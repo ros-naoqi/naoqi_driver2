@@ -23,7 +23,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <naoqi_driver/message_actions.h>
 
 namespace naoqi
@@ -82,12 +82,12 @@ public:
       convPtr_->callAll(actions);
     }
 
-    ros::Time after = ros::Time::now();
+    rclcpp::Time after = rclcpp::Node::now();
     lapse_time = after - before;
     before = after;
   }
 
-  ros::Duration lapseTime() const
+  rclcpp::Duration lapseTime() const
   {
     return lapse_time;
   }
@@ -102,8 +102,8 @@ public:
 
 private:
 
-  ros::Time before;
-  ros::Duration lapse_time;
+  rclcpp::Time before;
+  rclcpp::Duration lapse_time;
 
   /**
   * BASE concept struct
