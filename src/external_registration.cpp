@@ -15,85 +15,89 @@
  *
 */
 
-
+#include <rclcpp/rclcpp.hpp>
 #include <qi/applicationsession.hpp>
+#include <qi/session.hpp>
 #include <qi/anymodule.hpp>
+
+#if LIBQI_VERSION >= 29
+#include "driver_authenticator.hpp"
+#endif
+
 #include <naoqi_driver/naoqi_driver.hpp>
 
 #include <boost/program_options.hpp>
-
-#include "naoqi_env.hpp"
-#include "helpers/driver_helpers.hpp"
-
-int main(int argc, char** argv)
-{
-  /* launch naoqi service */
-  qi::ApplicationSession app(argc, argv);
-  /* In case you launch via roslaunch/rosrun we remove the ros args */
-  std::vector<std::string> args_out;
-  ros::removeROSArgs( argc, argv, args_out );
-
-  namespace po = boost::program_options;
-  po::options_description desc("Options");
-  desc.add_options()
-    ("help,h", "print help message")
-    ("roscore_ip,r", po::value<std::string>(), "set the ip of the roscore to use")
-    ("network_interface,i", po::value<std::string>()->default_value("eth0"),  "set the network interface over which to connect")
-    ("namespace,n", po::value<std::string>()->default_value("naoqi_driver_node"), "set an explicit namespace in case ROS namespace variables cannot be used");
-
-  po::variables_map vm;
-  try
-  {
-    po::store( po::parse_command_line(argc, argv, desc), vm );
-  }
-  catch (boost::program_options::invalid_command_line_syntax& e)
-  {
-    std::cout << "error " << e.what() << std::endl;
-    throw ros::Exception(e.what());
-  }
-  catch (boost::program_options::unknown_option& e)
-  {
-    std::cout << "error 2 " << e.what() << std::endl;
-    throw ros::Exception(e.what());
-  }
-
-  if( vm.count("help") )
-  {
-    std::cout << "This is the help message for the ROS-Driver C++ bridge" << std::endl << desc << std::endl;
-    exit(0);
-  }
+#include "naoqi_driver/tools.hpp"
 
 
-  // everything's correctly parsed - let's start the app!
-#if LIBQI_VERSION>24
-  app.startSession();
+int main(int argc, char** argv) {
+  const std::string no_password = "no_password";
+  std::string protocol = "tcp://";
+  
+  std::string nao_ip;
+  int nao_port;
+  std::string user;
+  std::string password;
+  std::string network_interface;
+
+  rclcpp::init(argc, argv);
+  boost::shared_ptr<naoqi::Driver> bs = boost::make_shared<naoqi::Driver>();
+  
+  bs->declare_parameter<std::string>("nao_ip", "127.0.0.1");
+  bs->declare_parameter<int>("nao_port", 9559);
+  bs->declare_parameter<std::string>("user", "nao");
+  bs->declare_parameter<std::string>("password", no_password);
+  bs->declare_parameter<std::string>("network_interface", "eth0");
+  
+  bs->get_parameter("nao_ip", nao_ip);
+  bs->get_parameter("nao_port", nao_port);
+  bs->get_parameter("user", user);
+  bs->get_parameter("password", password);
+  bs->get_parameter("network_interface", network_interface);
+
+  if (password.compare(no_password) != 0) {
+#if LIBQI_VERSION >= 29
+    protocol = "tcps://";
 #else
-  app.start();
+    std::cout << BOLDRED 
+              << "No need to set a password" 
+              << RESETCOLOR 
+              << std::endl;
 #endif
-  boost::shared_ptr<naoqi::Driver> bs = boost::make_shared<naoqi::Driver>(app.session(), vm["namespace"].as<std::string>());
+  }
 
+  qi::Url url(protocol + nao_ip + ":" + std::to_string(nao_port));
+  qi::ApplicationSession app(argc, argv);
+
+#if LIBQI_VERSION >= 29
+  if (password.compare(no_password) != 0) {
+    naoqi::DriverAuthenticatorFactory *factory = new naoqi::DriverAuthenticatorFactory;
+    factory->user = user;
+    factory->pass = password;
+
+    app.session()->setClientAuthenticatorFactory(
+      qi::ClientAuthenticatorFactoryPtr(factory));
+  }
+#endif
+
+  qi::Future<void> connection = app.session()->connect(url);
+  
+  if (connection.hasError()) {
+    std::cout << BOLDRED << connection.error() <<  RESETCOLOR << std::endl;
+    return 0;
+  }
+  
   app.session()->registerService("ROS-Driver", bs);
-
-  // set ros paramters directly upfront if available
-  if ( vm.count("roscore_ip") )
-  {
-    std::string roscore_ip = vm["roscore_ip"].as<std::string>();
-    std::string network_interface = vm["network_interface"].as<std::string>();
-
-    std::cout << BOLDYELLOW << "using ip address: "
-              << BOLDCYAN << roscore_ip << " @ " << network_interface << RESETCOLOR << std::endl;
-    bs->init();
-    bs->setMasterURINet( "http://"+roscore_ip+":11311", network_interface);
-  }
-  else
-  {
-    std::cout << BOLDRED << "No ip address given. Run qicli call to set the master uri" << RESETCOLOR << std::endl;
-    bs->init();
-  }
-
-  std::cout << BOLDYELLOW << "naoqi_driver initialized" << RESETCOLOR << std::endl;
+  bs->init();
+  std::cout << BOLDYELLOW 
+            << "naoqi_driver initialized" 
+            << RESETCOLOR 
+            << std::endl;
+  
   app.run();
+  
   bs->stopService();
   app.session()->close();
+  rclcpp::shutdown();
   return 0;
 }
