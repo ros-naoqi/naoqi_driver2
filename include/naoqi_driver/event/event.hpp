@@ -23,7 +23,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <naoqi_driver/message_actions.h>
 #include <naoqi_driver/recorder/globalrecorder.hpp>
 #include <naoqi_driver/tools.hpp>
@@ -54,9 +54,9 @@ public:
     eventPtr_( boost::make_shared<EventModel<T> >(event) )
   {}
 
-  void resetPublisher( ros::NodeHandle& nh )
+  void resetPublisher( rclcpp::Node& node )
   {
-    eventPtr_->resetPublisher(nh);
+    eventPtr_->resetPublisher(node);
   }
 
   void resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr )
@@ -74,7 +74,7 @@ public:
     eventPtr_->stopProcess();
   }
 
-  void writeDump( const ros::Time& time )
+  void writeDump( const rclcpp::Time& time )
   {
     eventPtr_->writeDump(time);
   }
@@ -107,11 +107,11 @@ private:
   struct EventConcept
   {
     virtual ~EventConcept(){}
-    virtual void resetPublisher(ros::NodeHandle& nh) = 0;
+    virtual void resetPublisher(rclcpp::Node& node) = 0;
     virtual void resetRecorder(boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr) = 0;
     virtual void startProcess() = 0;
     virtual void stopProcess() = 0;
-    virtual void writeDump(const ros::Time& time) = 0;
+    virtual void writeDump(const rclcpp::Time& time) = 0;
     virtual void setBufferDuration(float duration) = 0;
     virtual void isRecording(bool state) = 0;
     virtual void isPublishing(bool state) = 0;
@@ -129,9 +129,9 @@ private:
       converter_( other )
     {}
 
-    void resetPublisher( ros::NodeHandle& nh )
+    void resetPublisher( rclcpp::Node& node )
     {
-      converter_->resetPublisher(nh);
+      converter_->resetPublisher(node);
     }
 
     void resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr )
@@ -149,7 +149,7 @@ private:
       converter_->stopProcess();
     }
 
-    void writeDump( const ros::Time& time )
+    void writeDump( const rclcpp::Time& time )
     {
       converter_->writeDump(time);
     }
