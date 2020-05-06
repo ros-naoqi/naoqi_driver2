@@ -34,7 +34,7 @@ CameraRecorder::CameraRecorder( const std::string& topic_, float buffer_frequenc
   topic_img_ = topic_ + "/image_raw";
 }
 
-void CameraRecorder::write(const sensor_msgs::ImagePtr& img, const sensor_msgs::CameraInfo& camera_info)
+void CameraRecorder::write(const sensor_msgs::msg::Image::SharedPtr& img, const sensor_msgs::msg::CameraInfo& camera_info)
 {
   if (!img->header.stamp.isZero()) {
     gr_->write(topic_img_, *img, img->header.stamp);
@@ -50,7 +50,7 @@ void CameraRecorder::write(const sensor_msgs::ImagePtr& img, const sensor_msgs::
   }
 }
 
-void CameraRecorder::writeDump(const ros::Time& time)
+void CameraRecorder::writeDump(const rclcpp::Time& time)
 {
   boost::mutex::scoped_lock lock_write_buffer( mutex_ );
   boost::circular_buffer< std::pair<sensor_msgs::ImagePtr, sensor_msgs::CameraInfo> >::iterator it;
@@ -73,7 +73,7 @@ void CameraRecorder::reset(boost::shared_ptr<GlobalRecorder> gr, float conv_freq
   is_initialized_ = true;
 }
 
-void CameraRecorder::bufferize( const sensor_msgs::ImagePtr& img, const sensor_msgs::CameraInfo& camera_info )
+void CameraRecorder::bufferize( const sensor_msgs::msg::Image::SharedPtr& img, const sensor_msgs::msg::CameraInfo& camera_info )
 {
   boost::mutex::scoped_lock lock_bufferize( mutex_ );
   if (counter_ < max_counter_)
