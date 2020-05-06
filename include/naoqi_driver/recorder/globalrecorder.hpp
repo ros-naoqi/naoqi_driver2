@@ -22,6 +22,7 @@
 * LOCAL includes
 */
 #include <naoqi_driver/tools.hpp>
+#include <naoqi_driver/helpers.hpp>
 
 /*
 * STANDARD includes
@@ -81,7 +82,7 @@ public:
   * @brief Insert data into the ROSbag
   */
   template <class T>
-  void write(const std::string& topic, const T& msg, const rclcpp::Time& time = rclcpp::Node::now() ) {
+  void write(const std::string& topic, const T& msg, const rclcpp::Time& time = helpers::Time::now() ) {
     std::string ros_topic;
     if (topic[0]!='/')
     {

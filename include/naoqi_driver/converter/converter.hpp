@@ -25,6 +25,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <naoqi_driver/message_actions.h>
+#include <naoqi_driver/helpers.hpp>
 
 namespace naoqi
 {
@@ -82,7 +83,7 @@ public:
       convPtr_->callAll(actions);
     }
 
-    rclcpp::Time after = rclcpp::Node::now();
+    rclcpp::Time after = helpers::Time::now();
     lapse_time = after - before;
     before = after;
   }
