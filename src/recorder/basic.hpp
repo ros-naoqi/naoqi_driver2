@@ -81,7 +81,7 @@ public:
     }
   }
 
-  virtual void writeDump(const ros::Time& time)
+  virtual void writeDump(const rclcpp::Time& time)
   {
     boost::mutex::scoped_lock lock_write_buffer( mutex_ );
     typename boost::circular_buffer<T>::iterator it;
