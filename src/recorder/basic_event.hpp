@@ -22,6 +22,7 @@
 * LOCAL includes
 */
 #include <naoqi_driver/recorder/globalrecorder.hpp>
+#include <naoqi_driver/helpers.hpp>
 #include "../helpers/recorder_helpers.hpp"
 
 /*
@@ -78,7 +79,7 @@ public:
     }
   }
 
-  virtual void writeDump(const ros::Time& time)
+  virtual void writeDump(const rclcpp::Time& time)
   {
     boost::mutex::scoped_lock lock_write_buffer( mutex_ );
     removeOlderThan(time);
@@ -118,18 +119,18 @@ public:
 protected:
   bool isTooOld(const T& msg)
   {
-    ros::Duration d( ros::Time::now() - msg.header.stamp );
-    if (static_cast<float>(d.toSec()) > buffer_duration_)
+    rclcpp::Duration d( helpers::Time::now() - msg.header.stamp );
+    if (static_cast<float>(d.seconds()) > buffer_duration_)
     {
       return true;
     }
     return false;
   }
 
-  bool isOlderThan(const T& msg, const ros::Time& time)
+  bool isOlderThan(const T& msg, const rclcpp::Time& time)
   {
-    ros::Duration d( time - msg.header.stamp );
-    if (static_cast<float>(d.toSec()) > buffer_duration_)
+    rclcpp::Duration d( time - msg.header.stamp );
+    if (static_cast<float>(d.seconds()) > buffer_duration_)
     {
       return true;
     }
@@ -144,7 +145,7 @@ protected:
     }
   }
 
-  void removeOlderThan(const ros::Time& time)
+  void removeOlderThan(const rclcpp::Time& time)
   {
     while (buffer_.size() > 0 && isOlderThan(buffer_.front(), time))
     {
