@@ -113,17 +113,17 @@ include_directories(include
 
 # install(TARGETS naoqi_driver_module DESTINATION lib/${PROJECT_NAME})
 
-# add_library(
-#   naoqi_driver
-#   SHARED
-#   ${DRIVER_SRC}
-#   ${CONVERTERS_SRC}
-#   ${PUBLISHER_SRC}
-#   ${SUBSCRIBER_SRC}
-#   ${SERVICES_SRC}
-#   ${RECORDER_SRC}
-#   ${TOOLS_SRC}
-# )
+add_library(
+  naoqi_driver
+  SHARED
+  ${DRIVER_SRC}
+  ${CONVERTERS_SRC}
+  ${PUBLISHER_SRC}
+  ${SUBSCRIBER_SRC}
+  ${SERVICES_SRC}
+  ${RECORDER_SRC}
+  ${TOOLS_SRC}
+)
 
 # target_link_libraries(
 #   naoqi_driver
@@ -131,13 +131,13 @@ include_directories(include
 #   ${OpenCV_LIBRARIES}
 #   ${orocos_kdl_LIBRARIES}
 #   )
-# ament_target_dependencies(naoqi_driver
-#     rclcpp
-#     OpenCV
-#     orocos_kdl)
+ament_target_dependencies(naoqi_driver
+  rclcpp
+  naoqi_libqi
+  Boost)
 
 # add_dependencies(naoqi_driver ${catkin_EXPORTED_TARGETS})
-# install(TARGETS naoqi_driver DESTINATION lib/${PROJECT_NAME})
+install(TARGETS naoqi_driver DESTINATION lib/${PROJECT_NAME})
 
 # target_link_libraries(naoqi_driver_module
 #   naoqi_driver
@@ -150,9 +150,9 @@ add_executable(naoqi_driver_node src/external_registration.cpp)
 #     ${Boost_LIBRARIES}
 # )
 ament_target_dependencies(naoqi_driver_node
-    rclcpp
-    naoqi_libqi
-    Boost)
+  rclcpp
+  naoqi_driver
+  Boost)
 
 # install(TARGETS naoqi_driver_node DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(TARGETS naoqi_driver_node DESTINATION lib/${PROJECT_NAME})
