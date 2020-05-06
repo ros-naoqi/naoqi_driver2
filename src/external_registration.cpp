@@ -28,7 +28,7 @@
 
 #include <boost/program_options.hpp>
 #include "naoqi_driver/tools.hpp"
-
+#include "helpers/time_helpers.hpp"
 
 int main(int argc, char** argv) {
   const std::string no_password = "no_password";
@@ -40,9 +40,14 @@ int main(int argc, char** argv) {
   std::string password;
   std::string network_interface;
 
+  // Initialize ROS and create the driver Node
   rclcpp::init(argc, argv);
   boost::shared_ptr<naoqi::Driver> bs = boost::make_shared<naoqi::Driver>();
+
+  // Setup the time helper
+  naoqi::helpers::Time::setNode(bs);
   
+  // Retrieve the parameters
   bs->declare_parameter<std::string>("nao_ip", "127.0.0.1");
   bs->declare_parameter<int>("nao_port", 9559);
   bs->declare_parameter<std::string>("user", "nao");
@@ -66,6 +71,7 @@ int main(int argc, char** argv) {
 #endif
   }
 
+  // Build the q::ApplicationSession, and connect the associated session
   qi::Url url(protocol + nao_ip + ":" + std::to_string(nao_port));
   qi::ApplicationSession app(argc, argv);
 
@@ -87,6 +93,7 @@ int main(int argc, char** argv) {
     return 0;
   }
   
+  // Register the ROS-Driver service and init the driver node
   app.session()->registerService("ROS-Driver", bs);
   bs->init();
   std::cout << BOLDYELLOW 
@@ -94,8 +101,10 @@ int main(int argc, char** argv) {
             << RESETCOLOR 
             << std::endl;
   
+  // Run the qi::ApplicationSession
   app.run();
   
+  // Stop the driver service, close the qi::Session and stop ROS
   bs->stopService();
   app.session()->close();
   rclcpp::shutdown();
