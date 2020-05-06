@@ -28,7 +28,7 @@
 
 #include <boost/program_options.hpp>
 #include "naoqi_driver/tools.hpp"
-#include "helpers/time_helpers.hpp"
+#include "naoqi_driver/helpers.hpp"
 
 int main(int argc, char** argv) {
   const std::string no_password = "no_password";

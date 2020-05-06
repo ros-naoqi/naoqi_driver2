@@ -16,8 +16,8 @@
 */
 
 
-#ifndef TIME_HELPERS_HPP
-#define TIME_HELPERS_HPP
+#ifndef HELPERS_HPP
+#define HELPERS_HPP
 
 #include <rclcpp/rclcpp.hpp>
 #include <boost/shared_ptr.hpp>
@@ -57,4 +57,4 @@ private:
 } // naoqi
 } // helpers
 
-#endif // TIME_HELPERS_HPP
+#endif // HELPERS_HPP
