@@ -29,12 +29,12 @@ LogRecorder::LogRecorder(const std::string& topic , float buffer_frequency):
   counter_(1)
 {}
 
-void LogRecorder::write(std::list<rosgraph_msgs::Log>& log_msgs)
+void LogRecorder::write(std::list<rcl_interfaces::msg::Log>& log_msgs)
 {
   while ( !log_msgs.empty() )
   {
-    if (!log_msgs.front().header.stamp.isZero()) {
-      gr_->write(topic_, log_msgs.front(), log_msgs.front().header.stamp);
+    if (!log_msgs.front().stamp.isZero()) {
+      gr_->write(topic_, log_msgs.front(), log_msgs.front().stamp);
     }
     else {
       gr_->write(topic_, log_msgs.front());
@@ -45,10 +45,10 @@ void LogRecorder::write(std::list<rosgraph_msgs::Log>& log_msgs)
   }
 }
 
-void LogRecorder::writeDump(const ros::Time& time)
+void LogRecorder::writeDump(const rclcpp::Time& time)
 {
   boost::mutex::scoped_lock lock_write_buffer( mutex_ );
-  boost::circular_buffer< std::list<rosgraph_msgs::Log> >::iterator it;
+  boost::circular_buffer< std::list<rcl_interfaces::msg::Log> >::iterator it;
   for (it = buffer_.begin(); it != buffer_.end(); it++)
   {
     write(*it);
@@ -73,7 +73,7 @@ void LogRecorder::reset(boost::shared_ptr<GlobalRecorder> gr, float conv_frequen
   is_initialized_ = true;
 }
 
-void LogRecorder::bufferize( std::list<rosgraph_msgs::Log>& log_msgs )
+void LogRecorder::bufferize( std::list<rcl_interfaces::msg::Log>& log_msgs )
 {
   boost::mutex::scoped_lock lock_bufferize( mutex_ );
   if (counter_ < max_counter_)
