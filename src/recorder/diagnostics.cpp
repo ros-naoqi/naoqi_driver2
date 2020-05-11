@@ -36,7 +36,7 @@ DiagnosticsRecorder::DiagnosticsRecorder( const std::string& topic, float buffer
 
 void DiagnosticsRecorder::write(diagnostic_msgs::msg::DiagnosticArray& msg)
 {
-  if (!msg.header.stamp.isZero()) {
+  if (!helpers::recorder::isZero(msg.header.stamp)) {
     gr_->write(topic_, msg, msg.header.stamp);
   }
   else {
@@ -50,7 +50,7 @@ void DiagnosticsRecorder::writeDump(const rclcpp::Time& time)
   boost::circular_buffer<diagnostic_msgs::msg::DiagnosticArray>::iterator it;
   for (it = buffer_.begin(); it != buffer_.end(); it++)
   {
-    if (!it->header.stamp.isZero()) {
+    if (!helpers::recorder::isZero(it->header.stamp)) {
       gr_->write(topic_, *it, it->header.stamp);
     }
     else {

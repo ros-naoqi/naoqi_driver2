@@ -42,7 +42,7 @@ void SonarRecorder::write(const std::vector<sensor_msgs::msg::Range>& sonar_msgs
 
   for( size_t i=0; i<sonar_msgs.size(); ++i)
   {
-    if (!sonar_msgs[i].header.stamp.isZero()) {
+    if (!helpers::recorder::isZero(sonar_msgs[i].header.stamp)) {
       gr_->write(topics_[i], sonar_msgs[i], sonar_msgs[i].header.stamp);
     }
     else {

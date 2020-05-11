@@ -36,13 +36,13 @@ CameraRecorder::CameraRecorder( const std::string& topic_, float buffer_frequenc
 
 void CameraRecorder::write(const sensor_msgs::msg::Image::SharedPtr& img, const sensor_msgs::msg::CameraInfo& camera_info)
 {
-  if (!img->header.stamp.isZero()) {
+  if (!helpers::recorder::isZero(img->header.stamp)) {
     gr_->write(topic_img_, *img, img->header.stamp);
   }
   else {
     gr_->write(topic_img_, *img);
   }
-  if (!camera_info.header.stamp.isZero()) {
+  if (!helpers::recorder::isZero(camera_info.header.stamp)) {
     gr_->write(topic_info_, camera_info, camera_info.header.stamp);
   }
   else {

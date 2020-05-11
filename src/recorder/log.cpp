@@ -33,7 +33,7 @@ void LogRecorder::write(std::list<rcl_interfaces::msg::Log>& log_msgs)
 {
   while ( !log_msgs.empty() )
   {
-    if (!log_msgs.front().stamp.isZero()) {
+    if (!helpers::recorder::isZero(log_msgs.front().stamp)) {
       gr_->write(topic_, log_msgs.front(), log_msgs.front().stamp);
     }
     else {

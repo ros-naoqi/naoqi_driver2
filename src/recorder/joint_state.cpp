@@ -37,7 +37,7 @@ JointStateRecorder::JointStateRecorder( const std::string& topic, float buffer_f
 void JointStateRecorder::write( const sensor_msgs::msg::JointState& js_msg,
                                 const std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms )
 {
-  if (!js_msg.header.stamp.isZero()) {
+  if (!helpers::recorder::isZero(js_msg.header.stamp)) {
     gr_->write(topic_, js_msg, js_msg.header.stamp);
   }
   else {
@@ -57,7 +57,7 @@ void JointStateRecorder::writeDump(const rclcpp::Time& time)
   for (boost::circular_buffer<sensor_msgs::msg::JointState>::iterator it_js = bufferJoinState_.begin();
        it_js != bufferJoinState_.end(); it_js++)
   {
-    if (!it_js->header.stamp.isZero()) {
+    if (!helpers::recorder::isZero(it_js->header.stamp)) {
       gr_->write(topic_, *it_js, it_js->header.stamp);
     }
     else {

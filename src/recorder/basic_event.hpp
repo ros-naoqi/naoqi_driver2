@@ -71,7 +71,7 @@ public:
 
   virtual void write(const T& msg)
   {
-    if (!msg.header.stamp.isZero()) {
+    if (!helpers::recorder::isZero(msg.header.stamp) {
       gr_->write(topic_, msg, msg.header.stamp);
     }
     else {
@@ -86,7 +86,7 @@ public:
     typename std::list<T>::iterator it;
     for (it = buffer_.begin(); it != buffer_.end(); it++)
     {
-      if (!it->header.stamp.isZero()) {
+      if (!helpers::recorder::isZero(it->header.stamp)) {
         gr_->write(topic_, *it, it->header.stamp);
       }
       else {
