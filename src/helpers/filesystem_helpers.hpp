@@ -27,7 +27,7 @@
 #include <boost/algorithm/string/replace.hpp>
 
 #ifdef CATKIN_BUILD
-#include <ros/package.h>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 #endif
 
 namespace naoqi
@@ -99,7 +99,8 @@ static const std::string boot_config_file_name = "boot_config.json";
 inline std::string& getBootConfigFile()
 {
 #ifdef CATKIN_BUILD
-  static std::string path = ros::package::getPath("naoqi_driver")+"/share/"+boot_config_file_name;
+  static std::string path = ament_index_cpp::get_package_share_directory("naoqi_driver") + "/" + boot_config_file_name;
+  static std::string path = ament_index_cpp::get_package_share_directory("naoqi_driver") + "/" + boot_config_file_name;
   std::cout << "found a catkin prefix " << path << std::endl;
   return path;
 #else
@@ -113,7 +114,7 @@ inline std::string& getBootConfigFile()
 inline std::string& getURDF( std::string filename )
 {
 #ifdef CATKIN_BUILD
-  static std::string path = ros::package::getPath("naoqi_driver")+"/share/urdf/"+filename;
+  static std::string path = ament_index_cpp::get_package_share_directory("naoqi_driver") + "/urdf/"+filename;
   std::cout << "found a catkin URDF " << path << std::endl;
   return path;
 #else
