@@ -19,6 +19,7 @@
 * LOCAL includes
 */
 #include <naoqi_driver/recorder/globalrecorder.hpp>
+#include "../helpers/recorder_helpers.hpp"
 
 /*
 * STANDARD includes
@@ -145,7 +146,7 @@ namespace recorder
       }
       tf2_msgs::TFMessage message;
       rclcpp::Time now = helpers::Time::now();
-      if (!msgtf[0].header.stamp.isZero()) {
+      if (!helpers::recorder::isZero(msgtf[0].header.stamp)) {
         now = msgtf[0].header.stamp;
       }
       for (std::vector<geometry_msgs::msg::TransformStamped>::const_iterator it = msgtf.begin(); it != msgtf.end(); ++it)
