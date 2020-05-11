@@ -32,7 +32,7 @@
 /*
 * ROS includes
 */
-#include <sensor_msgs/Range.h>
+#include <sensor_msgs/msg/range.hpp>
 
 namespace naoqi
 {
@@ -45,13 +45,13 @@ class SonarRecorder
 public:
   SonarRecorder( const std::vector<std::string>& topics, float buffer_frequency = 0 );
 
-  void write(const std::vector<sensor_msgs::Range>& sonar_msgs );
+  void write(const std::vector<sensor_msgs::msg::Range>& sonar_msgs );
 
   void reset( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr, float conv_frequency );
 
-  void bufferize(const std::vector<sensor_msgs::Range>& sonar_msgs );
+  void bufferize(const std::vector<sensor_msgs::msg::Range>& sonar_msgs );
 
-  void writeDump(const ros::Time& time);
+  void writeDump(const rclcpp::Time& time);
 
   void setBufferDuration(float duration);
 
@@ -78,7 +78,7 @@ public:
 protected:
   std::string topic_;
 
-  boost::circular_buffer< std::vector<sensor_msgs::Range> > buffer_;
+  boost::circular_buffer< std::vector<sensor_msgs::msg::Range> > buffer_;
   size_t buffer_size_;
   float buffer_duration_;
 

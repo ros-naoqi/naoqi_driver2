@@ -32,7 +32,7 @@ SonarRecorder::SonarRecorder(const std::vector<std::string>& topics, float buffe
   counter_(1)
 {}
 
-void SonarRecorder::write(const std::vector<sensor_msgs::Range>& sonar_msgs)
+void SonarRecorder::write(const std::vector<sensor_msgs::msg::Range>& sonar_msgs)
 {
   if ( topics_.size() != sonar_msgs.size() )
   {
@@ -51,10 +51,10 @@ void SonarRecorder::write(const std::vector<sensor_msgs::Range>& sonar_msgs)
   }
 }
 
-void SonarRecorder::writeDump(const ros::Time& time)
+void SonarRecorder::writeDump(const rclcpp::Time& time)
 {
   boost::mutex::scoped_lock lock_write_buffer( mutex_ );
-  boost::circular_buffer< std::vector<sensor_msgs::Range> >::iterator it;
+  boost::circular_buffer< std::vector<sensor_msgs::msg::Range> >::iterator it;
   for (it = buffer_.begin(); it != buffer_.end(); it++)
   {
     write(*it);
@@ -79,7 +79,7 @@ void SonarRecorder::reset(boost::shared_ptr<GlobalRecorder> gr, float conv_frequ
   is_initialized_ = true;
 }
 
-void SonarRecorder::bufferize(const std::vector<sensor_msgs::Range>& sonar_msgs )
+void SonarRecorder::bufferize(const std::vector<sensor_msgs::msg::Range>& sonar_msgs )
 {
   boost::mutex::scoped_lock lock_bufferize( mutex_ );
   if (counter_ < max_counter_)
