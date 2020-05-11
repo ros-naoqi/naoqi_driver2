@@ -34,7 +34,7 @@ DiagnosticsRecorder::DiagnosticsRecorder( const std::string& topic, float buffer
   counter_(1)
 {}
 
-void DiagnosticsRecorder::write(diagnostic_msgs::DiagnosticArray& msg)
+void DiagnosticsRecorder::write(diagnostic_msgs::msg::DiagnosticArray& msg)
 {
   if (!msg.header.stamp.isZero()) {
     gr_->write(topic_, msg, msg.header.stamp);
@@ -44,10 +44,10 @@ void DiagnosticsRecorder::write(diagnostic_msgs::DiagnosticArray& msg)
   }
 }
 
-void DiagnosticsRecorder::writeDump(const ros::Time& time)
+void DiagnosticsRecorder::writeDump(const rclcpp::Time& time)
 {
   boost::mutex::scoped_lock lock_write_buffer( mutex_ );
-  boost::circular_buffer<diagnostic_msgs::DiagnosticArray>::iterator it;
+  boost::circular_buffer<diagnostic_msgs::msg::DiagnosticArray>::iterator it;
   for (it = buffer_.begin(); it != buffer_.end(); it++)
   {
     if (!it->header.stamp.isZero()) {
@@ -77,7 +77,7 @@ void DiagnosticsRecorder::reset(boost::shared_ptr<GlobalRecorder> gr, float conv
   is_initialized_ = true;
 }
 
-void DiagnosticsRecorder::bufferize(diagnostic_msgs::DiagnosticArray& msg )
+void DiagnosticsRecorder::bufferize(diagnostic_msgs::msg::DiagnosticArray& msg )
 {
   boost::mutex::scoped_lock lock_bufferize( mutex_ );
   if (counter_ < max_counter_)
