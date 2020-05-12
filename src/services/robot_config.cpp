@@ -29,15 +29,14 @@ RobotConfigService::RobotConfigService( const std::string& name, const std::stri
   session_(session)
 {}
 
-void RobotConfigService::reset( ros::NodeHandle& nh )
+void RobotConfigService::reset( rclcpp::Node& node )
 {
-  service_ = nh.advertiseService(topic_, &RobotConfigService::callback, this);
+  service_ = node.create_service<naoqi_bridge_msgs::srv::GetRobotInfo>(topic_, &RobotConfigService::callback);
 }
 
-bool RobotConfigService::callback( naoqi_bridge_msgs::GetRobotInfoRequest& req, naoqi_bridge_msgs::GetRobotInfoResponse& resp )
+void RobotConfigService::callback( const naoqi_bridge_msgs::srv::GetRobotInfo::Request& req, naoqi_bridge_msgs::srv::GetRobotInfo::Response& resp )
 {
-  resp.info = helpers::driver::getRobotInfo(session_);
-  return true;
+  resp->info = helpers::driver::getRobotInfo(session_);
 }
 
 
