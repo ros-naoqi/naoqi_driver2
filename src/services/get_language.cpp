@@ -29,15 +29,14 @@ GetLanguageService::GetLanguageService( const std::string& name, const std::stri
   session_(session)
 {}
 
-void GetLanguageService::reset( ros::NodeHandle& nh )
+void GetLanguageService::reset( rclcpp::Node& node )
 {
-  service_ = nh.advertiseService(topic_, &GetLanguageService::callback, this);
+  service_ = node.create_service<naoqi_bridge_msgs::srv::GetString>(topic_, &GetLanguageService::callback);
 }
 
-bool GetLanguageService::callback( naoqi_bridge_msgs::GetStringRequest& req, naoqi_bridge_msgs::GetStringResponse& resp )
+void GetLanguageService::callback( const naoqi_bridge_msgs::srv::GetString::Request& req, naoqi_bridge_msgs::srv::GetString::Response& resp )
 {
-  resp.data = helpers::driver::getLanguage(session_);
-  return true;
+  resp->data = helpers::driver::getLanguage(session_);
 }
 
 
