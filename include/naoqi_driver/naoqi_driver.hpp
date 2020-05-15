@@ -62,14 +62,14 @@ namespace recorder
 * @brief Interface for naoqi driver which is registered as a naoqi2 Module,
 * once the external roscore ip is set, this class will advertise and publish ros messages
 */
-class Driver
+class Driver : public rclcpp::Node
 {
 public:
   /**
-  * @brief Constructor for naoqi driver
-  * @param session[in] session pointer for naoqi2 service registration
-  */
-  Driver( qi::SessionPtr session, const std::string& prefix );
+   * @brief Constructor for the naoqi driver
+   * 
+   */
+  Driver();
 
   /**
   * @brief Destructor for naoqi driver,
@@ -78,6 +78,12 @@ public:
   ~Driver();
 
   void init();
+
+  /**
+   * @brief Set the Session object
+   * 
+   */
+  void setQiSession(const qi::SessionPtr& session_ptr);
 
   void startRosLoop();
   void stopRosLoop();
@@ -168,24 +174,24 @@ public:
    * eventually this should be replaced by move semantics C++11
    */
   void registerService( service::Service srv );
-  /**
-  * @brief qicli call function to get current master uri
-  * @return string indicating http master uri
-  */
-  std::string getMasterURI() const;
+  // /**
+  // * @brief qicli call function to get current master uri
+  // * @return string indicating http master uri
+  // */
+  // std::string getMasterURI() const;
 
-  /**
-  * @brief qicli call function to set current master uri
-  * @param string in form of http://<ip>:11311
-  * @param network_interface the network interface ("eth0", "tether" ...)
-  */
-  void setMasterURINet( const std::string& uri, const std::string& network_interface );
+  // /**
+  // * @brief qicli call function to set current master uri
+  // * @param string in form of http://<ip>:11311
+  // * @param network_interface the network interface ("eth0", "tether" ...)
+  // */
+  // void setMasterURINet( const std::string& uri, const std::string& network_interface );
 
-  /**
-  * @brief qicli call function to set current master uri
-  * @param string in form of http://<ip>:11311
-  */
-  void setMasterURI( const std::string& uri );
+  // /**
+  // * @brief qicli call function to set current master uri
+  // * @param string in form of http://<ip>:11311
+  // */
+  // void setMasterURI( const std::string& uri );
 
   /**
   * @brief qicli call function to start/enable publishing all registered publisher
@@ -244,7 +250,6 @@ private:
 
   const size_t freq_;
   boost::thread publisherThread_;
-  //ros::Rate r_;
 
   boost::shared_ptr<recorder::GlobalRecorder> recorder_;
 
@@ -270,7 +275,6 @@ private:
 
   void rosLoop();
 
-  boost::scoped_ptr<ros::NodeHandle> nhPtr_;
   boost::mutex mutex_reinit_;
   boost::mutex mutex_conv_queue_;
   boost::mutex mutex_record_;
@@ -293,7 +297,7 @@ private:
 
   /** Pub Publisher to execute at a specific time */
   struct ScheduledConverter {
-    ScheduledConverter(const ros::Time& schedule, size_t conv_index) :
+    ScheduledConverter(const rclcpp::Time& schedule, size_t conv_index) :
        schedule_(schedule), conv_index_(conv_index)
     {
     }
@@ -302,7 +306,7 @@ private:
       return schedule_ > sp_in.schedule_;
     }
     /** Time at which the publisher will be called */
-    ros::Time schedule_;
+    rclcpp::Time schedule_;
     /** Time at which the publisher will be called */
     size_t conv_index_;
   };
