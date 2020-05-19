@@ -26,22 +26,22 @@
 /*
 * ROS includes
 */
-#include <naoqi_bridge_msgs/StringStamped.h>
+#include <naoqi_bridge_msgs/msg/StringStamped.h>
 
 namespace naoqi
 {
 namespace publisher
 {
 
-class MemoryStringPublisher : public BasePublisher<naoqi_bridge_msgs::StringStamped>
+class MemoryStringPublisher : public BasePublisher<naoqi_bridge_msgs::msg::StringStamped>
 {
 
 public:
   MemoryStringPublisher( const std::string& topic );
 
-  void publish( const naoqi_bridge_msgs::StringStamped& msg );
+  void publish( const naoqi_bridge_msgs::msg::StringStamped& msg );
 
-  void reset( ros::NodeHandle& nh );
+  void reset( rclcpp::Node& node );
 }; // class
 
 } //publisher
