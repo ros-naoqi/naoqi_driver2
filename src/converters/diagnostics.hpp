@@ -23,11 +23,12 @@
 */
 #include "converter_base.hpp"
 #include <naoqi_driver/message_actions.h>
+#include <naoqi_driver/helpers.hpp>
 
 /*
 * ROS includes
 */
-#include <diagnostic_msgs/DiagnosticArray.h>
+#include <diagnostic_msgs/msg/diagnostic_array.hpp>
 
 namespace naoqi
 {
@@ -37,12 +38,12 @@ namespace converter
 /**
  * @brief This class defines a Diagnostic converter
  * It does not use the DiagnostricsUpdater for optimization.
- * A full diagnostic_msgs/DiagnosticArray is built and sent to requesting nodes
+ * A full diagnostic_msgs::msg::DiagnosticArray is built and sent to requesting nodes
  */
 class DiagnosticsConverter : public BaseConverter<DiagnosticsConverter>
 {
 
-  typedef boost::function<void(diagnostic_msgs::DiagnosticArray&) > Callback_t;
+  typedef boost::function<void(diagnostic_msgs::msg::DiagnosticArray&) > Callback_t;
 
 public:
   DiagnosticsConverter(const std::string& name, float frequency, const qi::SessionPtr &session );
