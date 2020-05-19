@@ -77,9 +77,9 @@ void InfoConverter::callAll( const std::vector<message_actions::MessageAction>& 
     return;
   }
 
-  naoqi_bridge_msgs::StringStamped msg;
+  naoqi_bridge_msgs::msg::StringStamped msg;
 
-  msg.header.stamp = ros::Time::now();
+  msg.header.stamp = helpers::Time::now();
   for(size_t i = 0; i < keys_.size(); ++i)
   {
     msg.data += keys_[i] + ": " + values[i];
