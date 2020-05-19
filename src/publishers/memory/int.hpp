@@ -26,22 +26,22 @@
 /*
 * ROS includes
 */
-#include <naoqi_bridge_msgs/IntStamped.h>
+#include <naoqi_bridge_msgs/msg/IntStamped.h>
 
 namespace naoqi
 {
 namespace publisher
 {
 
-class MemoryIntPublisher : public BasePublisher<naoqi_bridge_msgs::IntStamped>
+class MemoryIntPublisher : public BasePublisher<naoqi_bridge_msgs::msg::IntStamped>
 {
 
 public:
   MemoryIntPublisher( const std::string& topic );
 
-  void publish( const naoqi_bridge_msgs::IntStamped& msg );
+  void publish( const naoqi_bridge_msgs::msg::IntStamped& msg );
 
-  void reset( ros::NodeHandle& nh );
+  void reset( rclcpp::Node& node );
 
 }; // class
 
