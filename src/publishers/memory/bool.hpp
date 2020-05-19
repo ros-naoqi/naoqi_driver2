@@ -26,7 +26,7 @@
 /*
 * ROS includes
 */
-#include <naoqi_bridge_msgs/msg/BoolStamped.hpp>
+#include <naoqi_bridge_msgs/msg/bool_stamped.hpp>
 
 namespace naoqi
 {
