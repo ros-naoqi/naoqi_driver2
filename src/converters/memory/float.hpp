@@ -23,11 +23,12 @@
 */
 #include "../converter_base.hpp"
 #include <naoqi_driver/message_actions.h>
+#include <naoqi_driver/helpers.hpp>
 
 /*
 * ROS includes
 */
-#include <naoqi_bridge_msgs/FloatStamped.h>
+#include <naoqi_bridge_msgs/msg/FloatStamped.hpp>
 
 namespace naoqi
 {
@@ -36,7 +37,7 @@ namespace converter
 
 class MemoryFloatConverter : public BaseConverter<MemoryFloatConverter>
 {
-  typedef boost::function<void(naoqi_bridge_msgs::FloatStamped&)> Callback_t;
+  typedef boost::function<void(naoqi_bridge_msgs::msg::FloatStamped&)> Callback_t;
 
 public:
 
@@ -58,7 +59,7 @@ private:
   qi::AnyObject p_memory_;
 
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
-  naoqi_bridge_msgs::FloatStamped msg_;
+  naoqi_bridge_msgs::msg::FloatStamped msg_;
 
 }; // class
 
