@@ -91,7 +91,7 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
   std::vector<double> al_joint_velocities;
   std::vector<double> al_joint_torques;
 
-  const ros::Time& stamp = ros::Time::now();
+  const rclcpp::Time& stamp = helpers::Time::now();
 
   /**
    * JOINT STATE PUBLISHER
@@ -160,7 +160,7 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
    * with a base_link and base_footprint in the base
    */
   std::vector<float> al_odometry_data = p_motion_.call<std::vector<float> >( "getPosition", "Torso", 1, true );
-  const ros::Time& odom_stamp = ros::Time::now();
+  const rclcpp::Time& odom_stamp = helpers::Time::now();
   const float& odomX  =  al_odometry_data[0];
   const float& odomY  =  al_odometry_data[1];
   const float& odomZ  =  al_odometry_data[2];
@@ -170,9 +170,9 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
   //since all odometry is 6DOF we'll need a quaternion created from yaw
   tf2::Quaternion tf_quat;
   tf_quat.setRPY( odomWX, odomWY, odomWZ );
-  geometry_msgs::Quaternion odom_quat = tf2::toMsg( tf_quat );
+  geometry_msgs::msg::Quaternion odom_quat = tf2::toMsg( tf_quat );
 
-  static geometry_msgs::TransformStamped msg_tf_odom;
+  static geometry_msgs::msg::TransformStamped msg_tf_odom;
   msg_tf_odom.header.frame_id = "odom";
   msg_tf_odom.child_frame_id = "base_link";
   msg_tf_odom.header.stamp = odom_stamp;
@@ -187,7 +187,7 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
 
   if (robot_ == robot::NAO )
   {
-    nao::addBaseFootprint( tf2_buffer_, tf_transforms_, odom_stamp-ros::Duration(0.1) );
+    nao::addBaseFootprint( tf2_buffer_, tf_transforms_, odom_stamp- rclcpp::Duration(0.1, 0.0) );
   }
 
   // If nobody uses that buffer, do not fill it next time
@@ -204,9 +204,9 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
 
 
 // Copied from robot state publisher
-void JointStateConverter::setTransforms(const std::map<std::string, double>& joint_positions, const ros::Time& time, const std::string& tf_prefix)
+void JointStateConverter::setTransforms(const std::map<std::string, double>& joint_positions, const rclcpp::Time& time, const std::string& tf_prefix)
 {
-  geometry_msgs::TransformStamped tf_transform;
+  geometry_msgs::msg::TransformStamped tf_transform;
   tf_transform.header.stamp = time;
 
   // loop over all joints
@@ -236,10 +236,10 @@ void JointStateConverter::setTransforms(const std::map<std::string, double>& joi
 }
 
 // Copied from robot state publisher
-void JointStateConverter::setFixedTransforms(const std::string& tf_prefix, const ros::Time& time)
+void JointStateConverter::setFixedTransforms(const std::string& tf_prefix, const rclcpp::Time& time)
 {
-  geometry_msgs::TransformStamped tf_transform;
-  tf_transform.header.stamp = time/*+ros::Duration(0.5)*/;  // future publish by 0.5 seconds
+  geometry_msgs::msg::TransformStamped tf_transform;
+  tf_transform.header.stamp = time;
 
   // loop over all fixed segments
   for (std::map<std::string, robot_state_publisher::SegmentPair>::const_iterator seg=segments_fixed_.begin(); seg != segments_fixed_.end(); seg++){
@@ -274,11 +274,11 @@ void JointStateConverter::addChildren(const KDL::SegmentMap::const_iterator segm
     robot_state_publisher::SegmentPair s(GetTreeElementSegment(children[i]->second), root, child.getName());
     if (child.getJoint().getType() == KDL::Joint::None){
       segments_fixed_.insert(std::make_pair(child.getJoint().getName(), s));
-      ROS_DEBUG("Adding fixed segment from %s to %s", root.c_str(), child.getName().c_str());
+      RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), "Adding fixed segment from %s to %s", root.c_str(), child.getName().c_str());
     }
     else{
       segments_.insert(std::make_pair(child.getJoint().getName(), s));
-      ROS_DEBUG("Adding moving segment from %s to %s", root.c_str(), child.getName().c_str());
+      RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), "Adding moving segment from %s to %s", root.c_str(), child.getName().c_str());
     }
     addChildren(children[i]);
   }
