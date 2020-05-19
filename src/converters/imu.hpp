@@ -23,11 +23,12 @@
 */
 #include "converter_base.hpp"
 #include <naoqi_driver/message_actions.h>
+#include <naoqi_driver/helpers.hpp>
 
 /*
 * ROS includes
 */
-#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/msg/imu.hpp>
 
 namespace naoqi
 {
@@ -45,7 +46,7 @@ enum Location{
 class ImuConverter : public BaseConverter<ImuConverter>
 {
 
-  typedef boost::function<void(sensor_msgs::Imu&) > Callback_t;
+  typedef boost::function<void(sensor_msgs::msg::Imu&) > Callback_t;
 
 public:
   ImuConverter(const std::string& name, const IMU::Location& location, const float& frequency, const qi::SessionPtr& session);
@@ -59,7 +60,7 @@ public:
   virtual void callAll(const std::vector<message_actions::MessageAction>& actions);
 
 private:
-  sensor_msgs::Imu msg_imu_;
+  sensor_msgs::msg::Imu msg_imu_;
   qi::AnyObject p_memory_;
   std::vector<std::string> data_names_list_;
 

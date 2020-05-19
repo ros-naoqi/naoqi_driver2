@@ -100,7 +100,7 @@ namespace converter {
     // gyro  (X,Y,Z) = memData(4,5,6);
     // acc   (X,Y,Z) = memData(7,8,9);
 
-    const ros::Time& stamp = ros::Time::now();
+    const rclcpp::Time& stamp = helpers::Time::now();
     msg_imu_.header.stamp = stamp;
 
     tf2::Quaternion tf_quat;
