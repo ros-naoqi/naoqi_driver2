@@ -84,6 +84,19 @@ public:
 };
 
 
+class Logger : public Node {
+public:
+  /**
+   * @brief Get the logger object for the driver node
+   * 
+   * @return rclcpp::Logger 
+   */
+  static rclcpp::Logger get_logger() {
+    return Logger::node_ptr_->get_logger();
+  }
+};
+
+
 } // naoqi
 } // helpers
 
