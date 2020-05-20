@@ -41,6 +41,24 @@ public:
     Node::node_ptr_ = node_ptr;
   }
 
+  /**
+   * @brief Get the logger object for the driver node
+   * 
+   * @return rclcpp::Logger 
+   */
+  static rclcpp::Logger get_logger() {
+    return Node::node_ptr_->get_logger();
+  }
+
+  /**
+   * @brief Get the number of subscribers for a publisher on a specific topic
+   * 
+   * @return int 
+   */
+  static size_t count_subscribers(const std::string& topic_name) {
+    return Node::node_ptr_->count_subscribers(topic_name);
+  }
+
 protected:
   static boost::shared_ptr<rclcpp::Node> node_ptr_;
 };
@@ -64,38 +82,6 @@ public:
     return Time::node_ptr_->now();
   }
 };
-
-
-/**
- * @brief Publisher helper class, used to access to publisher related
- * functionalities throughout the project
- * 
- */
-class Publisher : public Node {
-public:
-  /**
-   * @brief Get the number of subscribers for a publisher on a specific topic
-   * 
-   * @return int 
-   */
-  static size_t getNumSubscribers(const std::string& topic_name) {
-    return Publisher::node_ptr_->count_subscribers(topic_name);
-  }
-};
-
-
-class Logger : public Node {
-public:
-  /**
-   * @brief Get the logger object for the driver node
-   * 
-   * @return rclcpp::Logger 
-   */
-  static rclcpp::Logger get_logger() {
-    return Logger::node_ptr_->get_logger();
-  }
-};
-
 
 } // naoqi
 } // helpers
