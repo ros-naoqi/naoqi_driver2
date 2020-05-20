@@ -26,21 +26,33 @@ namespace naoqi {
 namespace helpers {
 
 /**
- * @brief Time helper class, used to retrieve the time from the Driver node
- * throughout the project
+ * @brief Node helper class, holds a pointer towards the driver rclcpp::Node 
  * 
  */
-class Time {
+class Node {
 public:
   /**
    * @brief Set the Node object
    * 
-   * @param node_ptr 
+   * @param node_ptr_ 
    */
   static void setNode(const boost::shared_ptr<rclcpp::Node>& node_ptr) {
-    Time::node_ptr_ = node_ptr;
+    Node::node_ptr_ = node_ptr;
   }
 
+protected:
+  static boost::shared_ptr<rclcpp::Node> node_ptr_;
+};
+
+boost::shared_ptr<rclcpp::Node> Node::node_ptr_;
+
+/**
+ * @brief Time helper class, used to access to time related functionalities 
+ * throughout the project
+ * 
+ */
+class Time : public Node {
+public:
   /**
    * @brief Calls the method now of the node instance
    * 
@@ -49,9 +61,6 @@ public:
   static rclcpp::Time now() {
     return Time::node_ptr_->now();
   }
-
-private:
-  static boost::shared_ptr<rclcpp::Node> node_ptr_;
 };
 
 } // naoqi
