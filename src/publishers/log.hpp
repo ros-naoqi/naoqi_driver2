@@ -26,9 +26,9 @@
 /*
 * ROS includes
 */
-#include <ros/ros.h>
-#include <rosgraph_msgs/Log.h>
-#include <ros/serialization.h>
+#include <rclcpp/rclcpp.hpp>
+#include <rcl_interfaces/msg/log.hpp>
+#include <rclcpp/serialization.h>
 #include <std_msgs/String.h>
 
 /*
@@ -50,7 +50,7 @@ namespace naoqi
 namespace publisher
 {
 
-class LogPublisher : public BasicPublisher<rosgraph_msgs::Log>
+class LogPublisher : public BasicPublisher<rcl_interfaces::msg::Log>
 {
 public:
   LogPublisher(const std::string& topic);
@@ -65,7 +65,7 @@ public:
   }
 
 private:
-  ros::Publisher pub_;
+  rclcpp::Publisher pub_;
 
 };
 
