@@ -27,20 +27,20 @@
 /*
 * ROS includes
 */
-#include <ros/ros.h>
-#include <naoqi_bridge_msgs/StringStamped.h>
+#include <rclcpp/rclcpp.hpp>
+#include <naoqi_bridge_msgs/msg/StringStamped.hpp>
 
 namespace naoqi
 {
 namespace publisher
 {
 
-class InfoPublisher : public BasicPublisher<naoqi_bridge_msgs::StringStamped>
+class InfoPublisher : public BasicPublisher<naoqi_bridge_msgs::msg::StringStamped>
 {
 public:
   InfoPublisher( const std::string& topic, const robot::Robot& robot_type );
 
-  void reset( ros::NodeHandle& nh );
+  void reset( rclcpp::Node& node );
 
   virtual inline bool isSubscribed() const
   {
