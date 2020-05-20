@@ -21,8 +21,10 @@
 /*
 * ROS includes
 */
-#include <ros/ros.h>
-#include <sensor_msgs/Range.h>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/range.hpp>
+#include <naoqi_driver/helpers.hpp>
+
 
 namespace naoqi
 {
@@ -44,22 +46,22 @@ public:
     return is_initialized_;
   }
 
-  void publish( const std::vector<sensor_msgs::Range>& sonar_msgs );
+  void publish( const std::vector<sensor_msgs::msg::Range>& sonar_msgs );
 
-  void reset( ros::NodeHandle& nh );
+  void reset( rclcpp::Node& node );
 
   inline bool isSubscribed() const
   {
     if (is_initialized_ == false) return false;
-    for(std::vector<ros::Publisher>::const_iterator it = pubs_.begin(); it != pubs_.end(); ++it)
-      if (it->getNumSubscribers())
+    for(std::vector<rclcpp::Publisher>::const_iterator it = pubs_.begin(); it != pubs_.end(); ++it)
+      if (helpers::publishers::getNumSubscribers(it->get_topic_name()))
         return true;
     return false;
   }
 
 private:
   std::vector<std::string> topics_;
-  std::vector<ros::Publisher> pubs_;
+  std::vector<rclcpp::Publisher> pubs_;
   bool is_initialized_;
 
 };
