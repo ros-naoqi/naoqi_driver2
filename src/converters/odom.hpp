@@ -23,11 +23,12 @@
 */
 #include "converter_base.hpp"
 #include <naoqi_driver/message_actions.h>
+#include <naoqi_driver/helpers.hpp>
 
 /*
 * ROS includes
 */
-#include <nav_msgs/Odometry.h>
+#include <nav_msgs/msg/odometry.hpp>
 
 namespace naoqi
 {
@@ -37,7 +38,7 @@ namespace converter
 class OdomConverter : public BaseConverter<OdomConverter>
 {
 
-  typedef boost::function<void(nav_msgs::Odometry&)> Callback_t;
+  typedef boost::function<void(nav_msgs::msg::Odometry&)> Callback_t;
 
 public:
   OdomConverter( const std::string& name, const float& frequency, const qi::SessionPtr& session );
@@ -54,7 +55,7 @@ private:
   qi::AnyObject p_motion_;
 
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
-  nav_msgs::Odometry msg_;
+  nav_msgs::msg::Odometry msg_;
 }; // class
 
 } //publisher
