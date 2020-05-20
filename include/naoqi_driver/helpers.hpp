@@ -25,6 +25,7 @@
 namespace naoqi {
 namespace helpers {
 
+
 /**
  * @brief Node helper class, holds a pointer towards the driver rclcpp::Node 
  * 
@@ -46,6 +47,7 @@ protected:
 
 boost::shared_ptr<rclcpp::Node> Node::node_ptr_;
 
+
 /**
  * @brief Time helper class, used to access to time related functionalities 
  * throughout the project
@@ -62,6 +64,25 @@ public:
     return Time::node_ptr_->now();
   }
 };
+
+
+/**
+ * @brief Publisher helper class, used to access to publisher related
+ * functionalities throughout the project
+ * 
+ */
+class Publisher : public Node {
+public:
+  /**
+   * @brief Get the number of subscribers for a publisher on a specific topic
+   * 
+   * @return int 
+   */
+  static size_t getNumSubscribers(const std::string& topic_name) {
+    return Publisher::node_ptr_->count_subscribers(topic_name);
+  }
+};
+
 
 } // naoqi
 } // helpers
