@@ -63,7 +63,7 @@ SonarConverter::SonarConverter( const std::string& name, const float& frequency,
       msgs_[i].min_range = 0.25;
       msgs_[i].max_range = 2.55;
       msgs_[i].field_of_view = 0.523598776;
-      msgs_[i].radiation_type = sensor_msgs::Range::ULTRASOUND;
+      msgs_[i].radiation_type = sensor_msgs::msg::Range::ULTRASOUND;
     }
 
   keys_.resize(keys.size());
@@ -102,7 +102,7 @@ void SonarConverter::callAll( const std::vector<message_actions::MessageAction>&
     std::cerr << "Exception caught in SonarConverter: " << e.what() << std::endl;
     return;
   }
-  ros::Time now = ros::Time::now();
+  rclcpp::Time now = helpers::Time::now();
   for(size_t i = 0; i < msgs_.size(); ++i)
   {
     msgs_[i].header.stamp = now;
