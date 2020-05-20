@@ -18,8 +18,10 @@
 #ifndef CONVERTERS_LOG_HPP
 #define CONVERTERS_LOG_HPP
 
-#include <rosgraph_msgs/Log.h>
+#include <rcutils/logging.h>
+#include <rcl_interfaces/msg/log.hpp>
 
+#include <naoqi_driver/helpers.hpp>
 #include <naoqi_driver/message_actions.h>
 #include "converter_base.hpp"
 
@@ -34,7 +36,7 @@ namespace converter
 class LogConverter : public BaseConverter<LogConverter>
 {
 
-  typedef boost::function<void(rosgraph_msgs::Log&) > Callback_t;
+  typedef boost::function<void(rcl_interfaces::msg::Log&) > Callback_t;
 
 public:
   LogConverter( const std::string& name, float frequency, const qi::SessionPtr& sessions );

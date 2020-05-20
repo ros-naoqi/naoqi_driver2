@@ -20,13 +20,11 @@
 #include <qicore/logmessage.hpp>
 #include <queue>
 
-#include <std_msgs/String.h>
+#include <std_msgs/msg/string.hpp>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/foreach.hpp>
-
-#include <ros/console.h>
 
 #define for_each BOOST_FOREACH
 
@@ -38,13 +36,20 @@ namespace converter
 /** mutex to change the logs list */
 boost::mutex MUTEX_LOGS;
 /** list of ogs in which the NAOqi callback will write its logs */
-std::queue<rosgraph_msgs::Log> LOGS;
-/** Generic Log Level used to store all the correspondences between the libqi and ROS log levels */
+std::queue<rcl_interfaces::msg::Log> LOGS;
+
+/**
+ * @brief Generic Log Level used to store all the correspondences between the
+ * libqi and ROS log levels. The severity variable refers to the
+ * RCUTILS_LOG_SEVERITY level of a specific logger, while the ros_msg variable
+ * refers to the level of a rcl_interfaces/Log message.
+ * 
+ */
 class LogLevel
 {
 public:
-  LogLevel(qi::LogLevel qi, rosgraph_msgs::Log::_level_type ros_msg, ros::console::levels::Level ros_console) :
-      qi_(qi), ros_msg_(ros_msg), ros_console_(ros_console)
+  LogLevel(qi::LogLevel qi, rcl_interfaces::msg::Log::_level_type ros_msg, int severity) :
+      qi_(qi), ros_msg_(ros_msg), severity_(severity)
   {
     all_.push_back(*this);
   }
@@ -56,23 +61,23 @@ public:
         return log_level;
   }
 
-  static const LogLevel& get_from_ros_msg(rosgraph_msgs::Log::_level_type ros_msg)
+  static const LogLevel& get_from_ros_msg(rcl_interfaces::msg::Log::_level_type ros_msg)
   {
     for_each(const LogLevel& log_level, all_)
       if (log_level.ros_msg_ == ros_msg)
         return log_level;
   }
 
-  static const LogLevel& get_from_ros_console(ros::console::levels::Level ros_console)
+  static const LogLevel& get_from_log_severity(int severity)
   {
     for_each(const LogLevel& log_level, all_)
-      if (log_level.ros_console_ == ros_console)
+      if (log_level.severity_ == severity)
         return log_level;
   }
 
   qi::LogLevel qi_;
-  rosgraph_msgs::Log::_level_type ros_msg_;
-  ros::console::levels::Level ros_console_;
+  rcl_interfaces::msg::Log::_level_type ros_msg_;
+  int severity_;
 
 private:
   static std::vector<LogLevel> all_;
@@ -85,7 +90,7 @@ std::vector<LogLevel> LogLevel::all_ = std::vector<LogLevel>();
 void logCallback(const qi::LogMessage& msg)
 {
   // Convert the NAOqi log to a ROS log
-  rosgraph_msgs::Log log;
+  rcl_interfaces::msg::Log log;
 
   std::vector<std::string> results;
   boost::split(results, msg.source, boost::is_any_of(":"));
@@ -95,7 +100,7 @@ void logCallback(const qi::LogMessage& msg)
   log.level = LogLevel::get_from_qi(msg.level).ros_msg_;
   log.name = msg.category;
   log.msg = msg.message;
-  log.header.stamp = ros::Time(msg.timestamp.tv_sec, msg.timestamp.tv_usec);
+  log.stamp = rclcpp::Time(msg.timestamp.tv_sec, msg.timestamp.tv_usec);
 
   // If we are not publishing, the queue will increase, so we have to prevent an explosion
   // We only keep a log if it's within 5 second of the last publish (totally arbitrary)
@@ -114,13 +119,13 @@ LogConverter::LogConverter( const std::string& name, float frequency, const qi::
     log_level_(qi::LogLevel_Info)
 {
   // Define the log equivalents
-  LogLevel(qi::LogLevel_Silent, rosgraph_msgs::Log::DEBUG, ros::console::levels::Debug);
-  LogLevel(qi::LogLevel_Fatal, rosgraph_msgs::Log::FATAL, ros::console::levels::Fatal);
-  LogLevel(qi::LogLevel_Error, rosgraph_msgs::Log::ERROR, ros::console::levels::Error);
-  LogLevel(qi::LogLevel_Warning, rosgraph_msgs::Log::WARN, ros::console::levels::Warn);
-  LogLevel(qi::LogLevel_Info, rosgraph_msgs::Log::INFO, ros::console::levels::Info);
-  LogLevel(qi::LogLevel_Verbose, rosgraph_msgs::Log::DEBUG, ros::console::levels::Debug);
-  LogLevel(qi::LogLevel_Debug, rosgraph_msgs::Log::DEBUG, ros::console::levels::Debug);
+  LogLevel(qi::LogLevel_Silent, rcl_interfaces::msg::Log::DEBUG, RCUTILS_LOG_SEVERITY_DEBUG);
+  LogLevel(qi::LogLevel_Fatal, rcl_interfaces::msg::Log::FATAL, RCUTILS_LOG_SEVERITY_FATAL);
+  LogLevel(qi::LogLevel_Error, rcl_interfaces::msg::Log::ERROR, RCUTILS_LOG_SEVERITY_ERROR);
+  LogLevel(qi::LogLevel_Warning, rcl_interfaces::msg::Log::WARN, RCUTILS_LOG_SEVERITY_WARN);
+  LogLevel(qi::LogLevel_Info, rcl_interfaces::msg::Log::INFO, RCUTILS_LOG_SEVERITY_INFO);
+  LogLevel(qi::LogLevel_Verbose, rcl_interfaces::msg::Log::DEBUG, RCUTILS_LOG_SEVERITY_DEBUG);
+  LogLevel(qi::LogLevel_Debug, rcl_interfaces::msg::Log::DEBUG, RCUTILS_LOG_SEVERITY_DEBUG);
 
   listener_ = logger_->getListener();
   set_qi_logger_level();
@@ -136,7 +141,7 @@ void LogConverter::callAll( const std::vector<message_actions::MessageAction>& a
 {
   while ( !LOGS.empty() )
   {
-    rosgraph_msgs::Log& log_msg = LOGS.front();
+    rcl_interfaces::msg::Log& log_msg = LOGS.front();
     for_each( const message_actions::MessageAction& action, actions)
     {
       callbacks_[action](log_msg);
@@ -156,15 +161,9 @@ void LogConverter::reset( )
 void LogConverter::set_qi_logger_level( )
 {
   // Check that the log level is above or equal to the current one
-  std::map<std::string, ros::console::levels::Level> loggers;
-  ros::console::get_loggers(loggers);
+  int severity = rcutils_logging_get_logger_effective_level(helpers::Node::get_logger().get_name());
+  qi::LogLevel new_level = LogLevel::get_from_log_severity(iter->second).qi_;
 
-  std::map<std::string, ros::console::levels::Level>::iterator iter = loggers.find("ros.naoqi_driver");
-
-  if (iter == loggers.end())
-    return;
-
-  qi::LogLevel new_level = LogLevel::get_from_ros_console(iter->second).qi_;
   // Only change the log level if it has changed (otherwise, there is a flood of warnings)
   if (new_level == log_level_)
       return;
