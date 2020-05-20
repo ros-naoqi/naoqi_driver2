@@ -18,16 +18,19 @@
 #ifndef NAO_FOOTPRINT_HPP
 #define NAO_FOOTPRINT_HPP
 
+#include <chrono>
+
 /*
 * ROS includes
 */
 #include <tf2/LinearMath/Transform.h>
-#include <geometry_msgs/Transform.h>
+#include <geometry_msgs/msg/transform.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 /*
 * loca includes
 */
+#include <naoqi_driver/helpers.hpp>
 #include "../helpers/transform_helpers.hpp"
 
 namespace naoqi
@@ -37,24 +40,24 @@ namespace converter
 namespace nao
 {
 
-inline void addBaseFootprint( boost::shared_ptr<tf2_ros::Buffer> tf2_buffer, std::vector<geometry_msgs::TransformStamped>& tf_transforms, const ros::Time& time )
+inline void addBaseFootprint( boost::shared_ptr<tf2_ros::Buffer> tf2_buffer, std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms, const rclcpp::Time& time )
 {
-  bool canTransform = tf2_buffer->canTransform("odom", "l_sole", time, ros::Duration(0.1) );
+  bool canTransform = tf2_buffer->canTransform("odom", "l_sole", time, tf2::durationFromSec(0.1) );
   if (!canTransform)
   {
-    ROS_ERROR_STREAM("Do not calculate NAO Footprint, no transform possible " << time);
+    RCLCPP_ERROR(helpers::Node::get_logger(), "Do not calculate NAO Footprint, no transform possible (%d seconds)", &time.seconds());
     return;
   }
 
-  geometry_msgs::TransformStamped tf_odom_to_base, tf_odom_to_left_foot, tf_odom_to_right_foot;
+  geometry_msgs::msg::TransformStamped tf_odom_to_base, tf_odom_to_left_foot, tf_odom_to_right_foot;
   try {
     // TRANSFORM THEM DIRECTLY INTO TRANSFORM
     tf_odom_to_left_foot  = tf2_buffer->lookupTransform("odom", "l_sole",    time );
     tf_odom_to_right_foot = tf2_buffer->lookupTransform("odom", "r_sole",    time );
     tf_odom_to_base       = tf2_buffer->lookupTransform("odom", "base_link", time );
-  } catch (const tf2::TransformException& ex){
-    ROS_ERROR("NAO Footprint error %s",ex.what());
-    return ;
+  } catch (const tf2::TransformException& ex) {
+    RCLCPP_ERROR(helpers::Node::get_logger(), "NAO Footprint error %s",ex.what());
+    return;
   }
   // middle of both feet
   // z = fix to the lowest foot
@@ -86,7 +89,7 @@ inline void addBaseFootprint( boost::shared_ptr<tf2_ros::Buffer> tf2_buffer, std
   tf2::Transform tf_base_to_footprint = tf_odom_to_base_conv.inverse() * tf_odom_to_footprint;
 
   // convert it back to geometry_msgs
-  geometry_msgs::TransformStamped message;
+  geometry_msgs::msg::TransformStamped message;
   //message.transform = tf2::toMsg(tf_base_to_footprint);
   message.header.stamp = time;
   message.header.frame_id = "base_link";
