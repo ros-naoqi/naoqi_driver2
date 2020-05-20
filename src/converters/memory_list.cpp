@@ -45,8 +45,8 @@ void MemoryListConverter::callAll(const std::vector<message_actions::MessageActi
   qi::AnyValue memData_anyvalue = p_memory_.call<qi::AnyValue>("getListData", _key_list);
 
   // Reset message
-  _msg = naoqi_bridge_msgs::MemoryList();
-  ros::Time now = ros::Time::now();
+  _msg = naoqi_bridge_msgs::msg::MemoryList();
+  rclcpp::Time now = helpers::Time::now();
   _msg.header.stamp = now;
 
   qi::AnyReferenceVector memData_anyref = memData_anyvalue.asListValuePtr();
@@ -55,21 +55,21 @@ void MemoryListConverter::callAll(const std::vector<message_actions::MessageActi
   {
     if(memData_anyref[i].content().kind() == qi::TypeKind_Int)
     {
-      naoqi_bridge_msgs::MemoryPairInt tmp_msg;
+      naoqi_bridge_msgs::msg::MemoryPairInt tmp_msg;
       tmp_msg.memoryKey = _key_list[i];
       tmp_msg.data = memData_anyref[i].content().asInt32();
       _msg.ints.push_back(tmp_msg);
     }
     else if(memData_anyref[i].content().kind() == qi::TypeKind_Float)
     {
-        naoqi_bridge_msgs::MemoryPairFloat tmp_msg;
+        naoqi_bridge_msgs::msg::MemoryPairFloat tmp_msg;
         tmp_msg.memoryKey = _key_list[i];
         tmp_msg.data = memData_anyref[i].content().asFloat();
         _msg.floats.push_back(tmp_msg);
     }
     else if(memData_anyref[i].content().kind() == qi::TypeKind_String)
     {
-      naoqi_bridge_msgs::MemoryPairString tmp_msg;
+      naoqi_bridge_msgs::msg::MemoryPairString tmp_msg;
       tmp_msg.memoryKey = _key_list[i];
       tmp_msg.data = memData_anyref[i].content().asString();
       _msg.strings.push_back(tmp_msg);
