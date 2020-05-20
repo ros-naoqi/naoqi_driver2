@@ -23,11 +23,12 @@
 */
 #include "converter_base.hpp"
 #include <naoqi_driver/message_actions.h>
+#include <naoqi_driver/helpers.hpp>
 
 /*
 * ROS includes
 */
-#include <sensor_msgs/LaserScan.h>
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 namespace naoqi
 {
@@ -37,7 +38,7 @@ namespace converter
 class LaserConverter : public BaseConverter<LaserConverter>
 {
 
-  typedef boost::function<void(sensor_msgs::LaserScan&)> Callback_t;
+  typedef boost::function<void(sensor_msgs::msg::LaserScan&)> Callback_t;
 
 public:
   LaserConverter( const std::string& name, const float& frequency, const qi::SessionPtr& session );
@@ -57,7 +58,7 @@ private:
   float range_max_;
 
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
-  sensor_msgs::LaserScan msg_;
+  sensor_msgs::msg::LaserScan msg_;
 }; // class
 
 } //publisher
