@@ -21,8 +21,10 @@
 /*
 * ROS includes
 */
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/node_base_interface.hpp>
 #include <image_transport/image_transport.h>
+#include <naoqi_driver/helpers.hpp>
 
 namespace naoqi
 {
@@ -46,14 +48,17 @@ public:
     return is_initialized_;
   }
 
-  void publish( const sensor_msgs::ImagePtr& img, const sensor_msgs::CameraInfo& camera_info );
+  void publish( const sensor_msgs::msg::Image::SharedPtr& img, const sensor_msgs::msg::CameraInfo& camera_info );
 
-  void reset( ros::NodeHandle& nh );
+  void reset( rclcpp::Node& node );
 
   inline bool isSubscribed() const
   {
-    if (is_initialized_ == false) return false;
-    return pub_.getNumSubscribers() > 0;
+    if (is_initialized_ == false){
+      return false;
+    } else{
+      return helpers::publishers::getNumSubscribers(topic_) > 0;
+    }
   }
 
 private:
