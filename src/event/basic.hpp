@@ -26,7 +26,7 @@
 
 #include <qi/session.hpp>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <naoqi_driver/tools.hpp>
 #include <naoqi_driver/recorder/globalrecorder.hpp>
@@ -60,7 +60,7 @@ public:
   void startProcess();
   void stopProcess();
 
-  void writeDump(const ros::Time& time);
+  void writeDump(const rclcpp::Time& time);
   void setBufferDuration(float duration);
 
   void isRecording(bool state);
