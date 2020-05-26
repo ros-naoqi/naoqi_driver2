@@ -308,7 +308,7 @@ std::string Driver::minidump(const std::string& prefix)
   {
     iterator->second.isDumping(false);
   }
-  return recorder_->stopRecord();
+  return recorder_->stopRecord(::naoqi::ros_env::getROSIP("eth0"));
 }
 
 std::string Driver::minidumpConverters(const std::string& prefix, const std::vector<std::string>& names)
@@ -385,7 +385,7 @@ std::string Driver::minidumpConverters(const std::string& prefix, const std::vec
   }
   if ( is_started )
   {
-    return recorder_->stopRecord();
+    return recorder_->stopRecord(::naoqi::ros_env::getROSIP("eth0"));
   }
   else
   {
