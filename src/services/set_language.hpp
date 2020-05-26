@@ -23,7 +23,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <naoqi_bridge_msgs/srv/SetString.hpp>
+#include <naoqi_bridge_msgs/srv/set_string.hpp>
 #include <qi/session.hpp>
 
 namespace naoqi

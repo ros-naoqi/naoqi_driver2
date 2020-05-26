@@ -23,7 +23,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <naoqi_bridge_msgs/srv/GetRobotInfo.hpp>
+#include <naoqi_bridge_msgs/srv/get_robot_info.hpp>
 #include <qi/session.hpp>
 
 namespace naoqi
