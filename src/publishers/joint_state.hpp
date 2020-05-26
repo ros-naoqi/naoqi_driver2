@@ -58,7 +58,7 @@ private:
   boost::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcasterPtr_;
 
   /** initialize separate publishers for js and odom */
-  rclcpp::Publisher pub_joint_states_;
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_joint_states_;
 
   std::string topic_;
 

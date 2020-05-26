@@ -44,7 +44,7 @@ void JointStatePublisher::publish( const sensor_msgs::msg::JointState& js_msg,
 
 void JointStatePublisher::reset( rclcpp::Node& node )
 {
-  pub_joint_states_ = node.create_publisher<sensor_msgs::msg::JointState>( topic_, 10 );
+  pub_joint_states_ = node->create_publisher<sensor_msgs::msg::JointState>( topic_, 10 );
 
   tf_broadcasterPtr_ = boost::make_shared<tf2_ros::TransformBroadcaster>();
 
