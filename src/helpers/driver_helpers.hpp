@@ -21,8 +21,8 @@
 
 #include <naoqi_driver/tools.hpp>
 
-#include <naoqi_bridge_msgs/msg/RobotInfo.hpp>
-#include <naoqi_bridge_msgs/srv/SetString.hpp>
+#include <naoqi_bridge_msgs/msg/robot_info.hpp>
+#include <naoqi_bridge_msgs/srv/set_string.hpp>
 
 #include <qi/applicationsession.hpp>
 
