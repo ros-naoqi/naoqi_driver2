@@ -79,7 +79,7 @@ protected:
   bool is_initialized_;
 
   /** Publisher */
-  rclcpp::Publisher pub_;
+  rclcpp::Publisher<T>::SharedPtr pub_;
 }; // class
 
 } // publisher
