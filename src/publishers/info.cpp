@@ -35,7 +35,7 @@ InfoPublisher::InfoPublisher(const std::string& topic , const robot::Robot& robo
 void InfoPublisher::reset( rclcpp::Node& node)
 {
   // We latch as we only publish once
-  pub_ = node->create_publisher<naoqi_bridge_msgs::msg::StringStamped>( topic_, 1, true );
+  pub_ = node->create_publisher<naoqi_bridge_msgs::msg::StringStamped>( topic_, 1);
 
   std::string robot_desc = naoqi::tools::getRobotDescription(robot_);
   std::string parameter_name = "/robot_description"
