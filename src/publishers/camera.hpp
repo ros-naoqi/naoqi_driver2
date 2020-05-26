@@ -22,7 +22,6 @@
 * ROS includes
 */
 #include <rclcpp/rclcpp.hpp>
-#include <rclcpp/node_base_interface.hpp>
 #include <image_transport/image_transport.h>
 #include <naoqi_driver/helpers.hpp>
 
@@ -57,7 +56,7 @@ public:
     if (is_initialized_ == false){
       return false;
     } else{
-      return helpers::publishers::getNumSubscribers(topic_) > 0;
+      return helpers::Node::getNumSubscribers(topic_) > 0;
     }
   }
 
