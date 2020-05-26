@@ -99,7 +99,7 @@ const sensor_msgs::msg::CameraInfo& getCameraInfo( int camera_source, int resolu
     if ( resolution == AL::kVGA )
     {
       static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHVGA();
-      RCLCPP_WARN(rclcpp::get_logger("rclcpp"), "VGA resolution is not supported for the depth camera, use QVGA or lower");
+      RCLCPP_WARN(helpers::Node::get_logger(), "VGA resolution is not supported for the depth camera, use QVGA or lower");
       return cam_info_msg;
     }
     else if( resolution == AL::kQVGA )
@@ -137,7 +137,7 @@ const sensor_msgs::msg::CameraInfo& getCameraInfo( int camera_source, int resolu
     if ( resolution == AL::kVGA )
     {
       static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHVGA();
-      RCLCPP_WARN(rclcpp::get_logger("rclcpp"), "VGA resolution is not supported for the depth camera, use QVGA or lower");
+      RCLCPP_WARN(helpers::Node::get_logger(), "VGA resolution is not supported for the depth camera, use QVGA or lower");
       return cam_info_msg;
     }
     else if( resolution == AL::kQVGA )

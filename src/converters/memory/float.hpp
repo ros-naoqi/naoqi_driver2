@@ -28,7 +28,7 @@
 /*
 * ROS includes
 */
-#include <naoqi_bridge_msgs/msg/FloatStamped.hpp>
+#include <naoqi_bridge_msgs/msg/float_stamped.hpp>
 
 namespace naoqi
 {

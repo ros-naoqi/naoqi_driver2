@@ -27,7 +27,7 @@
 /*
 * ROS includes
 */
-#include <naoqi_bridge_msgs/msg/AudioBuffer.hpp>
+#include <naoqi_bridge_msgs/msg/audio_buffer.hpp>
 
 /*
 * ALDEBARAN includes

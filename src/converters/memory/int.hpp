@@ -28,7 +28,7 @@
 /*
 * ROS includes
 */
-#include <naoqi_bridge_msgs/msg/IntStamped.hpp>
+#include <naoqi_bridge_msgs/msg/int_stamped.hpp>
 
 namespace naoqi
 {

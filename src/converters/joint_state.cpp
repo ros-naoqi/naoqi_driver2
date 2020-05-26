@@ -187,7 +187,7 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
 
   if (robot_ == robot::NAO )
   {
-    nao::addBaseFootprint( tf2_buffer_, tf_transforms_, odom_stamp- rclcpp::Duration(0.1, 0.0) );
+    nao::addBaseFootprint( tf2_buffer_, tf_transforms_, odom_stamp - tf2::durationFromSec(0.1) );
   }
 
   // If nobody uses that buffer, do not fill it next time
@@ -274,11 +274,11 @@ void JointStateConverter::addChildren(const KDL::SegmentMap::const_iterator segm
     robot_state_publisher::SegmentPair s(GetTreeElementSegment(children[i]->second), root, child.getName());
     if (child.getJoint().getType() == KDL::Joint::None){
       segments_fixed_.insert(std::make_pair(child.getJoint().getName(), s));
-      RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), "Adding fixed segment from %s to %s", root.c_str(), child.getName().c_str());
+      RCLCPP_DEBUG(helpers::Node::get_logger(), "Adding fixed segment from %s to %s", root.c_str(), child.getName().c_str());
     }
     else{
       segments_.insert(std::make_pair(child.getJoint().getName(), s));
-      RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), "Adding moving segment from %s to %s", root.c_str(), child.getName().c_str());
+      RCLCPP_DEBUG(helpers::Node::get_logger(), "Adding moving segment from %s to %s", root.c_str(), child.getName().c_str());
     }
     addChildren(children[i]);
   }
