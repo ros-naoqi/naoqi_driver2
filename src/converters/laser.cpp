@@ -151,7 +151,7 @@ void LaserConverter::callAll( const std::vector<message_actions::MessageAction>&
     std::cerr << "Exception caught in LaserConverter: " << e.what() << std::endl;
     return;
   }
-  msg_.header.stamp = ros::Time::now();
+  msg_.header.stamp = helpers::Time::now();
   //  prepare the right sensor frame
   size_t pos = 0;
 

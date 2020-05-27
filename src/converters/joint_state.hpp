@@ -24,12 +24,13 @@
 #include "converter_base.hpp"
 #include "../tools/robot_description.hpp"
 #include <naoqi_driver/message_actions.h>
+#include <naoqi_driver/helpers.hpp>
 
 /*
 * ROS includes
 */
 #include <urdf/model.h>
-#include <sensor_msgs/JointState.h>
+#include <sensor_msgs/msg/joint_state.hpp>
 #include <tf2_ros/buffer.h>
 #include <robot_state_publisher/robot_state_publisher.h>
 
@@ -41,7 +42,7 @@ namespace converter
 class JointStateConverter : public BaseConverter<JointStateConverter>
 {
 
-  typedef boost::function<void(sensor_msgs::JointState&, std::vector<geometry_msgs::TransformStamped>&) > Callback_t;
+  typedef boost::function<void(sensor_msgs::msg::JointState&, std::vector<geometry_msgs::msg::TransformStamped>&) > Callback_t;
 
   typedef boost::shared_ptr<tf2_ros::Buffer> BufferPtr;
 
@@ -63,8 +64,8 @@ private:
   /** blatently copied from robot state publisher */
   void addChildren(const KDL::SegmentMap::const_iterator segment);
   std::map<std::string, robot_state_publisher::SegmentPair> segments_, segments_fixed_;
-  void setTransforms(const std::map<std::string, double>& joint_positions, const ros::Time& time, const std::string& tf_prefix);
-  void setFixedTransforms(const std::string& tf_prefix, const ros::Time& time);
+  void setTransforms(const std::map<std::string, double>& joint_positions, const rclcpp::Time& time, const std::string& tf_prefix);
+  void setFixedTransforms(const std::string& tf_prefix, const rclcpp::Time& time);
 
   /** Global Shared tf2 buffer **/
   BufferPtr tf2_buffer_;
@@ -83,10 +84,10 @@ private:
   MimicMap mimic_;
 
   /** JointState Message **/
-  sensor_msgs::JointState msg_joint_states_;
+  sensor_msgs::msg::JointState msg_joint_states_;
 
   /** Transform Messages **/
-  std::vector<geometry_msgs::TransformStamped> tf_transforms_;
+  std::vector<geometry_msgs::msg::TransformStamped> tf_transforms_;
 
 }; // class
 

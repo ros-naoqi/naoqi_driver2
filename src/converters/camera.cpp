@@ -27,7 +27,6 @@
 * ROS includes
 */
 #include <cv_bridge/cv_bridge.h>
-#include <ros/console.h>
 
 /*
 * CV includes
@@ -48,13 +47,13 @@ namespace converter
 namespace camera_info_definitions
 {
 
-const sensor_msgs::CameraInfo& getEmptyInfo()
+const sensor_msgs::msg::CameraInfo& getEmptyInfo()
 {
-  static const sensor_msgs::CameraInfo cam_info_msg;
+  static const sensor_msgs::msg::CameraInfo cam_info_msg;
   return cam_info_msg;
 }
 
-const sensor_msgs::CameraInfo& getCameraInfo( int camera_source, int resolution )
+const sensor_msgs::msg::CameraInfo& getCameraInfo( int camera_source, int resolution )
 {
   /** RETURN VALUE OPTIMIZATION (RVO)
   * since there is no C++11 initializer list nor lamda functions
@@ -63,17 +62,17 @@ const sensor_msgs::CameraInfo& getCameraInfo( int camera_source, int resolution 
   {
     if ( resolution == AL::kVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoTOPVGA();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoTOPVGA();
       return cam_info_msg;
     }
     else if( resolution == AL::kQVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoTOPQVGA();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoTOPQVGA();
       return cam_info_msg;
     }
     else if( resolution == AL::kQQVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoTOPQQVGA();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoTOPQQVGA();
       return cam_info_msg;
     }
   }
@@ -81,17 +80,17 @@ const sensor_msgs::CameraInfo& getCameraInfo( int camera_source, int resolution 
   {
     if ( resolution == AL::kVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoBOTTOMVGA();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoBOTTOMVGA();
       return cam_info_msg;
     }
     else if( resolution == AL::kQVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoBOTTOMQVGA();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoBOTTOMQVGA();
       return cam_info_msg;
     }
     else if( resolution == AL::kQQVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoBOTTOMQQVGA();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoBOTTOMQQVGA();
       return cam_info_msg;
     }
   }
@@ -99,76 +98,76 @@ const sensor_msgs::CameraInfo& getCameraInfo( int camera_source, int resolution 
   {
     if ( resolution == AL::kVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTHVGA();
-      ROS_WARN("VGA resolution is not supported for the depth camera, use QVGA or lower");
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHVGA();
+      RCLCPP_WARN(helpers::Node::get_logger(), "VGA resolution is not supported for the depth camera, use QVGA or lower");
       return cam_info_msg;
     }
     else if( resolution == AL::kQVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTHQVGA();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHQVGA();
       return cam_info_msg;
     }
     else if( resolution == AL::kQQVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTHQQVGA();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHQQVGA();
       return cam_info_msg;
     }
     else if (resolution == AL::k720p){
-        static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTH720P();
+        static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTH720P();
         return cam_info_msg;
     }
     else if (resolution == AL::kQ720p){
-        static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTHQ720P();
+        static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHQ720P();
         return cam_info_msg;
     }
     else if (resolution == AL::kQQ720p){
-        static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTHQQ720P();
+        static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHQQ720P();
         return cam_info_msg;
     }
     else if (resolution == AL::kQQQ720p){
-        static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTHQQQ720P();
+        static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHQQQ720P();
         return cam_info_msg;
     }
     else if (resolution == AL::kQQQQ720p){
-        static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTHQQQQ720P();
+        static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHQQQQ720P();
         return cam_info_msg;
     }
   }
   else if (camera_source == AL::kInfraredOrStereoCamera) {
     if ( resolution == AL::kVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTHVGA();
-      ROS_WARN("VGA resolution is not supported for the depth camera, use QVGA or lower");
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHVGA();
+      RCLCPP_WARN(helpers::Node::get_logger(), "VGA resolution is not supported for the depth camera, use QVGA or lower");
       return cam_info_msg;
     }
     else if( resolution == AL::kQVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTHQVGA();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHQVGA();
       return cam_info_msg;
     }
     else if( resolution == AL::kQQVGA )
     {
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoDEPTHQQVGA();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoDEPTHQQVGA();
       return cam_info_msg;
     }
     else if (resolution == AL::k720px2){
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoStereo720PX2();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoStereo720PX2();
       return cam_info_msg;
     }
     else if (resolution == AL::kQ720px2){
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoStereoQ720PX2();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoStereoQ720PX2();
       return cam_info_msg;
     }
     else if (resolution == AL::kQQ720px2){
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoStereoQQ720PX2();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoStereoQQ720PX2();
       return cam_info_msg;
     }
     else if (resolution == AL::kQQQ720px2){
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoStereoQQQ720PX2();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoStereoQQQ720PX2();
       return cam_info_msg;
     }
     else if (resolution == AL::kQQQQ720px2){
-      static const sensor_msgs::CameraInfo cam_info_msg = createCameraInfoStereoQQQQ720PX2();
+      static const sensor_msgs::msg::CameraInfo cam_info_msg = createCameraInfoStereoQQQQ720PX2();
       return cam_info_msg;
     }
   }
@@ -284,10 +283,10 @@ void CameraConverter::callAll( const std::vector<message_actions::MessageAction>
 
   // Create a cv::Mat of the right dimensions
   cv::Mat cv_img(image.height, image.width, cv_mat_type_, image.buffer);
-  msg_ = cv_bridge::CvImage(std_msgs::Header(), msg_colorspace_, cv_img).toImageMsg();
+  msg_ = cv_bridge::CvImage(std_msgs::msg::Header(), msg_colorspace_, cv_img).toImageMsg();
   msg_->header.frame_id = msg_frameid_;
 
-  msg_->header.stamp = ros::Time::now();
+  msg_->header.stamp = helpers::Time::now();
   //msg_->header.stamp.sec = image.timestamp_s;
   //msg_->header.stamp.nsec = image.timestamp_us*1000;
   camera_info_.header.stamp = msg_->header.stamp;

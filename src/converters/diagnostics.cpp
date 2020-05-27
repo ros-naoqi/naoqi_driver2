@@ -24,7 +24,7 @@
 /*
 * ROS includes
 */
-#include <diagnostic_updater/DiagnosticStatusWrapper.h>
+#include <diagnostic_updater/diagnostic_status_wrapper.hpp>
 
 /*
 * BOOST includes
@@ -36,9 +36,9 @@ namespace
 {
 void setMessageFromStatus(diagnostic_updater::DiagnosticStatusWrapper &status)
 {
-  if (status.level == diagnostic_msgs::DiagnosticStatus::OK) {
+  if (status.level == diagnostic_msgs::msg::DiagnosticStatus::OK) {
     status.message = "OK";
-  } else if (status.level == diagnostic_msgs::DiagnosticStatus::WARN) {
+  } else if (status.level == diagnostic_msgs::msg::DiagnosticStatus::WARN) {
     status.message = "WARN";
   } else {
     status.message = "ERROR";
@@ -128,8 +128,8 @@ DiagnosticsConverter::DiagnosticsConverter( const std::string& name, float frequ
 
 void DiagnosticsConverter::callAll( const std::vector<message_actions::MessageAction>& actions )
 {
-  diagnostic_msgs::DiagnosticArray msg;
-  msg.header.stamp = ros::Time::now();
+  diagnostic_msgs::msg::DiagnosticArray msg;
+  msg.header.stamp = helpers::Time::now();
 
   // Get all the keys
   //qi::details::printMetaObject(std::cout, p_memory_.metaObject());
@@ -150,7 +150,7 @@ void DiagnosticsConverter::callAll( const std::vector<message_actions::MessageAc
   std::stringstream hotJointsSS;
 
   size_t val = 0;
-  diagnostic_msgs::DiagnosticStatus::_level_type max_level = diagnostic_msgs::DiagnosticStatus::OK;
+  diagnostic_msgs::msg::DiagnosticStatus::_level_type max_level = diagnostic_msgs::msg::DiagnosticStatus::OK;
   for(size_t i = 0; i < joint_names_.size(); ++i)
   {
     diagnostic_updater::DiagnosticStatusWrapper status;
@@ -171,17 +171,17 @@ void DiagnosticsConverter::callAll( const std::vector<message_actions::MessageAc
     // Define the level
     if (temperature < temperature_warn_level_)
     {
-      status.level = diagnostic_msgs::DiagnosticStatus::OK;
+      status.level = diagnostic_msgs::msg::DiagnosticStatus::OK;
       status.message = "OK";
     }
     else if (temperature < temperature_error_level_)
     {
-      status.level = diagnostic_msgs::DiagnosticStatus::WARN;
+      status.level = diagnostic_msgs::msg::DiagnosticStatus::WARN;
       status.message = "Hot";
     }
     else
     {
-      status.level = diagnostic_msgs::DiagnosticStatus::ERROR;
+      status.level = diagnostic_msgs::msg::DiagnosticStatus::ERROR;
       status.message = "Too hot";
     }
 
@@ -194,7 +194,7 @@ void DiagnosticsConverter::callAll( const std::vector<message_actions::MessageAc
     minStiffness = std::min(minStiffness, stiffness);
     if(joint_names_[i].find("Hand") == std::string::npos)
       minStiffnessWoHands = std::min(minStiffnessWoHands, stiffness);
-    if(status.level >= (int) diagnostic_msgs::DiagnosticStatus::WARN) {
+    if(status.level >= (int) diagnostic_msgs::msg::DiagnosticStatus::WARN) {
       hotJointsSS << std::endl << joint_names_[i] << ": " << temperature << "°C";
     }
   }
@@ -234,31 +234,31 @@ void DiagnosticsConverter::callAll( const std::vector<message_actions::MessageAc
       {
         if (value)
         {
-          status.level = diagnostic_msgs::DiagnosticStatus::OK;
+          status.level = diagnostic_msgs::msg::DiagnosticStatus::OK;
           ss << "Charging (" << std::setw(4) << battery_percentage << "%)";
         }
         else
         {
           if (battery_percentage > 60)
           {
-              status.level = diagnostic_msgs::DiagnosticStatus::OK;
+              status.level = diagnostic_msgs::msg::DiagnosticStatus::OK;
               ss << "Battery OK (" << std::setw(4) << battery_percentage << "% left)";
           }
           else if (battery_percentage > 30)
           {
-              status.level = diagnostic_msgs::DiagnosticStatus::WARN;
+              status.level = diagnostic_msgs::msg::DiagnosticStatus::WARN;
               ss << "Battery discharging (" << std::setw(4) << battery_percentage << "% left)";
           }
           else
           {
-              status.level = diagnostic_msgs::DiagnosticStatus::ERROR;
+              status.level = diagnostic_msgs::msg::DiagnosticStatus::ERROR;
               ss << "Battery almost empty (" << std::setw(4) << battery_percentage << "% left)";
           }
         }
       }
       else if ((i == 1) && value)
       {
-        status.level = diagnostic_msgs::DiagnosticStatus::OK;
+        status.level = diagnostic_msgs::msg::DiagnosticStatus::OK;
         status.message = "Battery fully charged";
       }
     }
@@ -291,7 +291,7 @@ void DiagnosticsConverter::callAll( const std::vector<message_actions::MessageAc
   {
     diagnostic_updater::DiagnosticStatusWrapper status;
     status.name = std::string("naoqi_driver_computer:CPU");
-    status.level = diagnostic_msgs::DiagnosticStatus::OK;
+    status.level = diagnostic_msgs::msg::DiagnosticStatus::OK;
     //status.add("Temperature", static_cast<float>(values[val++]));
     // setting to -1 until we find the right key
     status.add("Temperature", static_cast<float>(-1));

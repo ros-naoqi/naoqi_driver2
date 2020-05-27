@@ -23,6 +23,7 @@
 */
 #include "converter_base.hpp"
 #include <naoqi_driver/message_actions.h>
+#include <naoqi_driver/helpers.hpp>
 
 /*
 * ROS includes
@@ -37,7 +38,7 @@ namespace converter
 class CameraConverter : public BaseConverter<CameraConverter>
 {
 
-  typedef boost::function<void(sensor_msgs::ImagePtr, sensor_msgs::CameraInfo)> Callback_t;
+  typedef boost::function<void(sensor_msgs::msg::Image::SharedPtr, sensor_msgs::msg::CameraInfo)> Callback_t;
 
 public:
   CameraConverter(
@@ -72,8 +73,8 @@ private:
   int cv_mat_type_;
   // msg frame id
   std::string msg_frameid_;
-  sensor_msgs::CameraInfo camera_info_;
-  sensor_msgs::ImagePtr msg_;
+  sensor_msgs::msg::CameraInfo camera_info_;
+  sensor_msgs::msg::Image::SharedPtr msg_;
 };
 
 } //publisher
