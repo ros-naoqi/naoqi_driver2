@@ -19,22 +19,13 @@
 * LOCAL includes
 */
 #include <naoqi_driver/recorder/globalrecorder.hpp>
+#include "../helpers/recorder_helpers.hpp"
 
 /*
 * STANDARD includes
 */
 #include <ctime>
 #include <sstream>
-
-/*
-* ROS includes
-*/
-#include <std_msgs/Int32.h>
-#include <tf2_msgs/TFMessage.h>
-#include <ros/ros.h>
-#include <rosbag/bag.h>
-#include <rosbag/view.h>
-#include <geometry_msgs/TransformStamped.h>
 
 /*
 * BOOST includes
@@ -56,10 +47,10 @@ namespace recorder
 {
 
   GlobalRecorder::GlobalRecorder(const std::string& prefix_topic):
-    _bag()
-  , _processMutex()
+    _processMutex()
   , _nameBag("")
   , _isStarted(false)
+  // , _writer()
   {
     if (!prefix_topic.empty())
     {
@@ -93,8 +84,10 @@ namespace recorder
           _nameBag = cur_path.string()+"/"+buffer;
         }
         _nameBag.append(".bag");
+        // rosbag2::StorageOptions storage_options({_nameBag, ""});
 
-        _bag.open(_nameBag, rosbag::bagmode::Write);
+        // _bag.open(_nameBag, rosbag::bagmode::Write);
+        // _writer.open(storage_options, {"", "rmw1_format"});
         _isStarted = true;
         std::cout << YELLOW << "The bag " << BOLDCYAN << _nameBag << RESETCOLOR << YELLOW << " is opened" << RESETCOLOR << std::endl;
       } catch (std::exception e){
@@ -109,7 +102,7 @@ namespace recorder
   std::string GlobalRecorder::stopRecord(const std::string& robot_ip) {
     boost::mutex::scoped_lock stopLock( _processMutex );
     if (_isStarted) {
-      _bag.close();
+      // _bag.close();
       _isStarted = false;
 
       std::stringstream message;
@@ -139,7 +132,7 @@ namespace recorder
     return _isStarted;
   }
 
-  void GlobalRecorder::write(const std::string& topic, const std::vector<geometry_msgs::TransformStamped>& msgtf) {
+  void GlobalRecorder::write(const std::string& topic, const std::vector<geometry_msgs::msg::TransformStamped>& msgtf) {
     if (!msgtf.empty())
     {
       std::string ros_topic;
@@ -152,17 +145,17 @@ namespace recorder
         ros_topic = topic;
       }
       tf2_msgs::TFMessage message;
-      ros::Time now = ros::Time::now();
-      if (!msgtf[0].header.stamp.isZero()) {
+      rclcpp::Time now = helpers::Time::now();
+      if (!helpers::recorder::isZero(msgtf[0].header.stamp)) {
         now = msgtf[0].header.stamp;
       }
-      for (std::vector<geometry_msgs::TransformStamped>::const_iterator it = msgtf.begin(); it != msgtf.end(); ++it)
+      for (std::vector<geometry_msgs::msg::TransformStamped>::const_iterator it = msgtf.begin(); it != msgtf.end(); ++it)
       {
         message.transforms.push_back(*it);
       }
       boost::mutex::scoped_lock writeLock( _processMutex );
       if (_isStarted) {
-        _bag.write(ros_topic, now, message);
+        // _bag.write(ros_topic, now, message);
       }
     }
   }

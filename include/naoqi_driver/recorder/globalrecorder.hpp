@@ -22,6 +22,7 @@
 * LOCAL includes
 */
 #include <naoqi_driver/tools.hpp>
+#include <naoqi_driver/helpers.hpp>
 
 /*
 * STANDARD includes
@@ -36,11 +37,14 @@
 /*
 * ROS includes
 */
-#include <ros/ros.h>
-#include <rosbag/bag.h>
-#include <geometry_msgs/TransformStamped.h>
-
-
+#include <rclcpp/rclcpp.hpp>
+// #include <rmw/serialized_message.h>
+// #include <rcutils/allocator.h>
+// #include <rosbag2/writer.hpp>
+// #include <rosbag/bag.h>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <std_msgs/msg/int32.hpp>
+#include <tf2_msgs/msg/tf_message.hpp>
 
 namespace naoqi
 {
@@ -78,7 +82,7 @@ public:
   * @brief Insert data into the ROSbag
   */
   template <class T>
-  void write(const std::string& topic, const T& msg, const ros::Time& time = ros::Time::now() ) {
+  void write(const std::string& topic, const T& msg, const rclcpp::Time& time = helpers::Time::now() ) {
     std::string ros_topic;
     if (topic[0]!='/')
     {
@@ -88,14 +92,32 @@ public:
     {
       ros_topic = topic;
     }
-    ros::Time time_msg = time;
+    rclcpp::Time time_msg = time;
+    // auto serialized_msg = rmw_get_zero_initialized_serialized_message();
+    // auto allocator = rcutils_get_default_allocator();
+    // auto initial_capacity = 0u;
+    // auto ret = rmw_serialized_message_init(
+    //   &serialized_msg,
+    //   initial_capacity,
+    //   &allocator);
+
+    // auto type_support = rosidl_typesupport_cpp::get_message_type_support_handle<T>();
+    // ret = rmw_serialize(msg.get(), type_support, &serialized_msg);
+
+    // rosbag2_storage::SerializedBagMessage bag_message;
+    // bag_message.serialized_data = serialized_msg.buffer;
+    // bag_message.time_point = time_msg;
+    // bag_message.topic = topic;
+
+    // setup the bag
     boost::mutex::scoped_lock writeLock( _processMutex );
     if (_isStarted) {
-      _bag.write(ros_topic, time_msg, msg);
+      // _bag.write(ros_topic, time_msg, msg);
+      // this->_writer.write(bag_message);
     }
   }
 
-  void write(const std::string& topic, const std::vector<geometry_msgs::TransformStamped>& msgtf);
+  void write(const std::string& topic, const std::vector<geometry_msgs::msg::TransformStamped>& msgtf);
 
   /**
   * @brief Check if the ROSbag is opened
@@ -105,7 +127,8 @@ public:
 private:
   std::string _prefix_topic;
   boost::mutex _processMutex;
-  rosbag::Bag _bag;
+  // rosbag::Bag _bag;
+  // rosbag2::Writer _writer;
   std::string _nameBag;
   bool _isStarted;
 

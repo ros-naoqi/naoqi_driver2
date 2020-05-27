@@ -23,7 +23,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 namespace naoqi
 {
@@ -52,14 +52,14 @@ public:
   {}
 
   /**
-  * @brief initializes/resets the service into ROS with a given nodehandle,
-  * this will be called at first for initialization or again when master uri has changed
-  * @param ros NodeHandle to register the service on
+  * @brief initializes/resets the service into ROS with a given node,
+  * this will be called at first for initialization
+  * @param node Node object to create the service
   */
-  void reset( ros::NodeHandle& nh )
+  void reset( rclcpp::Node& node )
   {
     std::cout << name() << " is resetting" << std::endl;
-    srvPtr_->reset( nh );
+    srvPtr_->reset( node );
     std::cout << name() << " reset" << std::endl;
   }
 
@@ -89,7 +89,7 @@ private:
   struct ServiceConcept
   {
     virtual ~ServiceConcept(){}
-    virtual void reset( ros::NodeHandle& nh ) = 0;
+    virtual void reset( rclcpp::Node& node ) = 0;
     virtual std::string name() const = 0;
     virtual std::string topic() const = 0;
   };
@@ -120,9 +120,9 @@ private:
       return service_->isInitialized();
     }
 
-    void reset( ros::NodeHandle& nh )
+    void reset( rclcpp::Node& node )
     {
-      service_->reset( nh );
+      service_->reset( node );
     }
 
     T service_;

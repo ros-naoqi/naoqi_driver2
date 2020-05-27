@@ -24,10 +24,10 @@
 #include <boost/shared_ptr.hpp>
 # include <boost/thread/mutex.hpp>
 
-#include <ros/ros.h>
-#include <rosbag/bag.h>
-#include <rosbag/view.h>
-#include <geometry_msgs/TransformStamped.h>
+#include <rclcpp/rclcpp.hpp>
+// #include <rosbag/bag.h>
+// #include <rosbag/view.h>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
 #include "naoqi_driver/recorder/globalrecorder.hpp"
 
@@ -57,7 +57,7 @@ public:
   {}
 
   /**
-  * @brief checks if the recorder is correctly initialized on the ros-master
+  * @brief checks if the recorder is correctly initialized
   @ @return bool value indicating true for success
   */
   bool isInitialized() const
@@ -86,16 +86,19 @@ public:
   }
 
   /**
-  * @brief initializes/resets the recorder into ROS with a given nodehandle,
-  * this will be called at first for initialization or again when master uri has changed
-  * @param ros NodeHandle to advertise the recorder on
-  */
+   * @brief initializes/resets the recorder into ROS with a given 
+   * GlobalRecorder pointer and a frequency, this will be called at first for
+   * initialization
+   * 
+   * @param gr GlobalRecorder pointer
+   * @param frequency the frequency of the recoder
+   */
   void reset( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr, float frequency)
   {
     recPtr_->reset( gr, frequency );
   }
 
-  void writeDump(const ros::Time& time)
+  void writeDump(const rclcpp::Time& time)
   {
     recPtr_->writeDump(time);
   }
@@ -125,7 +128,7 @@ private:
     virtual void subscribe(bool state) = 0;
     virtual bool isSubscribed() const = 0;
     virtual std::string topic() const = 0;
-    virtual void writeDump(const ros::Time& time) = 0;
+    virtual void writeDump(const rclcpp::Time& time) = 0;
     virtual void setBufferDuration(float duration) = 0;
     virtual void reset( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr, float frequency ) = 0;
   };
@@ -166,7 +169,7 @@ private:
       return recorder_->topic();
     }
 
-    void writeDump(const ros::Time& time)
+    void writeDump(const rclcpp::Time& time)
     {
       recorder_->writeDump(time);
     }

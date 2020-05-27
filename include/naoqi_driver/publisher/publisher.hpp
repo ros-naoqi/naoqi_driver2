@@ -23,7 +23,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 namespace naoqi
 {
@@ -70,14 +70,14 @@ public:
   }
 
   /**
-  * @brief initializes/resets the publisher into ROS with a given nodehandle,
-  * this will be called at first for initialization or again when master uri has changed
-  * @param ros NodeHandle to advertise the publisher on
+  * @brief initializes/resets the publisher into ROS with a given Node object,
+  * this will be called at first for initialization
+  * @param node rclcpp::Node from which the publisher is created
   */
-  void reset( ros::NodeHandle& nh )
+  void reset( rclcpp::Node& node )
   {
     std::cout << topic() << " is resetting" << std::endl;
-    pubPtr_->reset( nh );
+    pubPtr_->reset( node );
     std::cout << topic() << " reset" << std::endl;
   }
 
@@ -113,7 +113,7 @@ private:
     virtual ~PublisherConcept(){}
     virtual bool isInitialized() const = 0;
     virtual bool isSubscribed() const = 0;
-    virtual void reset( ros::NodeHandle& nh ) = 0;
+    virtual void reset( rclcpp::Node& node ) = 0;
     virtual std::string topic() const = 0;
   };
 
@@ -143,9 +143,9 @@ private:
       return publisher_->isSubscribed();
     }
 
-    void reset( ros::NodeHandle& nh )
+    void reset( rclcpp::Node& node )
     {
-      publisher_->reset( nh );
+      publisher_->reset( node );
     }
 
     T publisher_;
