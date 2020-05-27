@@ -42,14 +42,14 @@ public:
   ~SpeechSubscriber(){}
 
   void reset( rclcpp::Node& node );
-  void speech_callback( const std_msgs::msg::String::SharedPtr msg );
+  void speech_callback( const std_msgs::msg::String::ConstSharedPtr msg );
 
 private:
 
   std::string speech_topic_;
 
   qi::AnyObject p_tts_;
-  rclcpp::Subscription sub_speech_;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_speech_;
 
 
 

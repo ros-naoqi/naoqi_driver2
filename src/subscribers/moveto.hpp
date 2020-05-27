@@ -1,6 +1,5 @@
 /*
- * Copyright 2020 Softbank Robotics Europe
- *
+ * Copyright 2015 Aldebaran
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,11 +42,11 @@ public:
   ~MovetoSubscriber(){}
 
   void reset( rclcpp::Node& node );
-  void callback( const geometry_msgs::msg::PoseStamped::SharedPtr pose_msg );
+  void callback( const geometry_msgs::msg::PoseStamped::ConstSharedPtr pose_msg );
 
 private:
   qi::AnyObject p_motion_;
-  rclcpp::Subscription sub_moveto_;
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_moveto_;
   boost::shared_ptr<tf2_ros::Buffer> tf2_buffer_;
 }; // class Teleop
 

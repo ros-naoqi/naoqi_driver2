@@ -34,14 +34,14 @@ SpeechSubscriber::SpeechSubscriber( const std::string& name, const std::string& 
 
 void SpeechSubscriber::reset( rclcpp::Node& node )
 {
-  sub_speech_ = node.create_subscription( speech_topic_, 10, &SpeechSubscriber::speech_callback, this );
+  sub_speech_ = node.create_subscription<std_msgs::msg::String>( speech_topic_, 10, &SpeechSubscriber::speech_callback, this );
 
   is_initialized_ = true;
 }
 
-void SpeechSubscriber::speech_callback( std_msgs::msg::String::SharedPtr msg )
+void SpeechSubscriber::speech_callback( std_msgs::msg::String::ConstSharedPtr string_msg )
 {
-  p_tts_.async<void>("say", msg->data);
+  p_tts_.async<void>("say", string_msg->data);
 }
 
 } //publisher

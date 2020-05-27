@@ -35,13 +35,13 @@ TeleopSubscriber::TeleopSubscriber( const std::string& name, const std::string& 
 
 void TeleopSubscriber::reset( rclcpp::Node& node )
 {
-  sub_cmd_vel_ = node.create_subscription( cmd_vel_topic_, 10, &TeleopSubscriber::cmd_vel_callback, this );
-  sub_joint_angles_ = node.create_subscription( joint_angles_topic_, 10, &TeleopSubscriber::joint_angles_callback, this );
+  sub_cmd_vel_ = node.create_subscription<geometry_msgs::msg::Twist>( cmd_vel_topic_, 10, &TeleopSubscriber::cmd_vel_callback, this );
+  sub_joint_angles_ = node.create_subscription<naoqi_bridge_msgs::msg::JointAnglesWithSpeed>( joint_angles_topic_, 10, &TeleopSubscriber::joint_angles_callback, this );
 
   is_initialized_ = true;
 }
 
-void TeleopSubscriber::cmd_vel_callback( const geometry_msgs::msg::Twist::SharedPtr twist_msg )
+void TeleopSubscriber::cmd_vel_callback( const geometry_msgs::msg::Twist::ConstSharedPtr twist_msg )
 {
   // no need to check for max velocity since motion clamps the velocities internally
   const float& vel_x = twist_msg->linear.x;
@@ -52,7 +52,7 @@ void TeleopSubscriber::cmd_vel_callback( const geometry_msgs::msg::Twist::Shared
   p_motion_.async<void>("move", vel_x, vel_y, vel_th );
 }
 
-void TeleopSubscriber::joint_angles_callback( const naoqi_bridge_msgs::msg::JointAnglesWithSpeedConstPtr& js_msg )
+void TeleopSubscriber::joint_angles_callback( const naoqi_bridge_msgs::msg::JointAnglesWithSpeed::ConstSharedPtr  js_msg )
 {
   if ( js_msg->relative==0 )
   {

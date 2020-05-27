@@ -29,7 +29,7 @@
  */
 #include "rclcpp/rclcpp.hpp"
 #include <geometry_msgs/msg/twist.hpp>
-#include <naoqi_bridge_msgs/msg::joint_angles_with_speed.hpp>
+#include <naoqi_bridge_msgs/msg/joint_angles_with_speed.hpp>
 
 namespace naoqi
 {
@@ -43,8 +43,8 @@ public:
   ~TeleopSubscriber(){}
 
   void reset( ros::NodeHandle& nh );
-  void cmd_vel_callback( const geometry_msgs::msg::Twist::SharedPtr twist_msg );
-  void joint_angles_callback( const naoqi_bridge_msgs::msg::JointAnglesWithSpeedConstPtr& js_msg );
+  void cmd_vel_callback( const geometry_msgs::msg::Twist::ConstSharedPtr twist_msg );
+  void joint_angles_callback( const naoqi_bridge_msgs::msg::JointAnglesWithSpeed::ConstSharedPtr js_msg );
 
 private:
 
@@ -52,8 +52,8 @@ private:
   std::string joint_angles_topic_;
 
   qi::AnyObject p_motion_;
-  rclcpp::Subscription sub_cmd_vel_;
-  rclcpp::Subscription sub_joint_angles_;
+  rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_cmd_vel_;
+  rclcpp::Subscription<naoqi_bridge_msgs::msg::JointAnglesWithSpeed>::SharedPtr sub_joint_angles_;
 
 
 

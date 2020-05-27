@@ -1,7 +1,6 @@
 /*
  * Copyright 2015 Aldebaran
  *
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,11 +42,11 @@ MovetoSubscriber::MovetoSubscriber( const std::string& name, const std::string& 
 
 void MovetoSubscriber::reset( rclcpp::Node& node )
 {
-  sub_moveto_ = node.create_subscription( topic_, 10, &MovetoSubscriber::callback, this );
+  sub_moveto_ = node.create_subscription<geometry_msgs::msg::PoseStamped>( topic_, 10, &MovetoSubscriber::callback, this );
   is_initialized_ = true;
 }
 
-void MovetoSubscriber::callback( const geometry_msgs::msg::PoseStamped::SharedPtr pose_msg )
+void MovetoSubscriber::callback( const geometry_msgs::msg::PoseStamped::ConstSharedPtr pose_msg )
 {
   if (pose_msg->header.frame_id == "odom") {
     geometry_msgs::msg::PoseStamped pose_msg_bf;
@@ -56,7 +55,7 @@ void MovetoSubscriber::callback( const geometry_msgs::msg::PoseStamped::SharedPt
       "base_footprint",
       "odom",
       rclcpp::Time(0),
-      rclcpp::Duration(2));
+      rclcpp::Duration(2,0));
 
     if (!canTransform) {
       std::cout << "Cannot transform from "
