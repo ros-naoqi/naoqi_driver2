@@ -21,10 +21,9 @@
 
 #include <iostream>
 
-#include <ros/node_handle.h>
-#include <ros/service_server.h>
+#include <rclcpp/rclcpp.hpp>
 
-#include <naoqi_bridge_msgs/GetRobotInfo.h>
+#include <naoqi_bridge_msgs/srv/get_robot_info.hpp>
 #include <qi/session.hpp>
 
 namespace naoqi
@@ -49,9 +48,9 @@ public:
     return topic_;
   }
 
-  void reset( ros::NodeHandle& nh );
+  void reset( rclcpp::Node& node );
 
-  bool callback( naoqi_bridge_msgs::GetRobotInfoRequest& req, naoqi_bridge_msgs::GetRobotInfoResponse& resp );
+  void callback( const naoqi_bridge_msgs::srv::GetRobotInfo::Request& req, naoqi_bridge_msgs::srv::GetRobotInfo::Response& resp );
 
 
 private:
@@ -59,7 +58,7 @@ private:
   const std::string topic_;
 
   const qi::SessionPtr& session_;
-  ros::ServiceServer service_;
+  rclcpp::Service<naoqi_bridge_msgs::srv::GetRobotInfo>::SharedPtr service_;
 };
 
 } // service
