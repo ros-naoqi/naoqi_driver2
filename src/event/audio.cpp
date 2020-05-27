@@ -163,9 +163,9 @@ void AudioEventRegister::unregisterCallback()
 void AudioEventRegister::processRemote(int nbOfChannels, int samplesByChannel, qi::AnyValue altimestamp, qi::AnyValue buffer)
 {
   naoqi_bridge_msgs::msg::AudioBuffer msg = naoqi_bridge_msgs::msg::AudioBuffer();
-  msg.header.stamp = rclcpp::Time::now();
+  msg.header.stamp = helpers::Time::now();
   msg.frequency = 48000;
-  msg.channelMap = channelMap;
+  msg.channel_map = channelMap;
 
   std::pair<char*, size_t> buffer_pointer = buffer.asRaw();
 

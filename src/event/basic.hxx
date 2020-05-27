@@ -63,7 +63,7 @@ EventRegister<Converter, Publisher, Recorder>::~EventRegister()
 template <typename Converter, typename Publisher, typename Recorder>
 void EventRegister<Converter, Publisher, Recorder>::resetPublisher(  rclcpp::Node& node )
 {
-  publisher_->reset(nh);
+  publisher_->reset(node);
 }
 
 template <typename Converter, typename Publisher, typename Recorder>
