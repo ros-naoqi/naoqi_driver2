@@ -48,7 +48,7 @@ void CameraPublisher::publish( const sensor_msgs::msgs::Image::SharedPtr& img, c
 
 void CameraPublisher::reset( rclcpp::Node& node )
 {
-  pub_ = image_transport::create_publisher(node, topic_);
+  pub_ = image_transport::create_camera_publisher(node, topic_);
   /* TODO */
   /* Specify the QoS or remove unwanted image_transports topics by disabling plugin
   in the lanchfile. */
