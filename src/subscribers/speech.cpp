@@ -32,16 +32,16 @@ SpeechSubscriber::SpeechSubscriber( const std::string& name, const std::string& 
   p_tts_( session->service("ALTextToSpeech") )
 {}
 
-void SpeechSubscriber::reset( ros::NodeHandle& nh )
+void SpeechSubscriber::reset( rclcpp::Node& node )
 {
-  sub_speech_ = nh.subscribe( speech_topic_, 10, &SpeechSubscriber::speech_callback, this );
+  sub_speech_ = node.create_subscription( speech_topic_, 10, &SpeechSubscriber::speech_callback, this );
 
   is_initialized_ = true;
 }
 
-void SpeechSubscriber::speech_callback( const std_msgs::StringConstPtr& string_msg )
+void SpeechSubscriber::speech_callback( std_msgs::msg::String::SharedPtr msg )
 {
-  p_tts_.async<void>("say", string_msg->data);
+  p_tts_.async<void>("say", msg->data);
 }
 
 } //publisher
