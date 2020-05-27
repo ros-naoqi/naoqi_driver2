@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
   boost::shared_ptr<naoqi::Driver> bs = boost::make_shared<naoqi::Driver>();
 
   // Setup the time helper
-  naoqi::helpers::Time::setNode(bs);
+  naoqi::helpers::Node::setNode(bs);
   
   // Retrieve the parameters
   bs->declare_parameter<std::string>("nao_ip", "127.0.0.1");
