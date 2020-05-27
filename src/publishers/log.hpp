@@ -28,7 +28,6 @@
 */
 #include <rclcpp/rclcpp.hpp>
 #include <rcl_interfaces/msg/log.hpp>
-#include <rclcpp/serialization.h>
 #include <std_msgs/String.h>
 
 /*
@@ -65,7 +64,7 @@ public:
   }
 
 private:
-  rclcpp::Publisher pub_;
+  rclcpp::Publisher<rcl_interfaces::msg::Log>::SharedPtr pub_;
 
 };
 
