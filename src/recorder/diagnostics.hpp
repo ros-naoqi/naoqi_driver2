@@ -32,7 +32,7 @@
 /*
 * ROS includes
 */
-#include <diagnostic_msgs/DiagnosticArray.h>
+#include <diagnostic_msgs/msg/diagnostic_array.hpp>
 
 namespace naoqi
 {
@@ -45,13 +45,13 @@ class DiagnosticsRecorder
 public:
   DiagnosticsRecorder( const std::string& topic, float buffer_frequency = 0 );
 
-  void write(diagnostic_msgs::DiagnosticArray& msg );
+  void write(diagnostic_msgs::msg::DiagnosticArray& msg );
 
   void reset( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr, float conv_frequency );
 
-  void bufferize(diagnostic_msgs::DiagnosticArray& msg );
+  void bufferize(diagnostic_msgs::msg::DiagnosticArray& msg );
 
-  void writeDump(const ros::Time& time);
+  void writeDump(const rclcpp::Time& time);
 
   void setBufferDuration(float duration);
 
@@ -78,7 +78,7 @@ public:
 protected:
   std::string topic_;
 
-  boost::circular_buffer<diagnostic_msgs::DiagnosticArray> buffer_;
+  boost::circular_buffer<diagnostic_msgs::msg::DiagnosticArray> buffer_;
   size_t buffer_size_;
   float buffer_duration_;
 

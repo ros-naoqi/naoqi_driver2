@@ -73,7 +73,7 @@ public:
 
   virtual void write(const T& msg)
   {
-    if (!msg.header.stamp.isZero()) {
+    if (!helpers::recorder::isZero(msg.header.stamp)) {
       gr_->write(topic_, msg, msg.header.stamp);
     }
     else {
@@ -81,13 +81,13 @@ public:
     }
   }
 
-  virtual void writeDump(const ros::Time& time)
+  virtual void writeDump(const rclcpp::Time& time)
   {
     boost::mutex::scoped_lock lock_write_buffer( mutex_ );
     typename boost::circular_buffer<T>::iterator it;
     for (it = buffer_.begin(); it != buffer_.end(); it++)
     {
-      if (!it->header.stamp.isZero()) {
+      if (!helpers::recorder::isZero(it->header.stamp)) {
         gr_->write(topic_, *it, it->header.stamp);
       }
       else {

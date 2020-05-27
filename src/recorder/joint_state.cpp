@@ -34,10 +34,10 @@ JointStateRecorder::JointStateRecorder( const std::string& topic, float buffer_f
   counter_(1)
 {}
 
-void JointStateRecorder::write( const sensor_msgs::JointState& js_msg,
-                                const std::vector<geometry_msgs::TransformStamped>& tf_transforms )
+void JointStateRecorder::write( const sensor_msgs::msg::JointState& js_msg,
+                                const std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms )
 {
-  if (!js_msg.header.stamp.isZero()) {
+  if (!helpers::recorder::isZero(js_msg.header.stamp)) {
     gr_->write(topic_, js_msg, js_msg.header.stamp);
   }
   else {
@@ -46,18 +46,18 @@ void JointStateRecorder::write( const sensor_msgs::JointState& js_msg,
   gr_->write("/tf", tf_transforms);
 }
 
-void JointStateRecorder::writeDump(const ros::Time& time)
+void JointStateRecorder::writeDump(const rclcpp::Time& time)
 {
   boost::mutex::scoped_lock lock_write_buffer( mutex_ );
-  boost::circular_buffer< std::vector<geometry_msgs::TransformStamped> >::iterator it_tf;
+  boost::circular_buffer< std::vector<geometry_msgs::msg::TransformStamped> >::iterator it_tf;
   for (it_tf = bufferTF_.begin(); it_tf != bufferTF_.end(); it_tf++)
   {
     gr_->write("/tf", *it_tf);
   }
-  for (boost::circular_buffer<sensor_msgs::JointState>::iterator it_js = bufferJoinState_.begin();
+  for (boost::circular_buffer<sensor_msgs::msg::JointState>::iterator it_js = bufferJoinState_.begin();
        it_js != bufferJoinState_.end(); it_js++)
   {
-    if (!it_js->header.stamp.isZero()) {
+    if (!helpers::recorder::isZero(it_js->header.stamp)) {
       gr_->write(topic_, *it_js, it_js->header.stamp);
     }
     else {
@@ -85,8 +85,8 @@ void JointStateRecorder::reset(boost::shared_ptr<GlobalRecorder> gr, float conv_
   is_initialized_ = true;
 }
 
-void JointStateRecorder::bufferize( const sensor_msgs::JointState& js_msg,
-                const std::vector<geometry_msgs::TransformStamped>& tf_transforms )
+void JointStateRecorder::bufferize( const sensor_msgs::msg::JointState& js_msg,
+                const std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms )
 {
   boost::mutex::scoped_lock lock_bufferize( mutex_ );
   if (counter_ < max_counter_)

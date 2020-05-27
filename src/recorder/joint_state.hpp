@@ -32,7 +32,7 @@
 /*
 * ROS includes
 */
-#include <sensor_msgs/JointState.h>
+#include <sensor_msgs/msg/joint_state.hpp>
 
 namespace naoqi
 {
@@ -45,15 +45,15 @@ class JointStateRecorder
 public:
   JointStateRecorder( const std::string& topic, float buffer_frequency = 0 );
 
-  void write( const sensor_msgs::JointState& js_msg,
-              const std::vector<geometry_msgs::TransformStamped>& tf_transforms );
+  void write( const sensor_msgs::msg::JointState& js_msg,
+              const std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms );
 
   void reset( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr, float conv_frequency );
 
-  void bufferize( const sensor_msgs::JointState& js_msg,
-                  const std::vector<geometry_msgs::TransformStamped>& tf_transforms );
+  void bufferize( const sensor_msgs::msg::JointState& js_msg,
+                  const std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms );
 
-  void writeDump(const ros::Time& time);
+  void writeDump(const rclcpp::Time& time);
 
   void setBufferDuration(float duration);
 
@@ -80,8 +80,8 @@ public:
 protected:
   std::string topic_;
 
-  boost::circular_buffer<sensor_msgs::JointState> bufferJoinState_;
-  boost::circular_buffer< std::vector<geometry_msgs::TransformStamped> > bufferTF_;
+  boost::circular_buffer<sensor_msgs::msg::JointState> bufferJoinState_;
+  boost::circular_buffer< std::vector<geometry_msgs::msg::TransformStamped> > bufferTF_;
   size_t buffer_size_;
   float buffer_duration_;
 

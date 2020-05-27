@@ -32,8 +32,8 @@
 /*
 * ROS includes
 */
-#include <ros/ros.h>
-#include <rosgraph_msgs/Log.h>
+#include <rclcpp/rclcpp.hpp>
+#include <rcl_interfaces/msg/log.hpp>
 
 namespace naoqi
 {
@@ -46,13 +46,13 @@ class LogRecorder
 public:
   LogRecorder( const std::string& topic, float buffer_frequency = 0 );
 
-  void write( std::list<rosgraph_msgs::Log>& log_msgs );
+  void write( std::list<rcl_interfaces::msg::Log>& log_msgs );
 
   void reset(boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr, float conv_frequency );
 
-  void bufferize( std::list<rosgraph_msgs::Log>& log_msgs );
+  void bufferize( std::list<rcl_interfaces::msg::Log>& log_msgs );
 
-  void writeDump(const ros::Time& time);
+  void writeDump(const rclcpp::Time& time);
 
   void setBufferDuration(float duration);
 
@@ -79,7 +79,7 @@ public:
 protected:
   std::string topic_;
 
-  boost::circular_buffer< std::list<rosgraph_msgs::Log> > buffer_;
+  boost::circular_buffer< std::list<rcl_interfaces::msg::Log> > buffer_;
   size_t buffer_size_;
   float buffer_duration_;
 

@@ -19,6 +19,8 @@
 #ifndef RECORDER_HELPERS_HPP
 #define RECORDER_HELPERS_HPP
 
+#include <builtin_interfaces/msg/time.hpp>
+
 namespace naoqi
 {
 namespace helpers
@@ -27,6 +29,19 @@ namespace recorder
 {
 
 static const float bufferDefaultDuration = 10.f;
+
+/**
+ * @brief Checks if the time value contained in the builtin_interfaces time
+ * message is set to zero or not
+ * 
+ * @param msg a builtin_interfaces time message
+ * @return true if the time value of the message is 0 (0 seconds and 0
+ * nanoseconds)
+ * @return false if the time value of the message is not 0 
+ */
+static bool isZero(const builtin_interfaces::msg::Time& msg) const {
+  return msg.sec == 0 && msg.nanosec == 0;
+}
 
 } // recorder
 } // helpers
