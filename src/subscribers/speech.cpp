@@ -39,7 +39,7 @@ void SpeechSubscriber::reset( rclcpp::Node& node )
   is_initialized_ = true;
 }
 
-void SpeechSubscriber::speech_callback( std_msgs::msg::String::ConstSharedPtr& string_msg )
+void SpeechSubscriber::speech_callback( const std_msgs::msg::String::ConstSharedPtr& string_msg )
 {
   p_tts_.async<void>("say", string_msg->data);
 }
