@@ -56,7 +56,7 @@ public:
     if (is_initialized_ == false){
       return false;
     } else{
-      return helpers::Node::getNumSubscribers(topic_) > 0;
+      return helpers::Node::count_subscribers(topic_) > 0;
     }
   }
 
