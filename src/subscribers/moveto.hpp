@@ -1,5 +1,6 @@
 /*
- * Copyright 2015 Aldebaran
+ * Copyright 2020 Softbank Robotics Europe
+ *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +24,11 @@
  * LOCAL includes
  */
 #include "subscriber_base.hpp"
-
 /*
  * ROS includes
  */
-#include <ros/ros.h>
-#include <geometry_msgs/PoseStamped.h>
+#include "rclcpp/rclcpp.hpp"
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <tf2_ros/buffer.h>
 
 namespace naoqi
@@ -42,12 +42,12 @@ public:
   MovetoSubscriber( const std::string& name, const std::string& topic, const qi::SessionPtr& session, const boost::shared_ptr<tf2_ros::Buffer>& tf2_buffer );
   ~MovetoSubscriber(){}
 
-  void reset( ros::NodeHandle& nh );
-  void callback( const geometry_msgs::PoseStampedConstPtr& pose_msg );
+  void reset( rclcpp::Node& node );
+  void callback( const geometry_msgs::msg::PoseStamped::SharedPtr pose_msg );
 
 private:
   qi::AnyObject p_motion_;
-  ros::Subscriber sub_moveto_;
+  rclcpp::Subscription sub_moveto_;
   boost::shared_ptr<tf2_ros::Buffer> tf2_buffer_;
 }; // class Teleop
 
