@@ -54,7 +54,7 @@ public:
   {
     if (is_initialized_ == false) return false;
     for(std::vector<rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr>::const_iterator it = pubs_.begin(); it != pubs_.end(); ++it)
-      if (helpers::Node::count_subcribers(it->get_topic_name()))
+      if (helpers::Node::count_subcribers((*it)->get_topic_name()))
         return true;
     return false;
   }
