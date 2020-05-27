@@ -27,10 +27,10 @@
 
 #include <qi/session.hpp>
 
-#include <ros/ros.h>
-#include <naoqi_bridge_msgs/Bumper.h>
-#include <naoqi_bridge_msgs/HandTouch.h>
-#include <naoqi_bridge_msgs/HeadTouch.h>
+#include <rclcpp/rclcpp.h>
+#include <naoqi_bridge_msgs/msg/bumper.h>
+#include <naoqi_bridge_msgs/msg/hand_touch.h>
+#include <naoqi_bridge_msgs/head_touch.h>
 
 #include <naoqi_driver/tools.hpp>
 #include <naoqi_driver/recorder/globalrecorder.hpp>
@@ -65,13 +65,13 @@ public:
   TouchEventRegister(const std::string& name, const std::vector<std::string> keys, const float& frequency, const qi::SessionPtr& session );
   ~TouchEventRegister();
 
-  void resetPublisher( ros::NodeHandle& nh );
+  void resetPublisher( rclcpp::Node& node );
   void resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr );
 
   void startProcess();
   void stopProcess();
 
-  void writeDump(const ros::Time& time);
+  void writeDump(const rclcpp::Time& time);
   void setBufferDuration(float duration);
 
   void isRecording(bool state);
@@ -79,9 +79,9 @@ public:
   void isDumping(bool state);
 
   void touchCallback(std::string &key, qi::AnyValue &value, qi::AnyValue &message);
-  void touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::Bumper &msg);
-  void touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::HandTouch &msg);
-  void touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::HeadTouch &msg);
+  void touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::msg::Bumper &msg);
+  void touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::msg::HandTouch &msg);
+  void touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::msg::HeadTouch &msg);
   
 
 private:
@@ -111,46 +111,46 @@ protected:
 }; // class
 
 
-class BumperEventRegister: public TouchEventRegister<naoqi_bridge_msgs::Bumper>
+class BumperEventRegister: public TouchEventRegister<naoqi_bridge_msgs::msg::Bumper>
 {
 public:
-  BumperEventRegister( const std::string& name, const std::vector<std::string> keys, const float& frequency, const qi::SessionPtr& session ) : TouchEventRegister<naoqi_bridge_msgs::Bumper>(name, keys, frequency, session) {}
+  BumperEventRegister( const std::string& name, const std::vector<std::string> keys, const float& frequency, const qi::SessionPtr& session ) : TouchEventRegister<naoqi_bridge_msgs::msg::Bumper>(name, keys, frequency, session) {}
 };
 
-class HeadTouchEventRegister: public TouchEventRegister<naoqi_bridge_msgs::HeadTouch>
+class HeadTouchEventRegister: public TouchEventRegister<naoqi_bridge_msgs::msg::HeadTouch>
 {
 public:
-  HeadTouchEventRegister( const std::string& name, const std::vector<std::string> keys, const float& frequency, const qi::SessionPtr& session ) : TouchEventRegister<naoqi_bridge_msgs::HeadTouch>(name, keys, frequency, session) {}
+  HeadTouchEventRegister( const std::string& name, const std::vector<std::string> keys, const float& frequency, const qi::SessionPtr& session ) : TouchEventRegister<naoqi_bridge_msgs::msg::HeadTouch>(name, keys, frequency, session) {}
 };
 
-class HandTouchEventRegister: public TouchEventRegister<naoqi_bridge_msgs::HandTouch>
+class HandTouchEventRegister: public TouchEventRegister<naoqi_bridge_msgs::msg::HandTouch>
 {
 public:
-  HandTouchEventRegister( const std::string& name, const std::vector<std::string> keys, const float& frequency, const qi::SessionPtr& session ) : TouchEventRegister<naoqi_bridge_msgs::HandTouch>(name, keys, frequency, session) {}
+  HandTouchEventRegister( const std::string& name, const std::vector<std::string> keys, const float& frequency, const qi::SessionPtr& session ) : TouchEventRegister<naoqi_bridge_msgs::msg::HandTouch>(name, keys, frequency, session) {}
 };
 
 //QI_REGISTER_OBJECT(BumperEventRegister, touchCallback)
 //QI_REGISTER_OBJECT(HeadTouchEventRegister, touchCallback)
 
 static bool _qiregisterTouchEventRegisterBumper() {
-  ::qi::ObjectTypeBuilder<TouchEventRegister<naoqi_bridge_msgs::Bumper> > b;
-  QI_VAARGS_APPLY(__QI_REGISTER_ELEMENT, TouchEventRegister<naoqi_bridge_msgs::Bumper>, touchCallback)
+  ::qi::ObjectTypeBuilder<TouchEventRegister<naoqi_bridge_msgs::msg::Bumper> > b;
+  QI_VAARGS_APPLY(__QI_REGISTER_ELEMENT, TouchEventRegister<naoqi_bridge_msgs::msg::Bumper>, touchCallback)
     b.registerType();
   return true;
   }
 static bool BOOST_PP_CAT(__qi_registration, __LINE__) = _qiregisterTouchEventRegisterBumper();
 
 static bool _qiregisterTouchEventRegisterHandTouch() {
-  ::qi::ObjectTypeBuilder<TouchEventRegister<naoqi_bridge_msgs::HandTouch> > b;
-  QI_VAARGS_APPLY(__QI_REGISTER_ELEMENT, TouchEventRegister<naoqi_bridge_msgs::HandTouch>, touchCallback)
+  ::qi::ObjectTypeBuilder<TouchEventRegister<naoqi_bridge_msgs::msg::HandTouch> > b;
+  QI_VAARGS_APPLY(__QI_REGISTER_ELEMENT, TouchEventRegister<naoqi_bridge_msgs::msg::HandTouch>, touchCallback)
     b.registerType();
   return true;
   }
 static bool BOOST_PP_CAT(__qi_registration, __LINE__) = _qiregisterTouchEventRegisterHandTouch();
 
 static bool _qiregisterTouchEventRegisterHeadTouch() {
-  ::qi::ObjectTypeBuilder<TouchEventRegister<naoqi_bridge_msgs::HeadTouch> > b;
-  QI_VAARGS_APPLY(__QI_REGISTER_ELEMENT, TouchEventRegister<naoqi_bridge_msgs::HeadTouch>, touchCallback)
+  ::qi::ObjectTypeBuilder<TouchEventRegister<naoqi_bridge_msgs::msg::HeadTouch> > b;
+  QI_VAARGS_APPLY(__QI_REGISTER_ELEMENT, TouchEventRegister<naoqi_bridge_msgs::msg::HeadTouch>, touchCallback)
     b.registerType();
   return true;
   }

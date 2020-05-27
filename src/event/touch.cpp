@@ -20,7 +20,7 @@
 
 #include <boost/make_shared.hpp>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <qi/anyobject.hpp>
 
@@ -70,9 +70,9 @@ TouchEventRegister<T>::~TouchEventRegister()
 }
 
 template<class T>
-void TouchEventRegister<T>::resetPublisher(ros::NodeHandle& nh)
+void TouchEventRegister<T>::resetPublisher(rclcpp::Node& node)
 {
-  publisher_->reset(nh);
+  publisher_->reset(node);
 }
 
 template<class T>
@@ -123,7 +123,7 @@ void TouchEventRegister<T>::stopProcess()
 }
 
 template<class T>
-void TouchEventRegister<T>::writeDump(const ros::Time& time)
+void TouchEventRegister<T>::writeDump(const rclcpp::Time& time)
 {
   if (isStarted_)
   {
@@ -204,47 +204,47 @@ void TouchEventRegister<T>::touchCallback(std::string &key, qi::AnyValue &value,
 }
 
 template<class T>
-void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::Bumper &msg)
+void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::msg::Bumper &msg)
 {
   int i = 0;
   for(std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it, ++i)
   {
     if ( key == it->c_str() ) {
       msg.bumper = i;
-      msg.state = state?(naoqi_bridge_msgs::Bumper::statePressed):(naoqi_bridge_msgs::Bumper::stateReleased);
+      msg.state = state?(naoqi_bridge_msgs::msg::Bumper::STATE_PRESSED):(naoqi_bridge_msgs::msg::Bumper::STATE_RELEASED);
     }
   }
 }
 
 template<class T>
-void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::HandTouch &msg)
+void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::msg::HandTouch &msg)
 {
   int i = 0;
   for(std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it, ++i)
   {
     if ( key == it->c_str() ) {
       msg.hand = i;
-      msg.state = state?(naoqi_bridge_msgs::HandTouch::statePressed):(naoqi_bridge_msgs::HandTouch::stateReleased);
+      msg.state = state?(naoqi_bridge_msgs::msg::HandTouch::STATE_PRESSED):(naoqi_bridge_msgs::msg::HandTouch::STATE_RELEASED);
     }
   }
 }
 
 template<class T>
-void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::HeadTouch &msg)
+void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::msg::HeadTouch &msg)
 {
   int i = 0;
   for(std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it, ++i)
   {
     if ( key == it->c_str() ) {
       msg.button = i;
-      msg.state = state?(naoqi_bridge_msgs::HeadTouch::statePressed):(naoqi_bridge_msgs::HeadTouch::stateReleased);
+      msg.state = state?(naoqi_bridge_msgs::msg::HeadTouch::STATE_PRESSED):(naoqi_bridge_msgs::msg::HeadTouch::STATE_RELEASED);
     }
   }
 }
 
 // http://stackoverflow.com/questions/8752837/undefined-reference-to-template-class-constructor
-template class TouchEventRegister<naoqi_bridge_msgs::Bumper>;
-template class TouchEventRegister<naoqi_bridge_msgs::HandTouch>;
-template class TouchEventRegister<naoqi_bridge_msgs::HeadTouch>;
+template class TouchEventRegister<naoqi_bridge_msgs::msg::Bumper>;
+template class TouchEventRegister<naoqi_bridge_msgs::msg::HandTouch>;
+template class TouchEventRegister<naoqi_bridge_msgs::msg::HeadTouch>;
 
 }//namespace

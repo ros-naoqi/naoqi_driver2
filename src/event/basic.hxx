@@ -20,7 +20,7 @@
 
 #include <boost/make_shared.hpp>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <qi/anyobject.hpp>
 
@@ -61,9 +61,9 @@ EventRegister<Converter, Publisher, Recorder>::~EventRegister()
 }
 
 template <typename Converter, typename Publisher, typename Recorder>
-void EventRegister<Converter, Publisher, Recorder>::resetPublisher(  ros::NodeHandle& nh )
+void EventRegister<Converter, Publisher, Recorder>::resetPublisher(  rclcpp::Node& node )
 {
-  publisher_->reset(nh);
+  publisher_->reset(node);
 }
 
 template <typename Converter, typename Publisher, typename Recorder>
@@ -95,7 +95,7 @@ void EventRegister<Converter, Publisher, Recorder>::stopProcess()
 }
 
 template <typename Converter, typename Publisher, typename Recorder>
-void EventRegister<Converter, Publisher, Recorder>::writeDump(const ros::Time& time)
+void EventRegister<Converter, Publisher, Recorder>::writeDump(const rclcpp::Time& time)
 {
   if (isStarted_)
   {
