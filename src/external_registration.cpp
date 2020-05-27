@@ -95,6 +95,9 @@ int main(int argc, char** argv) {
   
   // Register the ROS-Driver service and init the driver node
   app.session()->registerService("ROS-Driver", bs);
+
+  // Pass the create session to the driver node, and init the node
+  bs->setQiSession(app.session());
   bs->init();
   std::cout << BOLDYELLOW 
             << "naoqi_driver initialized" 
