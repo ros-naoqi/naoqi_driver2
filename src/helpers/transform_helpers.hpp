@@ -19,8 +19,8 @@
 #ifndef TRANSFORM_HELPERS_HPP
 #define TRANSFORM_HELPERS_HPP
 
-#include <geometry_msgs/Transform.h>
-#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/msg/transform.hpp>
+#include <geometry_msgs/msg/pose.hpp>
 #include <tf2/LinearMath/Matrix3x3.h>
 
 namespace naoqi
@@ -30,7 +30,7 @@ namespace helpers
 namespace transform
 {
 
-inline double getYaw(const geometry_msgs::Pose& pose)
+inline double getYaw(const geometry_msgs::msg::Pose& pose)
 {
   double yaw, _pitch, _roll;
   tf2::Matrix3x3(tf2::Quaternion(pose.orientation.x, pose.orientation.y,
@@ -38,7 +38,7 @@ inline double getYaw(const geometry_msgs::Pose& pose)
   return yaw;
 }
 
-inline double getYaw( const geometry_msgs::Transform& pose)
+inline double getYaw( const geometry_msgs::msg::Transform& pose)
 {
   double yaw, _pitch, _roll;
   tf2::Matrix3x3(tf2::Quaternion(pose.rotation.x, pose.rotation.y, pose.rotation.z, pose.rotation.w)).getEulerYPR(yaw, _pitch, _roll);

@@ -26,9 +26,9 @@ namespace driver
 
 /** Function that returns the type of a robot
  */
-static naoqi_bridge_msgs::RobotInfo& getRobotInfoLocal( const qi::SessionPtr& session)
+static naoqi_bridge_msgs::msg::RobotInfo& getRobotInfoLocal( const qi::SessionPtr& session)
 {
-  static naoqi_bridge_msgs::RobotInfo info;
+  static naoqi_bridge_msgs::msg::RobotInfo info;
   static qi::Url robot_url;
 
   if (robot_url == session->url())
@@ -198,21 +198,21 @@ const robot::Robot& getRobot( const qi::SessionPtr& session )
   return robot;
 }
 
-const naoqi_bridge_msgs::RobotInfo& getRobotInfo( const qi::SessionPtr& session )
+const naoqi_bridge_msgs::msg::RobotInfo& getRobotInfo( const qi::SessionPtr& session )
 {
-  static naoqi_bridge_msgs::RobotInfo robot_info =  getRobotInfoLocal(session);
+  static naoqi_bridge_msgs::msg::RobotInfo robot_info =  getRobotInfoLocal(session);
   return robot_info;
 }
 
 /** Function that sets language for a robot
  */
-bool& setLanguage( const qi::SessionPtr& session, naoqi_bridge_msgs::SetStringRequest req)
+bool& setLanguage( const qi::SessionPtr& session, const std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Request> request)
 {
   static bool success;
   std::cout << "Receiving service call of setting speech language" << std::endl;
   try{
     qi::AnyObject p_text_to_speech = session->service("ALTextToSpeech");
-    p_text_to_speech.call<void>("setLanguage", req.data);
+    p_text_to_speech.call<void>("setLanguage", request->data);
     success = true;
     return success;
   }
