@@ -47,10 +47,10 @@ void SonarPublisher::publish( const std::vector<sensor_msgs::msg::Range>& sonar_
 
 void SonarPublisher::reset( rclcpp::Node& node )
 {
-  pubs_ = std::vector<rclcpp::Publisher>();
+  pubs_.clear();
   for( size_t i=0; i<topics_.size(); ++i)
   {
-    pubs_.push_back( node.create_publisher<sensor_msgs::msg::Range>(topics_[i], 1) );
+    pubs_.push_back( node->create_publisher<sensor_msgs::msg::Range>(topics_[i], 1) );
   }
 
   is_initialized_ = true;

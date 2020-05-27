@@ -53,15 +53,15 @@ public:
   inline bool isSubscribed() const
   {
     if (is_initialized_ == false) return false;
-    for(std::vector<rclcpp::Publisher>::const_iterator it = pubs_.begin(); it != pubs_.end(); ++it)
-      if (helpers::publishers::getNumSubscribers(it->get_topic_name()))
+    for(std::vector<rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr>::const_iterator it = pubs_.begin(); it != pubs_.end(); ++it)
+      if (helpers::Node::count_subcribers(it->get_topic_name()))
         return true;
     return false;
   }
 
 private:
   std::vector<std::string> topics_;
-  std::vector<rclcpp::Publisher> pubs_;
+  std::vector<rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr> pubs_;
   bool is_initialized_;
 
 };
