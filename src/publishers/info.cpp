@@ -32,13 +32,15 @@ InfoPublisher::InfoPublisher(const std::string& topic , const robot::Robot& robo
 {
 }
 
-void InfoPublisher::reset( ros::NodeHandle& nh )
+void InfoPublisher::reset( rclcpp::Node& node)
 {
   // We latch as we only publish once
-  pub_ = nh.advertise<naoqi_bridge_msgs::StringStamped>( topic_, 1, true );
+  pub_ = node->create_publisher<naoqi_bridge_msgs::msg::StringStamped>( topic_, 1);
 
   std::string robot_desc = naoqi::tools::getRobotDescription(robot_);
-  nh.setParam("/robot_description", robot_desc);
+  std::string parameter_name = "/robot_description"
+  rclcpp::ParameterValue value = node->declare_parameter(parameter_name);
+  node->set_parameters({parameter_name, robot_desc});
   std::cout << "load robot description from file" << std::endl;
 
   is_initialized_ = true;

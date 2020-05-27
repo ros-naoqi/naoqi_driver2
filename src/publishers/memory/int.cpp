@@ -29,14 +29,14 @@ MemoryIntPublisher::MemoryIntPublisher( const std::string& topic ):
   BasePublisher( topic )
 {}
 
-void MemoryIntPublisher::publish(const naoqi_bridge_msgs::IntStamped& msg )
+void MemoryIntPublisher::publish(const naoqi_bridge_msgs::msg::IntStamped& msg )
 {
-  pub_.publish( msg );
+  pub_->publish( msg );
 }
 
-void MemoryIntPublisher::reset( ros::NodeHandle& nh )
+void MemoryIntPublisher::reset( ros::Node& node )
 {
-  pub_ = nh.advertise< naoqi_bridge_msgs::IntStamped >( topic_, 10 );
+  pub_ = node->create_publisher< naoqi_bridge_msgs::msg::IntStamped >( topic_, 10 );
   is_initialized_ = true;
 }
 

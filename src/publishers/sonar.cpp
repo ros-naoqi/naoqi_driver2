@@ -31,7 +31,7 @@ SonarPublisher::SonarPublisher( const std::vector<std::string>& topics )
 {
 }
 
-void SonarPublisher::publish( const std::vector<sensor_msgs::Range>& sonar_msgs )
+void SonarPublisher::publish( const std::vector<sensor_msgs::msg::Range>& sonar_msgs )
 {
   if ( pubs_.size() != sonar_msgs.size() )
   {
@@ -41,16 +41,16 @@ void SonarPublisher::publish( const std::vector<sensor_msgs::Range>& sonar_msgs 
 
   for( size_t i=0; i<sonar_msgs.size(); ++i)
   {
-    pubs_[i].publish( sonar_msgs[i] );
+    pubs_[i]->publish( sonar_msgs[i] );
   }
 }
 
-void SonarPublisher::reset( ros::NodeHandle& nh )
+void SonarPublisher::reset( rclcpp::Node& node )
 {
-  pubs_ = std::vector<ros::Publisher>();
+  pubs_.clear();
   for( size_t i=0; i<topics_.size(); ++i)
   {
-    pubs_.push_back( nh.advertise<sensor_msgs::Range>(topics_[i], 1) );
+    pubs_.push_back( node->create_publisher<sensor_msgs::msg::Range>(topics_[i], 1) );
   }
 
   is_initialized_ = true;

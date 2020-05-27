@@ -23,7 +23,8 @@
 /*
 * ROS includes
 */
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
+#include <naoqi_driver/helpers.hpp>
 
 namespace naoqi
 {
@@ -54,18 +55,21 @@ public:
 
   virtual inline bool isSubscribed() const
   {
-    if (is_initialized_ == false) return false;
-      return pub_.getNumSubscribers() > 0;
+    if (is_initialized_ == false){
+      return false;
+    } else{
+      return helpers::Node::count_subscribers(topic_) > 0;
+    }
   }
 
   virtual void publish( const T& msg )
   {
-    pub_.publish( msg );
+    pub_->publish( msg );
   }
 
-  virtual void reset( ros::NodeHandle& nh )
+  virtual void reset( rclcpp::Node& node )
   {
-    pub_ = nh.advertise<T>( this->topic_, 10 );
+    pub_ = node->create_publisher<T>( this->topic_, 10 );
     is_initialized_ = true;
   }
 
@@ -75,7 +79,7 @@ protected:
   bool is_initialized_;
 
   /** Publisher */
-  ros::Publisher pub_;
+  rclcpp::Publisher<T>::SharedPtr pub_;
 }; // class
 
 } // publisher

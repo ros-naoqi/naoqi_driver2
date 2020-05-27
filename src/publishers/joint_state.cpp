@@ -30,10 +30,10 @@ JointStatePublisher::JointStatePublisher( const std::string& topic ):
   is_initialized_( false )
 {}
 
-void JointStatePublisher::publish( const sensor_msgs::JointState& js_msg,
-                                   const std::vector<geometry_msgs::TransformStamped>& tf_transforms )
+void JointStatePublisher::publish( const sensor_msgs::msg::JointState& js_msg,
+                                   const std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms )
 {
-  pub_joint_states_.publish( js_msg );
+  pub_joint_states_->publish( js_msg );
 
   /**
    * ROBOT STATE PUBLISHER
@@ -42,9 +42,9 @@ void JointStatePublisher::publish( const sensor_msgs::JointState& js_msg,
 }
 
 
-void JointStatePublisher::reset( ros::NodeHandle& nh )
+void JointStatePublisher::reset( rclcpp::Node& node )
 {
-  pub_joint_states_ = nh.advertise<sensor_msgs::JointState>( topic_, 10 );
+  pub_joint_states_ = node->create_publisher<sensor_msgs::msg::JointState>( topic_, 10 );
 
   tf_broadcasterPtr_ = boost::make_shared<tf2_ros::TransformBroadcaster>();
 

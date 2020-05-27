@@ -21,9 +21,9 @@
 /*
 * ROS includes
 */
-#include <ros/ros.h>
-#include <geometry_msgs/Transform.h>
-#include <sensor_msgs/JointState.h>
+#include <rclcpp/rclcpp.hpp>
+#include <geometry_msgs/msg/transform.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 
 namespace naoqi
@@ -47,10 +47,10 @@ public:
   return is_initialized_;
   }
 
-  virtual void publish( const sensor_msgs::JointState& js_msg,
-                        const std::vector<geometry_msgs::TransformStamped>& tf_transforms );
+  virtual void publish( const sensor_msgs::msg::JointState& js_msg,
+                        const std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms );
 
-  virtual void reset( ros::NodeHandle& nh );
+  virtual void reset( rclcpp::Node& node );
 
   virtual bool isSubscribed() const;
 
@@ -58,7 +58,7 @@ private:
   boost::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcasterPtr_;
 
   /** initialize separate publishers for js and odom */
-  ros::Publisher pub_joint_states_;
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_joint_states_;
 
   std::string topic_;
 

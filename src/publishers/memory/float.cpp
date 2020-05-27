@@ -29,14 +29,14 @@ MemoryFloatPublisher::MemoryFloatPublisher( const std::string& topic ):
   BasePublisher( topic )
 {}
 
-void MemoryFloatPublisher::publish( const naoqi_bridge_msgs::FloatStamped& msg )
+void MemoryFloatPublisher::publish( const naoqi_bridge_msgs::msg::FloatStamped& msg )
 {
-  pub_.publish( msg );
+  pub_->publish( msg );
 }
 
-void MemoryFloatPublisher::reset( ros::NodeHandle& nh )
+void MemoryFloatPublisher::reset( rclcpp::Node& node )
 {
-  pub_ = nh.advertise< naoqi_bridge_msgs::FloatStamped >( topic_, 10 );
+  pub_ = node->create_publisher< naoqi_bridge_msgs::msg::FloatStamped >( topic_, 10 );
   is_initialized_ = true;
 }
 
