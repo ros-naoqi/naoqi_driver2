@@ -27,8 +27,8 @@
 /*
  * ROS includes
  */
-#include <ros/ros.h>
-#include <std_msgs/String.h>
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
 
 namespace naoqi
 {
@@ -41,15 +41,15 @@ public:
   SpeechSubscriber( const std::string& name, const std::string& speech_topic, const qi::SessionPtr& session );
   ~SpeechSubscriber(){}
 
-  void reset( ros::NodeHandle& nh );
-  void speech_callback( const std_msgs::StringConstPtr& speech_msg );
+  void reset( rclcpp::Node& node );
+  void speech_callback( const std_msgs::msg::String::ConstSharedPtr& msg );
 
 private:
 
   std::string speech_topic_;
 
   qi::AnyObject p_tts_;
-  ros::Subscriber sub_speech_;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_speech_;
 
 
 
