@@ -42,7 +42,7 @@ public:
   ~SpeechSubscriber(){}
 
   void reset( rclcpp::Node& node );
-  void speech_callback( const std_msgs::msg::String::ConstSharedPtr msg );
+  void speech_callback( const std_msgs::msg::String::ConstSharedPtr& msg );
 
 private:
 

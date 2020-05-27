@@ -43,8 +43,8 @@ public:
   ~TeleopSubscriber(){}
 
   void reset( ros::NodeHandle& nh );
-  void cmd_vel_callback( const geometry_msgs::msg::Twist::ConstSharedPtr twist_msg );
-  void joint_angles_callback( const naoqi_bridge_msgs::msg::JointAnglesWithSpeed::ConstSharedPtr js_msg );
+  void cmd_vel_callback( const geometry_msgs::msg::Twist::ConstSharedPtr& twist_msg );
+  void joint_angles_callback( const naoqi_bridge_msgs::msg::JointAnglesWithSpeed::ConstSharedPtr& js_msg );
 
 private:
 

@@ -46,7 +46,7 @@ void MovetoSubscriber::reset( rclcpp::Node& node )
   is_initialized_ = true;
 }
 
-void MovetoSubscriber::callback( const geometry_msgs::msg::PoseStamped::ConstSharedPtr pose_msg )
+void MovetoSubscriber::callback( const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose_msg )
 {
   if (pose_msg->header.frame_id == "odom") {
     geometry_msgs::msg::PoseStamped pose_msg_bf;

@@ -42,7 +42,7 @@ public:
   ~MovetoSubscriber(){}
 
   void reset( rclcpp::Node& node );
-  void callback( const geometry_msgs::msg::PoseStamped::ConstSharedPtr pose_msg );
+  void callback( const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose_msg );
 
 private:
   qi::AnyObject p_motion_;
