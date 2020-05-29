@@ -25,7 +25,7 @@
 namespace naoqi {
 namespace helpers {
 
-
+namespace {
 /**
  * @brief Node helper class, holds a pointer towards the driver rclcpp::Node 
  * 
@@ -83,6 +83,7 @@ public:
   }
 };
 
+} // anonymous namespace
 } // naoqi
 } // helpers
 

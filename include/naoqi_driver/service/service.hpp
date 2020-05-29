@@ -54,9 +54,9 @@ public:
   /**
   * @brief initializes/resets the service into ROS with a given node,
   * this will be called at first for initialization
-  * @param node Node object to create the service
+  * @param node rclcpp::Node pointer used to create the service
   */
-  void reset( rclcpp::Node& node )
+  void reset( rclcpp::Node* node )
   {
     std::cout << name() << " is resetting" << std::endl;
     srvPtr_->reset( node );
@@ -89,7 +89,7 @@ private:
   struct ServiceConcept
   {
     virtual ~ServiceConcept(){}
-    virtual void reset( rclcpp::Node& node ) = 0;
+    virtual void reset( rclcpp::Node* node ) = 0;
     virtual std::string name() const = 0;
     virtual std::string topic() const = 0;
   };
@@ -120,7 +120,7 @@ private:
       return service_->isInitialized();
     }
 
-    void reset( rclcpp::Node& node )
+    void reset( rclcpp::Node* node )
     {
       service_->reset( node );
     }

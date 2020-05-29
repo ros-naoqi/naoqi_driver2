@@ -72,9 +72,9 @@ public:
   /**
   * @brief initializes/resets the publisher into ROS with a given Node object,
   * this will be called at first for initialization
-  * @param node rclcpp::Node from which the publisher is created
+  * @param node rclcpp::Node pointer from which the publisher is created
   */
-  void reset( rclcpp::Node& node )
+  void reset( rclcpp::Node* node )
   {
     std::cout << topic() << " is resetting" << std::endl;
     pubPtr_->reset( node );
@@ -113,7 +113,7 @@ private:
     virtual ~PublisherConcept(){}
     virtual bool isInitialized() const = 0;
     virtual bool isSubscribed() const = 0;
-    virtual void reset( rclcpp::Node& node ) = 0;
+    virtual void reset( rclcpp::Node* node ) = 0;
     virtual std::string topic() const = 0;
   };
 
@@ -143,7 +143,7 @@ private:
       return publisher_->isSubscribed();
     }
 
-    void reset( rclcpp::Node& node )
+    void reset( rclcpp::Node* node )
     {
       publisher_->reset( node );
     }

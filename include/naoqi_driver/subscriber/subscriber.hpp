@@ -63,9 +63,9 @@ public:
   /**
   * @brief initializes/resets the subscriber into ROS with a given Node,
   * this will be called at first for initialization
-  * @param node Node object used to create the subscriber
+  * @param node rclcpp::Node pointer object used to create the subscriber
   */
-  void reset( rclcpp::Node& node )
+  void reset( rclcpp::Node* node )
   {
     std::cout << name() << " is resetting" << std::endl;
     subPtr_->reset( node );
@@ -107,7 +107,7 @@ private:
   {
     virtual ~SubscriberConcept(){}
     virtual bool isInitialized() const = 0;
-    virtual void reset( rclcpp::Node& node ) = 0;
+    virtual void reset( rclcpp::Node* node ) = 0;
     virtual std::string name() const = 0;
     virtual std::string topic() const = 0;
   };
@@ -138,7 +138,7 @@ private:
       return subscriber_->isInitialized();
     }
 
-    void reset( rclcpp::Node& node )
+    void reset( rclcpp::Node* node )
     {
       subscriber_->reset( node );
     }

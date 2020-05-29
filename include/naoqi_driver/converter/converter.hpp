@@ -84,14 +84,14 @@ public:
     }
 
     rclcpp::Time after = helpers::Time::now();
-    lapse_time = after - before;
+    // lapse_time = after - before;
     before = after;
   }
 
-  rclcpp::Duration lapseTime() const
-  {
-    return lapse_time;
-  }
+  // rclcpp::Duration lapseTime() const
+  // {
+  //   return lapse_time;
+  // }
 
   friend bool operator==( const Converter& lhs, const Converter& rhs )
   {
@@ -104,7 +104,7 @@ public:
 private:
 
   rclcpp::Time before;
-  rclcpp::Duration lapse_time;
+  // rclcpp::Duration lapse_time;
 
   /**
   * BASE concept struct

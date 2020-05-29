@@ -239,8 +239,7 @@ public:
 
 private:
   qi::SessionPtr sessionPtr_;
-
-  const robot::Robot& robot_;
+  robot::Robot robot_;
 
   bool publish_enabled_;
   bool record_enabled_;
