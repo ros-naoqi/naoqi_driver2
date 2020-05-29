@@ -48,9 +48,9 @@ public:
     return topic_;
   }
 
-  void reset( rclcpp::Node& node );
+  void reset( rclcpp::Node* node );
 
-  void callback( const naoqi_bridge_msgs::srv::SetString::Request& req, naoqi_bridge_msgs::srv::SetString::Response& resp );
+  void callback( const std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Request> req, std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Response> resp );
 
 
 private:

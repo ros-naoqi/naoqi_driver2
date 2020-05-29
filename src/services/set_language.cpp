@@ -29,12 +29,14 @@ SetLanguageService::SetLanguageService( const std::string& name, const std::stri
   session_(session)
 {}
 
-void SetLanguageService::reset( rclcpp::Node& node )
+void SetLanguageService::reset( rclcpp::Node* node )
 {
-  service_ = node.create_service<naoqi_bridge_msgs::srv::SetString>(topic_, &SetLanguageService::callback);
+  service_ = node->create_service<naoqi_bridge_msgs::srv::SetString>(
+    topic_,
+    std::bind(&SetLanguageService::callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-void SetLanguageService::callback( const naoqi_bridge_msgs::srv::SetString::Request& req, naoqi_bridge_msgs::srv::SetString::Response& resp )
+void SetLanguageService::callback( const std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Request> req, std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Response> resp )
 {
   resp->success = helpers::driver::setLanguage(session_, req);
 }
