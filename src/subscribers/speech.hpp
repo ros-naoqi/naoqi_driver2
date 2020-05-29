@@ -41,8 +41,8 @@ public:
   SpeechSubscriber( const std::string& name, const std::string& speech_topic, const qi::SessionPtr& session );
   ~SpeechSubscriber(){}
 
-  void reset( rclcpp::Node& node );
-  void speech_callback( const std_msgs::msg::String::ConstSharedPtr& msg );
+  void reset( rclcpp::Node* node );
+  void speech_callback( const std_msgs::msg::String::SharedPtr msg );
 
 private:
 

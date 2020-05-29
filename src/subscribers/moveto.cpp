@@ -40,13 +40,17 @@ MovetoSubscriber::MovetoSubscriber( const std::string& name, const std::string& 
   tf2_buffer_( tf2_buffer )
 {}
 
-void MovetoSubscriber::reset( rclcpp::Node& node )
+void MovetoSubscriber::reset( rclcpp::Node* node )
 {
-  sub_moveto_ = node.create_subscription<geometry_msgs::msg::PoseStamped>( topic_, 10, &MovetoSubscriber::callback, this );
+  sub_moveto_ = node->create_subscription<geometry_msgs::msg::PoseStamped>(
+    topic_,
+    10,
+    std::bind(&MovetoSubscriber::callback, this, std::placeholders::_1));
+
   is_initialized_ = true;
 }
 
-void MovetoSubscriber::callback( const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose_msg )
+void MovetoSubscriber::callback( const geometry_msgs::msg::PoseStamped::SharedPtr pose_msg )
 {
   if (pose_msg->header.frame_id == "odom") {
     geometry_msgs::msg::PoseStamped pose_msg_bf;
@@ -54,8 +58,8 @@ void MovetoSubscriber::callback( const geometry_msgs::msg::PoseStamped::ConstSha
     bool canTransform = tf2_buffer_->canTransform(
       "base_footprint",
       "odom",
-      rclcpp::Time(0),
-      rclcpp::Duration(2,0));
+      tf2::get_now(),
+      tf2::Duration(2));
 
     if (!canTransform) {
       std::cout << "Cannot transform from "
@@ -70,7 +74,7 @@ void MovetoSubscriber::callback( const geometry_msgs::msg::PoseStamped::ConstSha
         *pose_msg,
         pose_msg_bf,
         "base_footprint",
-        rclcpp::Time(0),
+        tf2::get_now(),
         "odom");
 
       double yaw = helpers::transform::getYaw(pose_msg_bf.pose);

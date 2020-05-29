@@ -42,9 +42,9 @@ public:
   TeleopSubscriber( const std::string& name, const std::string& cmd_vel_topic, const std::string& joint_angles_topic, const qi::SessionPtr& session );
   ~TeleopSubscriber(){}
 
-  void reset( ros::NodeHandle& nh );
-  void cmd_vel_callback( const geometry_msgs::msg::Twist::ConstSharedPtr& twist_msg );
-  void joint_angles_callback( const naoqi_bridge_msgs::msg::JointAnglesWithSpeed::ConstSharedPtr& js_msg );
+  void reset( rclcpp::Node* node );
+  void cmd_vel_callback( const geometry_msgs::msg::Twist::SharedPtr twist_msg );
+  void joint_angles_callback( const naoqi_bridge_msgs::msg::JointAnglesWithSpeed::SharedPtr js_msg );
 
 private:
 

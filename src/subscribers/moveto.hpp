@@ -29,6 +29,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <tf2_ros/buffer.h>
+#include <tf2/time.h>
 
 namespace naoqi
 {
@@ -41,8 +42,8 @@ public:
   MovetoSubscriber( const std::string& name, const std::string& topic, const qi::SessionPtr& session, const boost::shared_ptr<tf2_ros::Buffer>& tf2_buffer );
   ~MovetoSubscriber(){}
 
-  void reset( rclcpp::Node& node );
-  void callback( const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose_msg );
+  void reset( rclcpp::Node* node );
+  void callback( const geometry_msgs::msg::PoseStamped::SharedPtr pose_msg );
 
 private:
   qi::AnyObject p_motion_;
