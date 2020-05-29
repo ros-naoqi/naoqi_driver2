@@ -22,21 +22,15 @@
   <depend>naoqi_libqicore</depend>
   <depend>orocos_kdl</depend>
   <depend>robot_state_publisher</depend>
-  <depend>rosbag2_storage</depend>
   <depend>tf2_ros</depend>
+  <depend>boost</depend>
 
-  <!-- <build_depend>boost</build_depend> -->
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>diagnostic_updater</build_depend>
   <build_depend>geometry_msgs</build_depend>
-  <!-- <build_depend version_gte="0.0.4">naoqi_bridge_msgs</build_depend> -->
-  <build_depend>rosgraph_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>tf2_geometry_msgs</build_depend>
   <build_depend>tf2_msgs</build_depend>
-
-  <!-- <run_depend>boost</run_depend> -->
-  <!-- <run_depend version_gte="0.0.4">naoqi_bridge_msgs</run_depend> -->
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

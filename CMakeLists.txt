@@ -13,8 +13,6 @@ find_package(naoqi_bridge_msgs REQUIRED)
 find_package(naoqi_libqi REQUIRED)
 find_package(naoqi_libqicore REQUIRED)
 find_package(robot_state_publisher REQUIRED)
-find_package(rosbag2_storage REQUIRED)
-find_package(rosgraph_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
@@ -94,7 +92,6 @@ set(
 
 add_definitions(-DLIBQI_VERSION=${naoqi_libqi_VERSION_MAJOR}${naoqi_libqi_VERSION_MINOR})
 
-# include_directories(include ${catkin_INCLUDE_DIRS})
 include_directories(include 
   ${naoqi_libqi_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
@@ -125,19 +122,27 @@ add_library(
   ${TOOLS_SRC}
 )
 
-# target_link_libraries(
-#   naoqi_driver
-#   ${catkin_LIBRARIES}
-#   ${OpenCV_LIBRARIES}
-#   ${orocos_kdl_LIBRARIES}
-#   )
 ament_target_dependencies(naoqi_driver
   rclcpp
+  cv_bridge
+  diagnostic_msgs
+  diagnostic_updater
+  geometry_msgs
+  image_transport
+  kdl_parser
+  naoqi_bridge_msgs
   naoqi_libqi
+  naoqi_libqicore
+  robot_state_publisher
+  sensor_msgs
+  tf2_geometry_msgs
+  tf2_msgs
+  tf2_ros
+  OpenCV
+  orocos_kdl
   Boost)
 
-# add_dependencies(naoqi_driver ${catkin_EXPORTED_TARGETS})
-install(TARGETS naoqi_driver DESTINATION lib/${PROJECT_NAME})
+install(TARGETS naoqi_driver DESTINATION lib/)
 
 # target_link_libraries(naoqi_driver_module
 #   naoqi_driver
@@ -145,16 +150,13 @@ install(TARGETS naoqi_driver DESTINATION lib/${PROJECT_NAME})
 
 # create the binary of the bridge
 add_executable(naoqi_driver_node src/external_registration.cpp)
-# target_link_libraries(naoqi_driver_node
-#     ${naoqi_libqi_LIBRARIES}
-#     ${Boost_LIBRARIES}
-# )
-ament_target_dependencies(naoqi_driver_node
-  rclcpp
-  naoqi_driver
-  Boost)
+target_link_libraries(naoqi_driver_node
+    naoqi_driver
+    ${rclcpp_LIBRARIES}
+    ${naoqi_libqi_LIBRARIES}
+    ${Boost_LIBRARIES}
+)
 
-# install(TARGETS naoqi_driver_node DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(TARGETS naoqi_driver_node DESTINATION lib/${PROJECT_NAME})
 
 # install the urdf for runtime loading
@@ -171,6 +173,6 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 # install(FILES ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_SHARE_DESTINATION}/qi/module/naoqi_driver_module.mod DESTINATION ${CATKIN_GLOBAL_SHARE_DESTINATION}/qi/module/)
 # file(WRITE share/${PROJECT_NAME}/qi/module/naoqi_driver_module.mod "cpp")
 
-# catkin_package(LIBRARIES naoqi_driver_module naoqi_driver)
 # ament_export_libraries(naoqi_driver_module naoqi_driver)
+ament_export_libraries(naoqi_driver)
 ament_package()
