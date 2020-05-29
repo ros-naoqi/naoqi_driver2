@@ -144,7 +144,7 @@ namespace recorder
       {
         ros_topic = topic;
       }
-      tf2_msgs::TFMessage message;
+      tf2_msgs::msg::TFMessage message;
       rclcpp::Time now = helpers::Time::now();
       if (!helpers::recorder::isZero(msgtf[0].header.stamp)) {
         now = msgtf[0].header.stamp;

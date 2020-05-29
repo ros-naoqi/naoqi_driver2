@@ -71,7 +71,7 @@ public:
 
   virtual void write(const T& msg)
   {
-    if (!helpers::recorder::isZero(msg.header.stamp) {
+    if (!helpers::recorder::isZero(msg.header.stamp)) {
       gr_->write(topic_, msg, msg.header.stamp);
     }
     else {
@@ -119,7 +119,7 @@ public:
 protected:
   bool isTooOld(const T& msg)
   {
-    rclcpp::Duration d( helpers::Time::now() - msg.header.stamp );
+    rclcpp::Duration d((helpers::Time::now() - msg.header.stamp).nanoseconds());
     if (static_cast<float>(d.seconds()) > buffer_duration_)
     {
       return true;
@@ -129,7 +129,7 @@ protected:
 
   bool isOlderThan(const T& msg, const rclcpp::Time& time)
   {
-    rclcpp::Duration d( time - msg.header.stamp );
+    rclcpp::Duration d((time - msg.header.stamp).nanoseconds());
     if (static_cast<float>(d.seconds()) > buffer_duration_)
     {
       return true;
@@ -153,7 +153,6 @@ protected:
     }
   }
 
-protected:
   std::string topic_;
 
   std::list<T> buffer_;
@@ -164,10 +163,9 @@ protected:
   bool is_subscribed_;
 
   boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr_;
-
 }; // class
 
-} // publisher
+} // recorder
 } // naoqi
 
 #endif
