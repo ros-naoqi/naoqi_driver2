@@ -92,7 +92,7 @@
 /*
  * STATIC FUNCTIONS INCLUDE
  */
-// #include "ros_env.hpp"
+#include "ros_env.hpp"
 #include "helpers/filesystem_helpers.hpp"
 #include "helpers/recorder_helpers.hpp"
 #include "helpers/naoqi_helpers.hpp"
@@ -122,7 +122,7 @@ Driver::Driver() : rclcpp::Node("naoqi_driver"),
   log_enabled_(false),
   keep_looping(true),
   recorder_(boost::make_shared<recorder::GlobalRecorder>("naoqi_driver")),
-  buffer_duration_(helpers::recorder::bufferDefaultDuration)) {}
+  buffer_duration_(helpers::recorder::bufferDefaultDuration) {}
 
 Driver::~Driver()
 {
@@ -224,30 +224,30 @@ void Driver::rosLoop()
           conv.callAll( actions );
         }
 
-        rclcpp::Duration d( schedule - this->now() );
+        rclcpp::Duration d((schedule - this->now()).nanoseconds());
         if ( d > rclcpp::Duration(0, 0))
         {
-          rclcpp::sleep_for(d.to_chrono());
+          rclcpp::sleep_for(d.to_chrono<std::chrono::nanoseconds>());
         }
 
         // Schedule for a future time or not
         conv_queue_.pop();
         if ( conv.frequency() != 0 )
         {
-          conv_queue_.push(ScheduledConverter(schedule + rclcpp::Duration(1.0f / conv.frequency()), conv_index));
+          conv_queue_.push(ScheduledConverter(schedule + rclcpp::Duration(0, (1.0f / conv.frequency())*1e9), conv_index));
         }
 
       }
       else // conv_queue is empty.
       {
         // sleep one second
-        rclcpp::sleep_for(rclcpp::Duration(1, 0).to_chrono());
+        rclcpp::sleep_for(rclcpp::Duration(1, 0).to_chrono<std::chrono::nanoseconds>());
       }
     } // mutex scope
 
     if ( publish_enabled_ )
     {
-      rclcpp::spinSome(this);
+      rclcpp::spin_some(this->get_node_base_interface());
     }
   } // while loop
 }
@@ -444,6 +444,7 @@ void Driver::registerRecorder( const std::string& conv_name, recorder::Recorder&
 void Driver::insertEventConverter(const std::string& key, event::Event event)
 {
   //event.reset(*nhPtr_, recorder_);
+  event.resetPublisher(this);
   event.resetRecorder(recorder_);
   event_map_.insert( std::map<std::string, event::Event>::value_type(key, event) );
 }
@@ -532,7 +533,7 @@ bool Driver::registerMemoryConverter( const std::string& key, float frequency, c
 void Driver::registerDefaultConverter()
 {
   // init global tf2 buffer
-  tf2_buffer_.reset<tf2_ros::Buffer>( new tf2_ros::Buffer() );
+  tf2_buffer_.reset<tf2_ros::Buffer>( new tf2_ros::Buffer(this->get_clock()) );
   tf2_buffer_->setUsingDedicatedThread(true);
 
   // replace this with proper configuration struct
@@ -909,6 +910,7 @@ void Driver::registerSubscriber( subscriber::Subscriber sub )
   {
     sub_index = subscribers_.size();
     //sub.reset( *nhPtr_ );
+    sub.reset(this);
     subscribers_.push_back( sub );
     std::cout << "registered subscriber:\t" << sub.name() << std::endl;
   }
@@ -930,6 +932,7 @@ void Driver::registerDefaultSubscriber()
 
 void Driver::registerService( service::Service srv )
 {
+  srv.reset(this);
   services_.push_back( srv );
 }
 
@@ -986,55 +989,55 @@ std::vector<std::string> Driver::getAvailableConverters()
 //     nhPtr_.reset( new ros::NodeHandle("~") );
 //   }
 
-  if(converters_.empty())
-  {
-    // If there is no converters, create them
-    // (converters only depends on Naoqi, resetting the
-    // Ros node has no impact on them)
-    std::cout << BOLDRED << "going to register converters" << RESETCOLOR << std::endl;
-    registerDefaultConverter();
-    registerDefaultSubscriber();
-//    startRosLoop();
-  }
-  else
-  {
-    std::cout << "NOT going to re-register the converters" << std::endl;
-    // If some converters are already there, then
-    // we just need to reset the registered publisher
-    // using the ROS node
-    typedef std::map< std::string, publisher::Publisher > publisher_map;
-    for_each( publisher_map::value_type &pub, pub_map_ )
-    {
-      pub.second.reset(this);
-    }
+//   if(converters_.empty())
+//   {
+//     // If there is no converters, create them
+//     // (converters only depends on Naoqi, resetting the
+//     // Ros node has no impact on them)
+//     std::cout << BOLDRED << "going to register converters" << RESETCOLOR << std::endl;
+//     registerDefaultConverter();
+//     registerDefaultSubscriber();
+// //    startRosLoop();
+//   }
+//   else
+//   {
+//     std::cout << "NOT going to re-register the converters" << std::endl;
+//     // If some converters are already there, then
+//     // we just need to reset the registered publisher
+//     // using the ROS node
+//     typedef std::map< std::string, publisher::Publisher > publisher_map;
+//     for_each( publisher_map::value_type &pub, pub_map_ )
+//     {
+//       pub.second.reset(this);
+//     }
 
-    for_each( subscriber::Subscriber& sub, subscribers_ )
-    {
-      sub.reset(this);
-    }
+//     for_each( subscriber::Subscriber& sub, subscribers_ )
+//     {
+//       sub.reset(this);
+//     }
 
-    for_each( service::Service& srv, services_ )
-    {
-      srv.reset(this);
-    }
-  }
+//     for_each( service::Service& srv, services_ )
+//     {
+//       srv.reset(this);
+//     }
+//   }
 
-  if (!event_map_.empty()) {
-    typedef std::map< std::string, event::Event > event_map;
-    for_each( event_map::value_type &event, event_map_ )
-    {
-      event.second.resetPublisher(this);
-    }
-  }
-  // Start publishing again
-  startPublishing();
+//   if (!event_map_.empty()) {
+//     typedef std::map< std::string, event::Event > event_map;
+//     for_each( event_map::value_type &event, event_map_ )
+//     {
+//       event.second.resetPublisher(this);
+//     }
+//   }
+//   // Start publishing again
+//   startPublishing();
 
-  if ( !keep_looping )
-  {
-    std::cout << "going to start ROS loop" << std::endl;
-    startRosLoop();
-  }
-}
+//   if ( !keep_looping )
+//   {
+//     std::cout << "going to start ROS loop" << std::endl;
+//     startRosLoop();
+//   }
+// }
 
 void Driver::startPublishing()
 {
