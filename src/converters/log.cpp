@@ -162,7 +162,7 @@ void LogConverter::set_qi_logger_level( )
 {
   // Check that the log level is above or equal to the current one
   int severity = rcutils_logging_get_logger_effective_level(helpers::Node::get_logger().get_name());
-  qi::LogLevel new_level = LogLevel::get_from_log_severity(iter->second).qi_;
+  qi::LogLevel new_level = LogLevel::get_from_log_severity(severity).qi_;
 
   // Only change the log level if it has changed (otherwise, there is a flood of warnings)
   if (new_level == log_level_)

@@ -42,19 +42,19 @@ namespace nao
 
 inline void addBaseFootprint( boost::shared_ptr<tf2_ros::Buffer> tf2_buffer, std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms, const rclcpp::Time& time )
 {
-  bool canTransform = tf2_buffer->canTransform("odom", "l_sole", time, tf2::durationFromSec(0.1) );
+  bool canTransform = tf2_buffer->canTransform("odom", "l_sole", tf2::timeFromSec(time.seconds()), tf2::durationFromSec(0.1) );
   if (!canTransform)
   {
-    RCLCPP_ERROR(helpers::Node::get_logger(), "Do not calculate NAO Footprint, no transform possible (%d seconds)", &time.seconds());
+    RCLCPP_ERROR(helpers::Node::get_logger(), "Do not calculate NAO Footprint, no transform possible (%d seconds)", time.seconds());
     return;
   }
 
   geometry_msgs::msg::TransformStamped tf_odom_to_base, tf_odom_to_left_foot, tf_odom_to_right_foot;
   try {
     // TRANSFORM THEM DIRECTLY INTO TRANSFORM
-    tf_odom_to_left_foot  = tf2_buffer->lookupTransform("odom", "l_sole",    time );
-    tf_odom_to_right_foot = tf2_buffer->lookupTransform("odom", "r_sole",    time );
-    tf_odom_to_base       = tf2_buffer->lookupTransform("odom", "base_link", time );
+    tf_odom_to_left_foot  = tf2_buffer->lookupTransform("odom", "l_sole", tf2::timeFromSec(time.seconds()));
+    tf_odom_to_right_foot = tf2_buffer->lookupTransform("odom", "r_sole", tf2::timeFromSec(time.seconds()));
+    tf_odom_to_base       = tf2_buffer->lookupTransform("odom", "base_link", tf2::timeFromSec(time.seconds()));
   } catch (const tf2::TransformException& ex) {
     RCLCPP_ERROR(helpers::Node::get_logger(), "NAO Footprint error %s",ex.what());
     return;
