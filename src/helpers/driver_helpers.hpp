@@ -19,6 +19,7 @@
 #ifndef DRIVER_HELPERS_HPP
 #define DRIVER_HELPERS_HPP
 
+#include <iostream>
 #include <naoqi_driver/tools.hpp>
 
 #include <naoqi_bridge_msgs/msg/robot_info.hpp>

@@ -47,21 +47,21 @@ static naoqi_bridge_msgs::msg::RobotInfo& getRobotInfoLocal( const qi::SessionPt
 
   if (std::string(robot) == "nao")
   {
-    info.type = naoqi_bridge_msgs::RobotInfo::NAO;
+    info.type = naoqi_bridge_msgs::msg::RobotInfo::NAO;
     std::cout << BOLDYELLOW << "Robot detected: "
               << BOLDCYAN << "NAO " << version
               << RESETCOLOR << std::endl;
   }
   if (std::string(robot) == "pepper" || std::string(robot) == "juliette" )
   {
-    info.type = naoqi_bridge_msgs::RobotInfo::PEPPER;
+    info.type = naoqi_bridge_msgs::msg::RobotInfo::PEPPER;
     std::cout << BOLDYELLOW << "Robot detected: "
               << BOLDCYAN << "Pepper " << version
               << RESETCOLOR << std::endl;
   }
   if (std::string(robot) == "romeo" )
   {
-    info.type = naoqi_bridge_msgs::RobotInfo::ROMEO;
+    info.type = naoqi_bridge_msgs::msg::RobotInfo::ROMEO;
     std::cout << BOLDYELLOW << "Robot detected: "
               << BOLDCYAN << "Romeo " << version
               << RESETCOLOR << std::endl;
@@ -182,15 +182,15 @@ const robot::Robot& getRobot( const qi::SessionPtr& session )
 {
   static robot::Robot robot = robot::UNIDENTIFIED;
 
-  if ( getRobotInfo(session).type == naoqi_bridge_msgs::RobotInfo::NAO )
+  if ( getRobotInfo(session).type == naoqi_bridge_msgs::msg::RobotInfo::NAO )
   {
     robot = robot::NAO;
   }
-  if ( getRobotInfo(session).type == naoqi_bridge_msgs::RobotInfo::PEPPER )
+  if ( getRobotInfo(session).type == naoqi_bridge_msgs::msg::RobotInfo::PEPPER )
   {
     robot = robot::PEPPER;
   }
-  if ( getRobotInfo(session).type == naoqi_bridge_msgs::RobotInfo::ROMEO )
+  if ( getRobotInfo(session).type == naoqi_bridge_msgs::msg::RobotInfo::ROMEO )
   {
     robot = robot::ROMEO;
   }

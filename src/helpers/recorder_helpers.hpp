@@ -39,7 +39,7 @@ static const float bufferDefaultDuration = 10.f;
  * nanoseconds)
  * @return false if the time value of the message is not 0 
  */
-static bool isZero(const builtin_interfaces::msg::Time& msg) const {
+static bool isZero(const builtin_interfaces::msg::Time& msg) {
   return msg.sec == 0 && msg.nanosec == 0;
 }
 
