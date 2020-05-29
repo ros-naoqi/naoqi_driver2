@@ -70,7 +70,7 @@ TouchEventRegister<T>::~TouchEventRegister()
 }
 
 template<class T>
-void TouchEventRegister<T>::resetPublisher(rclcpp::Node& node)
+void TouchEventRegister<T>::resetPublisher(rclcpp::Node* node)
 {
   publisher_->reset(node);
 }

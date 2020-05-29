@@ -27,10 +27,10 @@
 
 #include <qi/session.hpp>
 
-#include <rclcpp/rclcpp.h>
-#include <naoqi_bridge_msgs/msg/bumper.h>
-#include <naoqi_bridge_msgs/msg/hand_touch.h>
-#include <naoqi_bridge_msgs/head_touch.h>
+#include <rclcpp/rclcpp.hpp>
+#include <naoqi_bridge_msgs/msg/bumper.hpp>
+#include <naoqi_bridge_msgs/msg/hand_touch.hpp>
+#include <naoqi_bridge_msgs/msg/head_touch.hpp>
 
 #include <naoqi_driver/tools.hpp>
 #include <naoqi_driver/recorder/globalrecorder.hpp>
@@ -65,7 +65,7 @@ public:
   TouchEventRegister(const std::string& name, const std::vector<std::string> keys, const float& frequency, const qi::SessionPtr& session );
   ~TouchEventRegister();
 
-  void resetPublisher( rclcpp::Node& node );
+  void resetPublisher( rclcpp::Node* node );
   void resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr );
 
   void startProcess();

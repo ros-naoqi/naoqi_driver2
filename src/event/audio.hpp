@@ -63,7 +63,7 @@ public:
   AudioEventRegister( const std::string& name, const float& frequency, const qi::SessionPtr& session );
   ~AudioEventRegister();
 
-  void resetPublisher( rclcpp::Node& node );
+  void resetPublisher( rclcpp::Node* node );
   void resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr );
 
   void startProcess();

@@ -54,7 +54,7 @@ public:
   EventRegister( const std::string& key, const qi::SessionPtr& session );
   ~EventRegister();
 
-  void resetPublisher( ros::NodeHandle& nh );
+  void resetPublisher( rclcpp::Node* node );
   void resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr );
 
   void startProcess();
