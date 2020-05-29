@@ -34,7 +34,7 @@ void MemoryFloatPublisher::publish( const naoqi_bridge_msgs::msg::FloatStamped& 
   pub_->publish( msg );
 }
 
-void MemoryFloatPublisher::reset( rclcpp::Node& node )
+void MemoryFloatPublisher::reset( rclcpp::Node* node )
 {
   pub_ = node->create_publisher< naoqi_bridge_msgs::msg::FloatStamped >( topic_, 10 );
   is_initialized_ = true;

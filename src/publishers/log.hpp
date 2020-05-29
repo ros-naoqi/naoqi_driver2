@@ -28,7 +28,7 @@
 */
 #include <rclcpp/rclcpp.hpp>
 #include <rcl_interfaces/msg/log.hpp>
-#include <std_msgs/String.h>
+#include <std_msgs/msg/string.hpp>
 
 /*
 * BOOST includes

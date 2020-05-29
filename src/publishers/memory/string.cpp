@@ -35,7 +35,7 @@ void MemoryStringPublisher::publish( const naoqi_bridge_msgs::msg::StringStamped
   pub_->publish( msg );
 }
 
-void MemoryStringPublisher::reset( ros::Node& node )
+void MemoryStringPublisher::reset( rclcpp::Node* node )
 {
   pub_ = node->create_publisher<naoqi_bridge_msgs::msg::StringStamped>( topic_, 10 );
   is_initialized_ = true;

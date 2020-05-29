@@ -45,7 +45,7 @@ void SonarPublisher::publish( const std::vector<sensor_msgs::msg::Range>& sonar_
   }
 }
 
-void SonarPublisher::reset( rclcpp::Node& node )
+void SonarPublisher::reset( rclcpp::Node* node )
 {
   pubs_.clear();
   for( size_t i=0; i<topics_.size(); ++i)

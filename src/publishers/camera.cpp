@@ -41,12 +41,12 @@ CameraPublisher::~CameraPublisher()
 {
 }
 
-void CameraPublisher::publish( const sensor_msgs::msgs::Image::SharedPtr& img, const sensor_msgs::msg::CameraInfo& camera_info )
+void CameraPublisher::publish( const sensor_msgs::msg::Image::SharedPtr& img, const sensor_msgs::msg::CameraInfo& camera_info )
 {
-  pub_->publish( *img, camera_info );
+  pub_.publish( *img, camera_info );
 }
 
-void CameraPublisher::reset( rclcpp::Node& node )
+void CameraPublisher::reset( rclcpp::Node* node )
 {
   pub_ = image_transport::create_camera_publisher(node, topic_);
   /* TODO */

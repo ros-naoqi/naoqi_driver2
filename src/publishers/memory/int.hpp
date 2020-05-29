@@ -41,7 +41,7 @@ public:
 
   void publish( const naoqi_bridge_msgs::msg::IntStamped& msg );
 
-  void reset( rclcpp::Node& node );
+  void reset( rclcpp::Node* node );
 
 }; // class
 

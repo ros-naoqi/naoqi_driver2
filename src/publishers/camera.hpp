@@ -23,6 +23,9 @@
 */
 #include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.h>
+#include <sensor_msgs/msg/image.hpp>
+#include <sensor_msgs/msg/camera_info.hpp>
+
 #include <naoqi_driver/helpers.hpp>
 
 namespace naoqi
@@ -49,7 +52,7 @@ public:
 
   void publish( const sensor_msgs::msg::Image::SharedPtr& img, const sensor_msgs::msg::CameraInfo& camera_info );
 
-  void reset( rclcpp::Node& node );
+  void reset( rclcpp::Node* node );
 
   inline bool isSubscribed() const
   {

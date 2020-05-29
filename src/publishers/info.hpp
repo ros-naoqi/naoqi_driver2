@@ -40,7 +40,7 @@ class InfoPublisher : public BasicPublisher<naoqi_bridge_msgs::msg::StringStampe
 public:
   InfoPublisher( const std::string& topic, const robot::Robot& robot_type );
 
-  void reset( rclcpp::Node& node );
+  void reset( rclcpp::Node* node );
 
   virtual inline bool isSubscribed() const
   {

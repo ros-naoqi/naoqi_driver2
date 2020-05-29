@@ -26,6 +26,9 @@
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+
 namespace naoqi
 {
 namespace publisher
@@ -50,7 +53,7 @@ public:
   virtual void publish( const sensor_msgs::msg::JointState& js_msg,
                         const std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms );
 
-  virtual void reset( rclcpp::Node& node );
+  virtual void reset( rclcpp::Node* node );
 
   virtual bool isSubscribed() const;
 

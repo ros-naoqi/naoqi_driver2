@@ -67,7 +67,7 @@ public:
     pub_->publish( msg );
   }
 
-  virtual void reset( rclcpp::Node& node )
+  virtual void reset( rclcpp::Node* node )
   {
     pub_ = node->create_publisher<T>( this->topic_, 10 );
     is_initialized_ = true;
@@ -79,7 +79,7 @@ protected:
   bool is_initialized_;
 
   /** Publisher */
-  rclcpp::Publisher<T>::SharedPtr pub_;
+  typename rclcpp::Publisher<T>::SharedPtr pub_;
 }; // class
 
 } // publisher
