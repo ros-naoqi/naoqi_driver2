@@ -83,6 +83,7 @@ set(
   DRIVER_SRC
   src/naoqi_driver.cpp
   src/helpers/driver_helpers.cpp
+  src/helpers/ros_helpers.cpp
   src/recorder/globalrecorder.cpp
   src/event/basic.hxx
   src/event/basic.hpp
@@ -91,6 +92,9 @@ set(
 )
 
 add_definitions(-DLIBQI_VERSION=${naoqi_libqi_VERSION_MAJOR}${naoqi_libqi_VERSION_MINOR})
+
+# Add pre-processor compile flag indicating ament
+add_definitions( -DAMENT_BUILD )
 
 include_directories(include 
   ${naoqi_libqi_INCLUDE_DIRS}

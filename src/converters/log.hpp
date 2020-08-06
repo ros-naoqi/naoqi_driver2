@@ -21,7 +21,7 @@
 #include <rcutils/logging.h>
 #include <rcl_interfaces/msg/log.hpp>
 
-#include <naoqi_driver/helpers.hpp>
+#include <naoqi_driver/ros_helpers.hpp>
 #include <naoqi_driver/message_actions.h>
 #include "converter_base.hpp"
 

@@ -126,10 +126,17 @@ LogConverter::LogConverter( const std::string& name, float frequency, const qi::
   LogLevel(qi::LogLevel_Info, rcl_interfaces::msg::Log::INFO, RCUTILS_LOG_SEVERITY_INFO);
   LogLevel(qi::LogLevel_Verbose, rcl_interfaces::msg::Log::DEBUG, RCUTILS_LOG_SEVERITY_DEBUG);
   LogLevel(qi::LogLevel_Debug, rcl_interfaces::msg::Log::DEBUG, RCUTILS_LOG_SEVERITY_DEBUG);
-
-  listener_ = logger_->getListener();
+  
+  // TEMPORARY CODE, WEIRD BUG
+  qi::AnyObject p_manager = session->service("LogManager");
+  auto test_obj = p_manager.call<qi::AnyObject>("getListener");
+  qi::LogListenerPtr test = static_cast<qi::LogListenerPtr>(test_obj);
+  test->onLogMessage.connect(logCallback);
+  // END
+  
+  // listener_ = logger_->getListener();
   set_qi_logger_level();
-  listener_->onLogMessage.connect(logCallback);
+  // listener_->onLogMessage.connect(logCallback);
 }
 
 void LogConverter::registerCallback( const message_actions::MessageAction action, Callback_t cb )

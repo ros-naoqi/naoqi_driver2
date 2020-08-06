@@ -29,7 +29,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <naoqi_bridge_msgs/msg/audio_buffer.h>
-#include <naoqi_driver/helpers.hpp>
+#include <naoqi_driver/ros_helpers.hpp>
 
 #include <naoqi_driver/tools.hpp>
 #include <naoqi_driver/recorder/globalrecorder.hpp>
@@ -59,7 +59,6 @@ public:
   /**
   * @brief Constructor for recorder interface
   */
-  AudioEventRegister();
   AudioEventRegister( const std::string& name, const float& frequency, const qi::SessionPtr& session );
   ~AudioEventRegister();
 
@@ -94,6 +93,7 @@ private:
   qi::FutureSync<qi::AnyObject> p_audio_extractor_request;
   std::vector<uint8_t> channelMap;
   unsigned int serviceId;
+  const robot::NaoqiVersion& naoqi_version_;
 
   boost::mutex subscription_mutex_;
   boost::mutex processing_mutex_;

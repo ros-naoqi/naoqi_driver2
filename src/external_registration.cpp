@@ -28,7 +28,7 @@
 
 #include <boost/program_options.hpp>
 #include "naoqi_driver/tools.hpp"
-#include "naoqi_driver/helpers.hpp"
+#include "naoqi_driver/ros_helpers.hpp"
 
 int main(int argc, char** argv) {
   const std::string no_password = "no_password";

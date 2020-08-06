@@ -22,7 +22,7 @@
 * LOCAL includes
 */
 #include <naoqi_driver/recorder/globalrecorder.hpp>
-#include <naoqi_driver/helpers.hpp>
+#include <naoqi_driver/ros_helpers.hpp>
 #include "../helpers/recorder_helpers.hpp"
 
 /*
