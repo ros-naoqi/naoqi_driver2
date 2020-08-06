@@ -26,7 +26,7 @@
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
 
-#include <naoqi_driver/helpers.hpp>
+#include <naoqi_driver/ros_helpers.hpp>
 
 namespace naoqi
 {

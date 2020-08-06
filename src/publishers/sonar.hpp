@@ -23,7 +23,7 @@
 */
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/range.hpp>
-#include <naoqi_driver/helpers.hpp>
+#include <naoqi_driver/ros_helpers.hpp>
 
 
 namespace naoqi

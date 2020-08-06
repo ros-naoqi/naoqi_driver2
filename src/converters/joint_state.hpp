@@ -24,7 +24,7 @@
 #include "converter_base.hpp"
 #include "../tools/robot_description.hpp"
 #include <naoqi_driver/message_actions.h>
-#include <naoqi_driver/helpers.hpp>
+#include <naoqi_driver/ros_helpers.hpp>
 
 /*
 * ROS includes

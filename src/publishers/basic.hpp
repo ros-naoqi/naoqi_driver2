@@ -24,7 +24,7 @@
 * ROS includes
 */
 #include <rclcpp/rclcpp.hpp>
-#include <naoqi_driver/helpers.hpp>
+#include <naoqi_driver/ros_helpers.hpp>
 
 namespace naoqi
 {
