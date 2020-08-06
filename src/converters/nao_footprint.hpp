@@ -30,7 +30,7 @@
 /*
 * loca includes
 */
-#include <naoqi_driver/helpers.hpp>
+#include <naoqi_driver/ros_helpers.hpp>
 #include "../helpers/transform_helpers.hpp"
 
 namespace naoqi

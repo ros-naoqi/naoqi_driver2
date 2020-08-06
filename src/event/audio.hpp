@@ -29,7 +29,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <naoqi_bridge_msgs/msg/audio_buffer.h>
-#include <naoqi_driver/helpers.hpp>
+#include <naoqi_driver/ros_helpers.hpp>
 
 #include <naoqi_driver/tools.hpp>
 #include <naoqi_driver/recorder/globalrecorder.hpp>

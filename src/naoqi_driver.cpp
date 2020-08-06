@@ -139,7 +139,74 @@ void Driver::init()
   registerDefaultSubscriber();
   registerDefaultServices();
   startRosLoop();
+
+  /* TEMPORARY CODE, TO ORGANIZE, REPLACING MASTER URI METHOD */
+  // To avoid two calls to this function happening at the same time
+  boost::mutex::scoped_lock lock( mutex_conv_queue_ );
+
+  // Stopping the loop if there is any
+  stopRosLoop();
+
+  // Reinitializing ROS Node
+  // {
+  //   nhPtr_.reset();
+  //   std::cout << "nodehandle reset " << std::endl;
+  //   ros_env::setMasterURI( uri, network_interface );
+  //   nhPtr_.reset( new ros::NodeHandle("~") );
+  // }
+
+  if(converters_.empty())
+  {
+    // If there is no converters, create them
+    // (converters only depends on Naoqi, resetting the
+    // Ros node has no impact on them)
+    std::cout << BOLDRED << "going to register converters" << RESETCOLOR << std::endl;
+    registerDefaultConverter();
+    registerDefaultSubscriber();
+//    startRosLoop();
+  }
+  else
+  {
+    std::cout << "NOT going to re-register the converters" << std::endl;
+    // If some converters are already there, then
+    // we just need to reset the registered publisher
+    // using the ROS node
+    typedef std::map< std::string, publisher::Publisher > publisher_map;
+    for_each( publisher_map::value_type &pub, pub_map_ )
+    {
+      pub.second.reset(this);
+    }
+
+    for_each( subscriber::Subscriber& sub, subscribers_ )
+    {
+      sub.reset(this);
+    }
+
+    for_each( service::Service& srv, services_ )
+    {
+      srv.reset(this);
+    }
+  }
+
+  if (!event_map_.empty()) {
+    typedef std::map< std::string, event::Event > event_map;
+    for_each( event_map::value_type &event, event_map_ )
+    {
+      event.second.resetPublisher(this);
+    }
+  }
+  // Start publishing again
+  startPublishing();
+
+  if ( !keep_looping )
+  {
+    std::cout << "going to start ROS loop" << std::endl;
+    startRosLoop();
+  }
+  /* END */
 }
+
+// }
 
 /**
  * @brief Sets the Driver sessionPtr, robot and has_stereo objects
@@ -444,7 +511,6 @@ void Driver::registerRecorder( const std::string& conv_name, recorder::Recorder&
 void Driver::insertEventConverter(const std::string& key, event::Event event)
 {
   //event.reset(*nhPtr_, recorder_);
-  event.resetPublisher(this);
   event.resetRecorder(recorder_);
   event_map_.insert( std::map<std::string, event::Event>::value_type(key, event) );
 }
@@ -910,7 +976,6 @@ void Driver::registerSubscriber( subscriber::Subscriber sub )
   {
     sub_index = subscribers_.size();
     //sub.reset( *nhPtr_ );
-    sub.reset(this);
     subscribers_.push_back( sub );
     std::cout << "registered subscriber:\t" << sub.name() << std::endl;
   }
@@ -932,7 +997,6 @@ void Driver::registerDefaultSubscriber()
 
 void Driver::registerService( service::Service srv )
 {
-  srv.reset(this);
   services_.push_back( srv );
 }
 
@@ -1183,6 +1247,7 @@ void Driver::stopLogging()
 
 void Driver::startRosLoop()
 {
+  keep_looping = true;
   if (publisherThread_.get_id() ==  boost::thread::id())
     publisherThread_ = boost::thread( &Driver::rosLoop, this );
   for(EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
@@ -1190,7 +1255,7 @@ void Driver::startRosLoop()
     iterator->second.startProcess();
   }
   // Create the publishing thread if needed
-  keep_looping = true;
+  // keep_looping = true;
 }
 
 void Driver::stopRosLoop()

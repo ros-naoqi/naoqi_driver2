@@ -33,7 +33,7 @@ def generate_launch_description():
         launch_ros.actions.Node(
             package='naoqi_driver',
             node_executable='naoqi_driver_node',
-            node_name=[launch.substitutions.LaunchConfiguration('namespace'), "naoqi_driver"],
+            node_name=[launch.substitutions.LaunchConfiguration('namespace')],
             parameters=[{
                 'nao_ip': launch.substitutions.LaunchConfiguration('nao_ip'),
                 'nao_port': launch.substitutions.LaunchConfiguration('nao_port'),

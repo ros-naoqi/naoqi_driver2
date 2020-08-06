@@ -25,7 +25,6 @@
 namespace naoqi {
 namespace helpers {
 
-namespace {
 /**
  * @brief Node helper class, holds a pointer towards the driver rclcpp::Node 
  * 
@@ -63,9 +62,6 @@ protected:
   static boost::shared_ptr<rclcpp::Node> node_ptr_;
 };
 
-boost::shared_ptr<rclcpp::Node> Node::node_ptr_;
-
-
 /**
  * @brief Time helper class, used to access to time related functionalities 
  * throughout the project
@@ -83,7 +79,6 @@ public:
   }
 };
 
-} // anonymous namespace
 } // naoqi
 } // helpers
 
