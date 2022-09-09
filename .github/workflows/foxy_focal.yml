@@ -1,0 +1,15 @@
+name: ros2-foxy-focal
+
+on:
+  push
+
+jobs:
+  ros2_foxy_focal_ci:
+    name: foxy (focal)
+    uses: ./.github/workflows/ros2.yml
+    with:
+      ROS_DISTRO: foxy
+      ROS_REPO: testing
+      OS_NAME: ubuntu
+      OS_CODE_NAME: focal
+      ALLOW_FAIL: false

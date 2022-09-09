@@ -1,0 +1,15 @@
+name: ros2-galactic-focal
+
+on:
+  push
+
+jobs:
+  ros2_galactic_focal_ci:
+    name: galactic (focal)
+    uses: ./.github/workflows/ros2.yml
+    with:
+      ROS_DISTRO: galactic
+      ROS_REPO: testing
+      OS_NAME: ubuntu
+      OS_CODE_NAME: focal
+      ALLOW_FAIL: false

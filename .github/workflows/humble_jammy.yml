@@ -1,0 +1,15 @@
+name: ros2-humble-jammy
+
+on:
+  push
+
+jobs:
+  ros2_humble_jammy_ci:
+    name: humble (jammy)
+    uses: ./.github/workflows/ros2.yml
+    with:
+      ROS_DISTRO: humble
+      ROS_REPO: testing
+      OS_NAME: ubuntu
+      OS_CODE_NAME: jammy
+      ALLOW_FAIL: false
