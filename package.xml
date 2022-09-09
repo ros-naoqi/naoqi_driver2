@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>naoqi_driver</name>
+  <version>2.0.0</version>
+  <description>Driver module between Aldebaran's NAOqiOS and ROS2. It publishes all sensor and actuator data as well as basic diagnostic for battery, temperature. It subscribes also to RVIZ simple goal and cmd_vel for teleop.</description>
+
+  <author>Karsten Knese</author>
+  <maintainer email="mchamoux@softbankrobotics.com">Marine Chamoux</maintainer>
+  <maintainer email="mbusy@softbankrobotics.com">Maxime Busy</maintainer>
+  <maintainer email="surya.ambrose@gmail.com">Surya Ambrose</maintainer>
+  <maintainer email="karsten.knese@gmail.com">Karsten Knese</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+  <depend>kdl_parser</depend>
+  <depend version_gte="2.0.0">naoqi_bridge_msgs</depend>
+  <depend>naoqi_libqi</depend>
+  <depend>naoqi_libqicore</depend>
+  <depend>orocos_kdl</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>tf2_ros</depend>
+  <depend>boost</depend>
+
+  <build_depend>diagnostic_msgs</build_depend>
+  <build_depend>diagnostic_updater</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>tf2_geometry_msgs</build_depend>
+  <build_depend>tf2_msgs</build_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <conflict>nao_driver</conflict>
+  <conflict>naoqi_rosbridge</conflict>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
