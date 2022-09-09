@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>naoqi_driver</name>
-  <version>0.5.11</version>
-  <description>Driver module between Aldebaran's NAOqiOS and ROS. It publishes all sensor and actuator data as well as basic diagnostic for battery, temperature. It subscribes also to RVIZ simple goal and cmd_vel for teleop.</description>
+  <version>2.0.0</version>
+  <description>Driver module between Aldebaran's NAOqiOS and ROS2. It publishes all sensor and actuator data as well as basic diagnostic for battery, temperature. It subscribes also to RVIZ simple goal and cmd_vel for teleop.</description>
 
   <author>Karsten Knese</author>
   <maintainer email="mchamoux@softbankrobotics.com">Marine Chamoux</maintainer>
@@ -17,7 +17,7 @@
   <depend>cv_bridge</depend>
   <depend>image_transport</depend>
   <depend>kdl_parser</depend>
-  <depend version_gte="0.0.4">naoqi_bridge_msgs</depend>
+  <depend version_gte="2.0.0">naoqi_bridge_msgs</depend>
   <depend>naoqi_libqi</depend>
   <depend>naoqi_libqicore</depend>
   <depend>orocos_kdl</depend>
