@@ -15,7 +15,7 @@ def generate_launch_description():
             default_value="9559",
             description='Port to be used for the connection'),
         launch.actions.DeclareLaunchArgument(
-            'user',
+            'username',
             default_value="nao",
             description='Username for the connection'),    
         launch.actions.DeclareLaunchArgument(

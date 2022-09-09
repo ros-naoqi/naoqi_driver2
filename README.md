@@ -38,7 +38,7 @@ git clone --branch ros2 https://github.com/ros-naoqi/nao_meshes.git
 ## Launch
 The driver can be launched using the following command:
 ```sh
-roslaunch naoqi_driver naoqi_driver.launch nao_ip:=<ip> nao_port:=<port> network_interface:=<interface> username:=<name> password:=<passwd>
+ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<ip> nao_port:=<port> network_interface:=<interface> username:=<name> password:=<passwd>
 ```
 Note that the username and password arguments are only required for robots running naoqi 2.9 or greater.
 
