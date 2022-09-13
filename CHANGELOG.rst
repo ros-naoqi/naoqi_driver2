@@ -2,6 +2,225 @@
 Changelog for package naoqi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update README, add buildfarm status badges
+* Fix typos in README, update username arg in launchfile
+* Merge branch 'ros2_integration' into main
+* Remove old README
+* Migrate Travis CI to github actions, remove spurious README
+* Update the package version, add a README.md
+* Initial commit
+* Fix robot_state_publisher header import
+* Merge branch 'naoqi-2.9' into ros2_integration
+* Merge branch 'temp_tests' into naoqi-2.9
+* Correct include towards ros_helper, and small functional updates
+* Refactor the converters for NAOqi 2.9 compatibility
+* Refactor the audio event for NAOqi 2.9 compatibility
+* Add the NaoqiVersion struct
+* Add the getNaoqiVersion and isNaoqiVersionLesser methods, refactor the getInfoRobotLocal method
+* Update the package definition and its CMakeLists
+* Fix the Driver class
+* Fix the subscribers
+* Fix the services
+* Fix the recorders
+* Fix the publishers
+* Fix the helpers
+* Fix the events
+* Fix the converters
+* Fix project headers
+* Merge pull request `#10 <https://github.com/ros-naoqi/naoqi_driver2/issues/10>`_ from arturocuma/subscriber_refactoring
+  Subscriber refactoring
+* Merge pull request `#9 <https://github.com/ros-naoqi/naoqi_driver2/issues/9>`_ from mcaniot/publishers_refactoring
+  Publishers refactoring
+* Merge pull request `#8 <https://github.com/ros-naoqi/naoqi_driver2/issues/8>`_ from elagrue/event_refactoring
+  Event refactoring
+* Merge pull request `#7 <https://github.com/ros-naoqi/naoqi_driver2/issues/7>`_ from mbusy/converters_refactoring
+  Converters refactoring
+* Merge pull request `#6 <https://github.com/ros-naoqi/naoqi_driver2/issues/6>`_ from mbusy/migration_helpers
+  Migration helpers
+* Merge pull request `#5 <https://github.com/ros-naoqi/naoqi_driver2/issues/5>`_ from mbusy/driver_refactoring
+  Driver refactoring
+* Merge pull request `#4 <https://github.com/ros-naoqi/naoqi_driver2/issues/4>`_ from mbusy/services_refactoring
+  Services refactoring
+* Merge pull request `#3 <https://github.com/ros-naoqi/naoqi_driver2/issues/3>`_ from mbusy/helpers_refactoring
+  Helpers refactoring
+* Merge pull request `#2 <https://github.com/ros-naoqi/naoqi_driver2/issues/2>`_ from mbusy/recorders_refactoring
+  Recorders refactoring
+* Merge pull request `#1 <https://github.com/ros-naoqi/naoqi_driver2/issues/1>`_ from mbusy/interface_headers
+  Interface headers
+* adding const at speech_callback
+* changing ConstSharedPtr to ConstSharedPtr&
+* pull request changes
+* refactor teleop subscriber for geometry_msgs, naoqi_bridge_msgs compliancy
+* refactor speech subscriber for rclcpp, std_msgs compliancy
+* refactor moveto for rclcpp, geometry_msgs compliancy
+* Fix Refactor sonar publisher
+  replace it by (*it)
+* Fix Refactor camera publisher
+  replace create_publisher by create_camera_publisher
+* Event refactoring minor bugfix
+* Fix Refactor sonar publisher
+  replace Publisher with Publisher<sensor_msgs::msg::Range>::SharedPtr
+  replace publishers::getNumSubscribers by Node::count_subscribers
+  use clear() function to reset vector pubs\_
+  replace . by ->
+* Fix Refactor log publisher
+  remove header serialization.h
+  replace Publisher by Publisher<rcl_interfaces::msg::Log>::SharedPtr
+* Fix helpers called function
+  replace getNumSubscribers by count_subscribers
+* Fix Refactor joint_state publisher
+  replace rclcpp::Publisher by rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr
+  replace . by ->
+* Fix Refactor Info
+  remove unnecessary parameters
+  replace StringStamped by string_stamped
+* Fix Refactor Camera publisher
+  Add note above commented code
+  remove unused header
+  replace helpers::pulishers by helpers::Node
+* Fix Refactor basic publisher
+  replace rclcpp::Publisher by rclcpp::Publisher<T>::SharedPtr
+* Fix Refactor basic publisher
+  replace helpers::publishers by helper::Node
+* Specify the IP address when calling the stopRecord method in the Driver class
+* Remove the Master URI related methods in ros_env.hpp
+* Fix include names for the driver_helpers header
+* Global fix for the services
+* Fix the converter accoring to the review of PR `#7 <https://github.com/ros-naoqi/naoqi_driver2/issues/7>`_
+* Refactor Camera publisher
+  add msg namespace
+  replace ros::NodeHandle by rclcpp::Node
+  replace . by pointer ->
+  replace ros by rclcpp
+  add helpers to replace deprecaded getNumSubscribers
+  comment if that remove compressedDepth topics check if still poping in ros2
+* Refactor the touch event
+* Refactor the basic event
+* Refactor the audio event
+* Refactor the touch converter
+* Refactor the sonar converter
+* Refactor the odom converter
+* Refactor the nao footprint header
+* Refactor info publisher
+  add msg namespace
+  replace ros::NodeHandle by rclcpp::Node
+  replace . by pointer ->
+  replace ros by rclcpp
+  replace setParam by set_parameters
+* Refactor the memory list converter
+* Refactor sonar publisher
+  add msg namespace
+  replace ros::NodeHandle by rclcpp::Node
+  replace . by pointer ->
+  replace advertise by create_publisher
+  replace ros by rclcpp
+  add helpers to replace getNumSubscribers
+* Refactor log publisher
+  replace ros bu rclcpp
+  replace rosgraph_msgs by rcl_interfaces/msg
+* Refactor the joint_state publisher
+  add msg namespace
+  replace ros::NodeHandle by rclcpp::Node
+  replace . by pointer ->
+  replace advertise by create_publisher
+  replace ros by rclcpp
+* Refactor the basic publisher
+  add msg namespace
+  replace ros::NodeHandle by rclcpp::Node
+  replace . by pointer ->
+  replace advertise by create_publisher
+  replace ros by rclcpp
+  add helpers function to replace getNumSubscribers
+* Refactor the log converter. Use rcl_interfaces::msg::Log and the RCUTILS_LOG_SEVERITY enum
+* Remove unnecessary classes, realocate the various methods in the Node class. The Time class is kept for now, but ought to be removed in the future
+* Add the Logger helper class, allowing to access to the driver node's logger throughout the project
+* Add the Publisher helper class, rendering Publisher related features accessible throughout the project
+* Add a node helper class to set the shared ptr towards the node, refactor the external registration script accordingly
+* Refactor the laser converter
+* Refactor the joint state converter. The general rclcpp logger is used to log, that might be modified in the future
+* Refactor the info converter
+* Refactor the imu converter
+* Refactor the diagnostics converter
+* Refactor memory publisher: correct headers names
+  namespace with \_
+  replace .h missing by .hpp
+* Refactor the camera converter. Logging with the rclcpp general logger might be a problem
+* Refactor the string memory publisher
+  add msg namespace
+  replace ros::NodeHandle by rclcpp::Node
+  replace . by pointer ->
+  replace advertise by create_publisher
+* Refactor the int memory publisher
+  add msg namespace
+  replace ros::NodeHandle by rclcpp::Node
+  replace . by pointer ->
+  replace advertise by create_publisher
+* Refactor the float memory publisher
+  add msg namespace
+  replace ros::NodeHandle by rclcpp::Node
+  replace . by pointer ->
+  replace advertise by create_publisher
+* Refactor the bool memory publisher
+  add msg namespace
+  replace ros::NodeHandle by rclcpp::Node
+  replace . by pointer ->
+  replace advertise by create_publisher
+* Refactor the camera info definitions header
+* Refactor the audio converter
+* Use StringStamped.hpp in the string memory converter
+* Refactor the string memory converter
+* Refactor the int memory converter
+* Refactor the float memory converter
+* Refactor the bool memory converter
+* Set the qi session of the driver in the external registration script
+* Refactor the driver class
+* Refactor the set_language service
+* Refactor the robot_config service
+* Include the GetString hpp header in the get_language service
+* Refactor the get_language service
+* Refactor the driver_helpers, handle the new syntax for the naoqi_bridge_custom messages
+* Refactor the filesystem_helpers, use ament_index_cpp to get the packages share directories
+* Refactor transform_helpers, update the includes and the ROS message types
+* Refactor the global recorder to use the  method of the recorder helper
+* Use the  method provided by the recorder helper to check if the message timestamps are set to 0
+* Add the isZero static method to the recorder helper
+* Refactor the sonar recorder
+* refactor the log recorder
+* Refactor the joint_state recorder
+* Refactor the diagnostics recorder
+* Refactor the camera recorder
+* Refactor the basic recorder
+* Refactor the basic_event recorder
+* Use the time helper to call now()
+* Refactor the globalrecorder recorder. For now the rosbag2 calls are commented
+* Refactor the event interface header for rclcpp compliance
+* Refactor recorder interface header. The rosbag includes will have to be updated
+* Refactor the service interface header for rclcpp compliance
+* Refactor the subscriber interface header for rclcpp compliance
+* Refactor converter interface header for rclcpp compliance
+  ros::Node::now() might not work, to be possibly updated
+* Refactor the publisher interface header for rclcpp compliance
+* Relocalize the Time helper in the includes folder
+* Initialize the time helper in the external registration, and add comments
+* Update CMakeLists for the whole project
+* Add a time helper for the project
+* Update the external registration code for rclcpp compliance
+* Add the DriverAuthenticator and DriverAuthenticatorFactory classes
+* Add a python launchfile for ros2 launch
+* Use only one CMakeLists for colcon build
+* Update package.xml for ros2 compatibility
+* Removing unused naoqi_env file
+* Merge pull request `#132 <https://github.com/ros-naoqi/naoqi_driver2/issues/132>`_ from mbusy/robust_movebase
+  Robustify moveTo
+* Safer moveTo: only odom and base_footprint are accepted as references, and check if yaw is nan
+* Merge pull request `#131 <https://github.com/ros-naoqi/naoqi_driver2/issues/131>`_ from ros-naoqi/testing_repo
+  Update CI for melodic
+* melodic not allowed to fail anymore, indigo allowed
+* use testing repo
+* Contributors: Arturo, Arturo Cruz, Edo, Maxime Busy, Mikael Arguedas, Pandhariix, eneuron, mbusy, mcaniot
+
 0.5.11 (2020-01-08)
 -------------------
 * Merge pull request `#129 <https://github.com/ros-naoqi/naoqi_driver/issues/129>`_ from Pandhariix/melodic_compatibility
