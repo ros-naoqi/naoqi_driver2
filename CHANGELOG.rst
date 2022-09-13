@@ -2,8 +2,8 @@
 Changelog for package naoqi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.0 (2022-09-13)
+------------------
 * Update README, add buildfarm status badges
 * Fix typos in README, update username arg in launchfile
 * Merge branch 'ros2_integration' into main
