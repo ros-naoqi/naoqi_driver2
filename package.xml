@@ -20,7 +20,6 @@
   <depend version_gte="2.0.0">naoqi_bridge_msgs</depend>
   <depend>naoqi_libqi</depend>
   <depend>naoqi_libqicore</depend>
-  <depend>orocos_kdl</depend>
   <depend>robot_state_publisher</depend>
   <depend>tf2_ros</depend>
   <depend>boost</depend>

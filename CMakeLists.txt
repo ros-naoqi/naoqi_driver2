@@ -18,7 +18,6 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(OpenCV REQUIRED)
-find_package(orocos_kdl REQUIRED)
 find_package(Boost QUIET COMPONENTS chrono filesystem program_options regex system thread random)
 
 # define source files that can be used by qibuild or catkin
@@ -96,10 +95,10 @@ add_definitions(-DLIBQI_VERSION=${naoqi_libqi_VERSION_MAJOR}${naoqi_libqi_VERSIO
 # Add pre-processor compile flag indicating ament
 add_definitions( -DAMENT_BUILD )
 
-include_directories(include 
+include_directories(include
   ${naoqi_libqi_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  ${orocos_kdl_INCLUDE_DIRS})
+)
 
 # create the different libraries
 # add_library(
@@ -143,7 +142,6 @@ ament_target_dependencies(naoqi_driver
   tf2_msgs
   tf2_ros
   OpenCV
-  orocos_kdl
   Boost)
 
 install(TARGETS naoqi_driver DESTINATION lib/)
