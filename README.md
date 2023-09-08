@@ -30,7 +30,7 @@ git clone --branch v2.5.0-foxy https://github.com/ros-naoqi/libqicore.git
 git clone https://github.com/ros-naoqi/naoqi_bridge_msgs2.git
 git clone https://github.com/ros-naoqi/naoqi_driver2.git
 
-# Eventually, if you didn't install the robot meshes.
+# Eventually, we will need the robot meshes. But the following repos are not ready for ROS2 yet.
 git clone --branch ros2 https://github.com/ros-naoqi/pepper_meshes.git
 git clone --branch ros2 https://github.com/ros-naoqi/nao_meshes.git
 ```
@@ -49,6 +49,14 @@ For further information, you can consult the documentation (__OUTDATED__) [here]
 cd doc
 doxygen Doxyfile
 sphinx-build -b html ./source/ ./build/
+```
+
+## Development
+Check how to [install the driver from source](#installing-from-source),
+or use the [`Dockerfile`](Dockerfile) to get setup a reproducible dev environment:
+
+```sh
+docker build -t ros2-naoqi-driver .
 ```
 
 ## Build status
