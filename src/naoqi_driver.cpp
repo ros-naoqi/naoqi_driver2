@@ -291,7 +291,7 @@ void Driver::rosLoop()
           conv.callAll( actions );
         }
 
-        rclcpp::Duration d((schedule - this->now()).nanoseconds());
+        rclcpp::Duration d(schedule - this->now());
         if ( d > rclcpp::Duration(0, 0))
         {
           rclcpp::sleep_for(d.to_chrono<std::chrono::nanoseconds>());

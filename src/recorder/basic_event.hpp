@@ -24,6 +24,7 @@
 #include <naoqi_driver/recorder/globalrecorder.hpp>
 #include <naoqi_driver/ros_helpers.hpp>
 #include "../helpers/recorder_helpers.hpp"
+#include <rclcpp/duration.hpp>
 
 /*
 * STANDARD includes
@@ -119,7 +120,7 @@ public:
 protected:
   bool isTooOld(const T& msg)
   {
-    rclcpp::Duration d((helpers::Time::now() - msg.header.stamp).nanoseconds());
+    rclcpp::Duration d(helpers::Time::now() - msg.header.stamp);
     if (static_cast<float>(d.seconds()) > buffer_duration_)
     {
       return true;
@@ -129,7 +130,7 @@ protected:
 
   bool isOlderThan(const T& msg, const rclcpp::Time& time)
   {
-    rclcpp::Duration d((time - msg.header.stamp).nanoseconds());
+    rclcpp::Duration d(time - msg.header.stamp);
     if (static_cast<float>(d.seconds()) > buffer_duration_)
     {
       return true;

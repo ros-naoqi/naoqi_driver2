@@ -38,9 +38,9 @@ void InfoPublisher::reset( rclcpp::Node* node )
   pub_ = node->create_publisher<naoqi_bridge_msgs::msg::StringStamped>( topic_, 1);
 
   std::string robot_desc = naoqi::tools::getRobotDescription(robot_);
+  rclcpp::ParameterValue robot_desc_as_value(std::move(robot_desc));
   std::string parameter_name = "/robot_description";
-  rclcpp::ParameterValue value = node->declare_parameter(parameter_name);
-  node->set_parameter(rclcpp::Parameter(parameter_name, robot_desc));
+  rclcpp::ParameterValue value = node->declare_parameter(parameter_name, robot_desc_as_value);
   std::cout << "load robot description from file" << std::endl;
 
   is_initialized_ = true;
