@@ -46,7 +46,7 @@ AudioEventRegister::AudioEventRegister( const std::string& name, const float& fr
   // _getMicrophoneConfig is used for NAOqi < 2.9, _getConfigMap for NAOqi > 2.9
   int micConfig;
 
-  if (helpers::driver::isNaoqiVersionLesser(naoqi_version_, 2, 9))
+  if (helpers::driver::isNaoqiVersionLesser(naoqi_version_, 2, 8))
   {
     micConfig = p_robot_model_.call<int>("_getMicrophoneConfig");
   }
@@ -54,7 +54,7 @@ AudioEventRegister::AudioEventRegister( const std::string& name, const float& fr
   {
     std::map<std::string, std::string> config_map =\
       p_robot_model_.call<std::map<std::string, std::string> >("_getConfigMap");
-    
+
     micConfig = std::atoi(
       config_map["RobotConfig/Head/Device/Micro/Version"].c_str());
   }
