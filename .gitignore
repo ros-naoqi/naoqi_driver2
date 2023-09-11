@@ -4,4 +4,5 @@ doc/*
 !doc/Doxyfile
 *.pro
 *.pro.user
-/.vscode/
+.colcon/
+.vscode/
