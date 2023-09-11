@@ -32,8 +32,7 @@ def generate_launch_description():
             description='Name of the namespace to be used'),
         launch_ros.actions.Node(
             package='naoqi_driver',
-            node_executable='naoqi_driver_node',
-            node_name=[launch.substitutions.LaunchConfiguration('namespace')],
+            executable='naoqi_driver_node',
             parameters=[{
                 'nao_ip': launch.substitutions.LaunchConfiguration('nao_ip'),
                 'nao_port': launch.substitutions.LaunchConfiguration('nao_port'),
