@@ -17,7 +17,7 @@ def generate_launch_description():
         launch.actions.DeclareLaunchArgument(
             'username',
             default_value="nao",
-            description='Username for the connection'),    
+            description='Username for the connection'),
         launch.actions.DeclareLaunchArgument(
             'password',
             default_value="no_password",
