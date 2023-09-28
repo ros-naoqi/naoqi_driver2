@@ -45,7 +45,7 @@ inline void addBaseFootprint( boost::shared_ptr<tf2_ros::Buffer> tf2_buffer, std
   bool canTransform = tf2_buffer->canTransform("odom", "l_sole", tf2::timeFromSec(time.seconds()), tf2::durationFromSec(0.1) );
   if (!canTransform)
   {
-    RCLCPP_ERROR(helpers::Node::get_logger(), "Do not calculate NAO Footprint, no transform possible (%d seconds)", time.seconds());
+    RCLCPP_ERROR(helpers::Node::get_logger(), "Could not compute NAO Footprint: no transform is possible (%d seconds)", time.seconds());
     return;
   }
 
