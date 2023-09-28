@@ -103,7 +103,7 @@ void AudioEventRegister::startProcess()
   {
     if(!serviceId)
     {
-      serviceId = session_->registerService("ROS-Driver-Audio", shared_from_this());
+      serviceId = session_->registerService("ROS-Driver-Audio", shared_from_this()).value();
       p_audio_.call<void>(
               "setClientPreferences",
               "ROS-Driver-Audio",
