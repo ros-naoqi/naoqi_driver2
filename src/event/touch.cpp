@@ -112,7 +112,11 @@ void TouchEventRegister<T>::stopProcess()
     std::string serviceName = std::string("ROS-Driver-") + keys_[0];
     if(serviceId){
       for(std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it) {
-        p_memory_.call<void>("unsubscribeToEvent",it->c_str(), serviceName);
+        try {
+          p_memory_.call<void>("unsubscribeToEvent",it->c_str(), serviceName);
+        } catch (const std::exception& e) {
+          std::cerr << "Error attempting to clean-up ALMemory subscription: " << e.what() << std::endl;
+        }
       }
       session_->unregisterService(serviceId);
       serviceId = 0;
@@ -172,7 +176,7 @@ template<class T>
 void TouchEventRegister<T>::touchCallback(std::string &key, qi::AnyValue &value, qi::AnyValue &message)
 {
   T msg = T();
-  
+
   bool state =  value.toFloat() > 0.5f;
 
   //std::cerr << key << " " << state << std::endl;
