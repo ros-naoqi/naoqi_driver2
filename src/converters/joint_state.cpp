@@ -42,8 +42,8 @@ namespace converter
 
 JointStateConverter::JointStateConverter( const std::string& name, const float& frequency, const BufferPtr& tf2_buffer, const qi::SessionPtr& session ):
   BaseConverter( name, frequency, session ),
-  p_motion_( session->service("ALMotion") ),
-  p_memory_( session->service("ALMemory") ),
+  p_motion_( session->service("ALMotion").value() ),
+  p_memory_( session->service("ALMemory").value() ),
   tf2_buffer_(tf2_buffer)
 {
   robot_desc_ = tools::getRobotDescription( robot_ );
