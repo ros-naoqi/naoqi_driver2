@@ -15,6 +15,8 @@
  *
 */
 
+#include <signal.h>
+
 #include <rclcpp/rclcpp.hpp>
 #include <qi/applicationsession.hpp>
 #include <qi/session.hpp>
@@ -26,14 +28,23 @@
 
 #include <naoqi_driver/naoqi_driver.hpp>
 
-#include <boost/program_options.hpp>
 #include "naoqi_driver/tools.hpp"
 #include "naoqi_driver/ros_helpers.hpp"
 
-int main(int argc, char** argv) {
+boost::weak_ptr<naoqi::Driver> driver_weak;
+
+void sigint_handler(int sig)
+{
+  if (auto driver = driver_weak.lock()) {
+    driver->stop();
+  }
+}
+
+int main(int argc, char** argv)
+{
   const std::string no_password = "no_password";
   std::string protocol = "tcp://";
-  
+
   std::string nao_ip;
   int nao_port;
   std::string user;
@@ -42,18 +53,18 @@ int main(int argc, char** argv) {
 
   // Initialize ROS and create the driver Node
   rclcpp::init(argc, argv);
-  boost::shared_ptr<naoqi::Driver> bs = boost::make_shared<naoqi::Driver>();
+  auto bs = boost::make_shared<naoqi::Driver>();
 
   // Setup the time helper
   naoqi::helpers::Node::setNode(bs);
-  
+
   // Retrieve the parameters
   bs->declare_parameter<std::string>("nao_ip", "127.0.0.1");
   bs->declare_parameter<int>("nao_port", 9559);
   bs->declare_parameter<std::string>("user", "nao");
   bs->declare_parameter<std::string>("password", no_password);
   bs->declare_parameter<std::string>("network_interface", "eth0");
-  
+
   bs->get_parameter("nao_ip", nao_ip);
   bs->get_parameter("nao_port", nao_port);
   bs->get_parameter("user", user);
@@ -64,9 +75,9 @@ int main(int argc, char** argv) {
 #if LIBQI_VERSION >= 29
     protocol = "tcps://";
 #else
-    std::cout << BOLDRED 
-              << "No need to set a password" 
-              << RESETCOLOR 
+    std::cout << BOLDRED
+              << "No need to set a password"
+              << RESETCOLOR
               << std::endl;
 #endif
   }
@@ -86,30 +97,28 @@ int main(int argc, char** argv) {
   }
 #endif
 
-  qi::Future<void> connection = app.session()->connect(url);
-  
+  auto session = app.session();
+  qi::Future<void> connection = session->connect(url);
+
   if (connection.hasError()) {
     std::cout << BOLDRED << connection.error() <<  RESETCOLOR << std::endl;
-    return 0;
+    return EXIT_FAILURE;
   }
-  
+
   // Register the ROS-Driver service and init the driver node
-  app.session()->registerService("ROS-Driver", bs);
+  session->registerService("ROS-Driver", bs);
 
   // Pass the create session to the driver node, and init the node
-  bs->setQiSession(app.session());
-  bs->init();
-  std::cout << BOLDYELLOW 
-            << "naoqi_driver initialized" 
-            << RESETCOLOR 
-            << std::endl;
-  
-  // Run the qi::ApplicationSession
-  app.run();
-  
-  // Stop the driver service, close the qi::Session and stop ROS
-  bs->stopService();
+  bs->setQiSession(session);
+
+  // Run the driver node. Stop it on SIGINT
+  driver_weak = bs;
+  signal(SIGINT, sigint_handler);
+  bs->run();
+  driver_weak.reset();
+
+  // Close the qi::Session and stop ROS
   app.session()->close();
   rclcpp::shutdown();
-  return 0;
+  return EXIT_SUCCESS;
 }

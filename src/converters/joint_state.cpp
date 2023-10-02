@@ -156,7 +156,7 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
 
   /*
    * can be called via getRobotPosture
-   * but this would require a proper URDF 
+   * but this would require a proper URDF
    * with a base_link and base_footprint in the base
    */
   std::vector<float> al_odometry_data = p_motion_.call<std::vector<float> >( "getPosition", "Torso", 1, true );
