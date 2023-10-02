@@ -126,91 +126,83 @@ Driver::Driver() : rclcpp::Node("naoqi_driver"),
 
 Driver::~Driver()
 {
-  std::cout << BOLDCYAN 
-    << "naoqi driver is shutting down.." 
-    << RESETCOLOR 
+  std::cout << BOLDCYAN
+    << "naoqi driver is shutting down.."
+    << RESETCOLOR
     << std::endl;
 }
 
-void Driver::init()
+void Driver::run()
 {
   loadBootConfig();
   registerDefaultConverter();
   registerDefaultSubscriber();
   registerDefaultServices();
-  startRosLoop();
 
-  /* TEMPORARY CODE, TO ORGANIZE, REPLACING MASTER URI METHOD */
-  // To avoid two calls to this function happening at the same time
-  boost::mutex::scoped_lock lock( mutex_conv_queue_ );
+  // A single iteration will propagate registrations, etc...
+  rosIteration();
 
-  // Stopping the loop if there is any
-  stopRosLoop();
-
-  // Reinitializing ROS Node
-  // {
-  //   nhPtr_.reset();
-  //   std::cout << "nodehandle reset " << std::endl;
-  //   ros_env::setMasterURI( uri, network_interface );
-  //   nhPtr_.reset( new ros::NodeHandle("~") );
-  // }
-
-  if(converters_.empty())
   {
-    // If there is no converters, create them
-    // (converters only depends on Naoqi, resetting the
-    // Ros node has no impact on them)
-    std::cout << BOLDRED << "going to register converters" << RESETCOLOR << std::endl;
-    registerDefaultConverter();
-    registerDefaultSubscriber();
-//    startRosLoop();
+    boost::mutex::scoped_lock lock( mutex_conv_queue_ );
+
+    if(converters_.empty())
+    {
+      // If there is no converters, create them
+      // (converters only depends on Naoqi, resetting the
+      // Ros node has no impact on them)
+      std::cout << BOLDRED << "going to register converters" << RESETCOLOR << std::endl;
+      registerDefaultConverter();
+      registerDefaultSubscriber();
+    }
+    else
+    {
+      std::cout << "NOT going to re-register the converters" << std::endl;
+      // If some converters are already there, then
+      // we just need to reset the registered publisher
+      // using the ROS node
+      typedef std::map< std::string, publisher::Publisher > publisher_map;
+      for_each( publisher_map::value_type &pub, pub_map_ )
+      {
+        pub.second.reset(this);
+      }
+
+      for_each( subscriber::Subscriber& sub, subscribers_ )
+      {
+        sub.reset(this);
+      }
+
+      for_each( service::Service& srv, services_ )
+      {
+        srv.reset(this);
+      }
+    }
+
+    if (!event_map_.empty()) {
+      typedef std::map< std::string, event::Event > event_map;
+      for_each( event_map::value_type &event, event_map_ )
+      {
+        event.second.resetPublisher(this);
+      }
+    }
+    // Start publishing again
+    startPublishing();
   }
-  else
+
+  std::cout << BOLDYELLOW
+            << "naoqi_driver initialized"
+            << RESETCOLOR
+            << std::endl;
+  std::cout << "Starting ROS loop" << std::endl;
+
+  while ( keep_looping )
   {
-    std::cout << "NOT going to re-register the converters" << std::endl;
-    // If some converters are already there, then
-    // we just need to reset the registered publisher
-    // using the ROS node
-    typedef std::map< std::string, publisher::Publisher > publisher_map;
-    for_each( publisher_map::value_type &pub, pub_map_ )
-    {
-      pub.second.reset(this);
-    }
-
-    for_each( subscriber::Subscriber& sub, subscribers_ )
-    {
-      sub.reset(this);
-    }
-
-    for_each( service::Service& srv, services_ )
-    {
-      srv.reset(this);
-    }
+    this->rosIteration();
   }
-
-  if (!event_map_.empty()) {
-    typedef std::map< std::string, event::Event > event_map;
-    for_each( event_map::value_type &event, event_map_ )
-    {
-      event.second.resetPublisher(this);
-    }
-  }
-  // Start publishing again
-  startPublishing();
-
-  if ( !keep_looping )
-  {
-    std::cout << "going to start ROS loop" << std::endl;
-    startRosLoop();
-  }
-  /* END */
 }
-
-// }
 
 /**
  * @brief Sets the Driver sessionPtr, robot and has_stereo objects
- * 
+ *
  * @param sessionPtr
  */
 void Driver::setQiSession(const qi::SessionPtr& sessionPtr)
@@ -230,93 +222,78 @@ void Driver::loadBootConfig()
   }
 }
 
-void Driver::stopService() {
-  stopRosLoop();
-  converters_.clear();
-  subscribers_.clear();
-  event_map_.clear();
-}
+void Driver::rosIteration() {
+  std::vector<message_actions::MessageAction> actions;
 
-
-void Driver::rosLoop()
-{
-  static std::vector<message_actions::MessageAction> actions;
-
-//  ros::Time::init();
-  while( keep_looping )
   {
-    // clear the callback triggers
-    actions.clear();
+    boost::mutex::scoped_lock lock( mutex_conv_queue_ );
+    if (!conv_queue_.empty())
     {
-      boost::mutex::scoped_lock lock( mutex_conv_queue_ );
-      if (!conv_queue_.empty())
+      // Wait for the next Publisher to be ready
+      size_t conv_index = conv_queue_.top().conv_index_;
+      converter::Converter& conv = converters_[conv_index];
+      rclcpp::Time schedule = conv_queue_.top().schedule_;
+
+      // check the publishing condition
+      // 1. publishing enabled
+      // 2. has to be registered
+      // 3. has to be subscribed
+      PubConstIter pub_it = pub_map_.find( conv.name() );
+      if ( publish_enabled_ &&  pub_it != pub_map_.end() && pub_it->second.isSubscribed() )
       {
-        // Wait for the next Publisher to be ready
-        size_t conv_index = conv_queue_.top().conv_index_;
-        converter::Converter& conv = converters_[conv_index];
-        rclcpp::Time schedule = conv_queue_.top().schedule_;
-
-        // check the publishing condition
-        // 1. publishing enabled
-        // 2. has to be registered
-        // 3. has to be subscribed
-        PubConstIter pub_it = pub_map_.find( conv.name() );
-        if ( publish_enabled_ &&  pub_it != pub_map_.end() && pub_it->second.isSubscribed() )
-        {
-          actions.push_back(message_actions::PUBLISH);
-        }
-
-        // check the recording condition
-        // 1. recording enabled
-        // 2. has to be registered
-        // 3. has to be subscribed (configured to be recorded)
-        RecConstIter rec_it = rec_map_.find( conv.name() );
-        {
-          boost::mutex::scoped_lock lock_record( mutex_record_, boost::try_to_lock );
-          if ( lock_record && record_enabled_ && rec_it != rec_map_.end() && rec_it->second.isSubscribed() )
-          {
-            actions.push_back(message_actions::RECORD);
-          }
-        }
-
-        // bufferize data in recorder
-        if ( log_enabled_ && rec_it != rec_map_.end() && conv.frequency() != 0)
-        {
-          actions.push_back(message_actions::LOG);
-        }
-
-        // only call when we have at least one action to perform
-        if (actions.size() >0)
-        {
-          conv.callAll( actions );
-        }
-
-        rclcpp::Duration d(schedule - this->now());
-        if ( d > rclcpp::Duration(0, 0))
-        {
-          rclcpp::sleep_for(d.to_chrono<std::chrono::nanoseconds>());
-        }
-
-        // Schedule for a future time or not
-        conv_queue_.pop();
-        if ( conv.frequency() != 0 )
-        {
-          conv_queue_.push(ScheduledConverter(schedule + rclcpp::Duration(0, (1.0f / conv.frequency())*1e9), conv_index));
-        }
-
+        actions.push_back(message_actions::PUBLISH);
       }
-      else // conv_queue is empty.
+
+      // check the recording condition
+      // 1. recording enabled
+      // 2. has to be registered
+      // 3. has to be subscribed (configured to be recorded)
+      RecConstIter rec_it = rec_map_.find( conv.name() );
       {
-        // sleep one second
-        rclcpp::sleep_for(rclcpp::Duration(1, 0).to_chrono<std::chrono::nanoseconds>());
+        boost::mutex::scoped_lock lock_record( mutex_record_, boost::try_to_lock );
+        if ( lock_record && record_enabled_ && rec_it != rec_map_.end() && rec_it->second.isSubscribed() )
+        {
+          actions.push_back(message_actions::RECORD);
+        }
       }
-    } // mutex scope
 
-    if ( publish_enabled_ )
-    {
-      rclcpp::spin_some(this->get_node_base_interface());
+      // bufferize data in recorder
+      if ( log_enabled_ && rec_it != rec_map_.end() && conv.frequency() != 0)
+      {
+        actions.push_back(message_actions::LOG);
+      }
+
+      // only call when we have at least one action to perform
+      if (actions.size() >0)
+      {
+        conv.callAll( actions );
+      }
+
+      rclcpp::Duration d(schedule - this->now());
+      if ( d > rclcpp::Duration(0, 0))
+      {
+        rclcpp::sleep_for(d.to_chrono<std::chrono::nanoseconds>());
+      }
+
+      // Schedule for a future time or not
+      conv_queue_.pop();
+      if ( conv.frequency() != 0 )
+      {
+        conv_queue_.push(ScheduledConverter(schedule + rclcpp::Duration(0, (1.0f / conv.frequency())*1e9), conv_index));
+      }
+
     }
-  } // while loop
+    else // conv_queue is empty.
+    {
+      // sleep one second
+      rclcpp::sleep_for(rclcpp::Duration(1, 0).to_chrono<std::chrono::nanoseconds>());
+    }
+  } // mutex scope
+
+  if ( publish_enabled_ )
+  {
+    rclcpp::spin_some(this->get_node_base_interface());
+  }
 }
 
 std::string Driver::minidump(const std::string& prefix)
@@ -1023,86 +1000,6 @@ std::vector<std::string> Driver::getAvailableConverters()
   return conv_list;
 }
 
-/*
-* EXPOSED FUNCTIONS
-*/
-
-// std::string Driver::getMasterURI() const
-// {
-//   return ros_env::getMasterURI();
-// }
-
-// void Driver::setMasterURI( const std::string& uri)
-// {
-//   setMasterURINet(uri, "eth0");
-// }
-
-// void Driver::setMasterURINet( const std::string& uri, const std::string& network_interface)
-// {
-//   // To avoid two calls to this function happening at the same time
-//   boost::mutex::scoped_lock lock( mutex_conv_queue_ );
-
-//   // Stopping the loop if there is any
-//   //stopRosLoop();
-
-//   // Reinitializing ROS Node
-//   {
-//     nhPtr_.reset();
-//     std::cout << "nodehandle reset " << std::endl;
-//     ros_env::setMasterURI( uri, network_interface );
-//     nhPtr_.reset( new ros::NodeHandle("~") );
-//   }
-
-//   if(converters_.empty())
-//   {
-//     // If there is no converters, create them
-//     // (converters only depends on Naoqi, resetting the
-//     // Ros node has no impact on them)
-//     std::cout << BOLDRED << "going to register converters" << RESETCOLOR << std::endl;
-//     registerDefaultConverter();
-//     registerDefaultSubscriber();
-// //    startRosLoop();
-//   }
-//   else
-//   {
-//     std::cout << "NOT going to re-register the converters" << std::endl;
-//     // If some converters are already there, then
-//     // we just need to reset the registered publisher
-//     // using the ROS node
-//     typedef std::map< std::string, publisher::Publisher > publisher_map;
-//     for_each( publisher_map::value_type &pub, pub_map_ )
-//     {
-//       pub.second.reset(this);
-//     }
-
-//     for_each( subscriber::Subscriber& sub, subscribers_ )
-//     {
-//       sub.reset(this);
-//     }
-
-//     for_each( service::Service& srv, services_ )
-//     {
-//       srv.reset(this);
-//     }
-//   }
-
-//   if (!event_map_.empty()) {
-//     typedef std::map< std::string, event::Event > event_map;
-//     for_each( event_map::value_type &event, event_map_ )
-//     {
-//       event.second.resetPublisher(this);
-//     }
-//   }
-//   // Start publishing again
-//   startPublishing();
-
-//   if ( !keep_looping )
-//   {
-//     std::cout << "going to start ROS loop" << std::endl;
-//     startRosLoop();
-//   }
-// }
-
 void Driver::startPublishing()
 {
   publish_enabled_ = true;
@@ -1245,28 +1142,18 @@ void Driver::stopLogging()
   log_enabled_ = false;
 }
 
-void Driver::startRosLoop()
-{
-  keep_looping = true;
-  if (publisherThread_.get_id() ==  boost::thread::id())
-    publisherThread_ = boost::thread( &Driver::rosLoop, this );
-  for(EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
-  {
-    iterator->second.startProcess();
-  }
-  // Create the publishing thread if needed
-  // keep_looping = true;
-}
-
-void Driver::stopRosLoop()
+void Driver::stop()
 {
   keep_looping = false;
-  if (publisherThread_.get_id() !=  boost::thread::id())
-    publisherThread_.join();
   for(EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.stopProcess();
   }
+
+  converters_.clear();
+  subscribers_.clear();
+  event_map_.clear();
+  rclcpp::spin_some(this->get_node_base_interface());
 }
 
 void Driver::parseJsonFile(std::string filepath, boost::property_tree::ptree &pt){

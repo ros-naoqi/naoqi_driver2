@@ -67,7 +67,7 @@ class Driver : public rclcpp::Node
 public:
   /**
    * @brief Constructor for the naoqi driver
-   * 
+   *
    */
   Driver();
 
@@ -77,16 +77,18 @@ public:
   */
   ~Driver();
 
-  void init();
+  /**
+   * @brief Register the ROS components and start the ROS loop.
+   */
+  void run();
 
   /**
    * @brief Set the Session object
-   * 
+   *
    */
   void setQiSession(const qi::SessionPtr& session_ptr);
 
-  void startRosLoop();
-  void stopRosLoop();
+  void stop();
   /**
    * @brief Write a ROSbag with the last bufferized data (10s by default)
    */
@@ -229,8 +231,6 @@ public:
 
   void parseJsonFile(std::string filepath, boost::property_tree::ptree& pt);
 
-  void stopService();
-
   std::vector<std::string> getFilesList();
 
   void removeAllFiles();
@@ -272,7 +272,7 @@ private:
     registerConverter( mfc, mfp, mfr );
   }
 
-  void rosLoop();
+  void rosIteration();
 
   boost::mutex mutex_reinit_;
   boost::mutex mutex_conv_queue_;
