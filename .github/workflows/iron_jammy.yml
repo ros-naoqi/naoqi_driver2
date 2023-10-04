@@ -1,0 +1,15 @@
+name: ros2-irons-jammy
+
+on:
+  push
+
+jobs:
+  ros2_iron_jammy_ci:
+    name: iron (jammy)
+    uses: ./.github/workflows/ros2.yml
+    with:
+      ROS_DISTRO: iron
+      ROS_REPO: testing
+      OS_NAME: ubuntu
+      OS_CODE_NAME: jammy
+      ALLOW_FAIL: false
