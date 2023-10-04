@@ -15,7 +15,7 @@ repositories:
   nao_meshes:
     type: git
     url: https://github.com/ros-naoqi/nao_meshes.git
-    version: master
+    version: ros2
   pepper_meshes:
     type: git
     url: https://github.com/ros-naoqi/pepper_meshes.git
