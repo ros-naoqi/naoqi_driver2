@@ -171,10 +171,9 @@ const sensor_msgs::msg::CameraInfo& getCameraInfo( int camera_source, int resolu
       return cam_info_msg;
     }
   }
-  else{
-    std::cout << "no camera information found for camera_source " << camera_source << " and res: " << resolution << std::endl;
-    return getEmptyInfo();
-  }
+
+  std::cout << "no camera information found for camera_source " << camera_source << " and res: " << resolution << std::endl;
+  return getEmptyInfo();
 }
 
 } // camera_info_definitions
