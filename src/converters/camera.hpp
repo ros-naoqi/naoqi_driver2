@@ -28,7 +28,7 @@
 /*
 * ROS includes
 */
-#include <image_transport/image_transport.h>
+#include <image_transport/image_transport.hpp>
 
 namespace naoqi
 {
