@@ -49,7 +49,7 @@ TouchEventRegister<T>::TouchEventRegister( const std::string& name, const std::v
   //recorder_ = boost::make_shared<recorder::BasicEventRecorder<T> >( name );
   converter_ = boost::make_shared<converter::TouchEventConverter<T> >( name, frequency, session );
 
-  converter_->registerCallback( message_actions::PUBLISH, boost::bind(&publisher::BasicPublisher<T>::publish, publisher_, _1) );
+  converter_->registerCallback( message_actions::PUBLISH, boost::bind(&publisher::BasicPublisher<T>::publish, publisher_, boost::placeholders::_1) );
   //converter_->registerCallback( message_actions::RECORD, boost::bind(&recorder::BasicEventRecorder<T>::write, recorder_, _1) );
   //converter_->registerCallback( message_actions::LOG, boost::bind(&recorder::BasicEventRecorder<T>::bufferize, recorder_, _1) );
 
