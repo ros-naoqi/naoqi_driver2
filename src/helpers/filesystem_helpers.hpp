@@ -100,7 +100,7 @@ inline std::string& getBootConfigFile()
 {
 #ifdef AMENT_BUILD
   static std::string path = ament_index_cpp::get_package_share_directory("naoqi_driver") + "/share/" + boot_config_file_name;
-  std::cout << "found a catkin prefix " << path << std::endl;
+  std::cout << "found an ament prefix " << path << std::endl;
   return path;
 #else
   static std::string path = qi::path::findData( "/", boot_config_file_name );
@@ -114,7 +114,7 @@ inline std::string& getURDF( std::string filename )
 {
 #ifdef AMENT_BUILD
   static std::string path = ament_index_cpp::get_package_share_directory("naoqi_driver") + "/share/urdf/"+filename;
-  std::cout << "found a catkin URDF " << path << std::endl;
+  std::cout << "found a ament URDF " << path << std::endl;
   return path;
 #else
   static std::string path = qi::path::findData( "/urdf/", filename );
