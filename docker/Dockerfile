@@ -37,11 +37,6 @@ RUN source /opt/ros/${ROS_DISTRO}/setup.bash \
  && rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y \
  && colcon build --symlink-install
 
-# Download Groot2 AppImage and place it in the home folder.
-WORKDIR /root/
-RUN curl -o Groot2.AppImage https://s3.us-west-1.amazonaws.com/download.behaviortree.dev/groot2_linux_installer/Groot2-v1.0.1-x86_64.AppImage \
- && chmod a+x Groot2.AppImage
-
 # Remove display warnings
 RUN mkdir /tmp/runtime-root
 ENV XDG_RUNTIME_DIR "/tmp/runtime-root"
@@ -96,12 +91,6 @@ RUN groupadd --gid $GID $USERNAME \
 
 # Set the ownership of the overlay workspace to the new user
 RUN chown -R ${UID}:${GID} $OVERLAY_WS/
-
-# Move Groot2 to new user's home directory and ensure it can be run
-RUN groupadd fuse \
- && usermod -aG fuse ${USERNAME}
-RUN mv /root/Groot2.AppImage /home/${USERNAME} \
- && chown ${UID}:${GID} /home/${USERNAME}/Groot2.AppImage
 
 # Set the user and source entrypoint in the user's .bashrc file
 USER ${USERNAME}
