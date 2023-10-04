@@ -19,6 +19,7 @@
 * LOCAL includes
 */
 #include "info.hpp"
+#include <std_msgs/msg/string.hpp>
 #include "../tools/robot_description.hpp"
 
 namespace naoqi
@@ -34,14 +35,19 @@ InfoPublisher::InfoPublisher(const std::string& topic , const robot::Robot& robo
 
 void InfoPublisher::reset( rclcpp::Node* node )
 {
-  // We latch as we only publish once
-  pub_ = node->create_publisher<naoqi_bridge_msgs::msg::StringStamped>( topic_, 1);
+  auto description_pub = node->create_publisher<std_msgs::msg::String>(
+    "robot_description",
+    // Transient local is similar to latching in ROS 1.
+    rclcpp::QoS(1).transient_local()
+  );
 
   std::string robot_desc = naoqi::tools::getRobotDescription(robot_);
-  rclcpp::ParameterValue robot_desc_as_value(std::move(robot_desc));
-  std::string parameter_name = "/robot_description";
-  rclcpp::ParameterValue value = node->declare_parameter(parameter_name, robot_desc_as_value);
-  std::cout << "load robot description from file" << std::endl;
+  auto msg = std::make_unique<std_msgs::msg::String>();
+  msg->data = robot_desc;
+
+  // Publish the robot description
+  description_pub->publish(std::move(msg));
+  std::cout << "published robot description" << std::endl;
 
   is_initialized_ = true;
 }
