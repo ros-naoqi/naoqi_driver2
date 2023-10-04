@@ -23,16 +23,19 @@ sudo apt-get install ros-<your_distro>-naoqi-driver
 ```
 
 ### Installing from source
-Create a workspace, and clone the required repositories. Then, checkout a relevant tag / branch for the cloned repos, and build the packages. This is a cloning example for the ROS2 foxy distro:
-```sh
-git clone --branch v2.5.0-foxy https://github.com/ros-naoqi/libqi.git
-git clone --branch v2.5.0-foxy https://github.com/ros-naoqi/libqicore.git
-git clone https://github.com/ros-naoqi/naoqi_bridge_msgs2.git
-git clone https://github.com/ros-naoqi/naoqi_driver2.git
 
-# Eventually, we will need the robot meshes. But the following repos are not ready for ROS2 yet.
-git clone --branch ros2 https://github.com/ros-naoqi/pepper_meshes.git
-git clone --branch ros2 https://github.com/ros-naoqi/nao_meshes.git
+Create a workspace, and clone the required repositories:
+
+```sh
+cd <your_workspace>/src
+vcs import < naoqi_driver2/dependencies.repos
+```
+
+Then, build the workspace:
+
+```sh
+cd <your_workspace>
+colcon build --symlink-install
 ```
 
 ## Launch
@@ -43,6 +46,7 @@ ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<ip> nao_port:=<port> ne
 Note that the username and password arguments are only required for robots running naoqi 2.9 or greater.
 
 ## Documentation
+
 For further information, you can consult the documentation (__OUTDATED__) [here](http://ros-naoqi.github.io/naoqi_driver2/) or build it:
 
 ```sh
