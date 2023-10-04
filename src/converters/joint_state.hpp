@@ -77,9 +77,6 @@ private:
   /** Registered Callbacks **/
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
 
-  /** Robot Description in xml format **/
-  std::string robot_desc_;
-
   /** MimicJoint List **/
   MimicMap mimic_;
 

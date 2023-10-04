@@ -46,7 +46,6 @@ JointStateConverter::JointStateConverter( const std::string& name, const float& 
   p_memory_( session->service("ALMemory").value() ),
   tf2_buffer_(tf2_buffer)
 {
-  robot_desc_ = tools::getRobotDescription( robot_ );
 }
 
 JointStateConverter::~JointStateConverter()
@@ -56,13 +55,15 @@ JointStateConverter::~JointStateConverter()
 
 void JointStateConverter::reset()
 {
-  if ( robot_desc_.empty() )
+  std::string robot_desc = naoqi::tools::getRobotDescription(robot_);
+  if ( robot_desc.empty() )
   {
     std::cout << "error in loading robot description" << std::endl;
     return;
   }
+
   urdf::Model model;
-  model.initString( robot_desc_ );
+  model.initString(robot_desc);
   KDL::Tree tree;
   kdl_parser::treeFromUrdfModel( model, tree );
 
