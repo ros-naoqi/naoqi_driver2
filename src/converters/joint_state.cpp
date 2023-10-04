@@ -32,7 +32,7 @@
 */
 #include <urdf/model.h>
 #include <kdl_parser/kdl_parser.hpp>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 namespace naoqi
 {
@@ -86,11 +86,20 @@ void JointStateConverter::registerCallback( const message_actions::MessageAction
 
 void JointStateConverter::callAll( const std::vector<message_actions::MessageAction>& actions )
 {
+  /*
+   * get torso position for odometry at the same time as joint states
+   * can be called via getRobotPosture
+   * but this would require a proper URDF
+   * with a base_link and base_footprint in the base
+   */
+  auto getting_odometry_data = p_motion_.async<std::vector<float> >( "getPosition", "Torso", 1, true );
+
   // get joint state values
   std::vector<double> al_joint_angles = p_motion_.call<std::vector<double> >("getAngles", "Body", true );
   std::vector<double> al_joint_velocities;
   std::vector<double> al_joint_torques;
 
+  std::vector<float> al_odometry_data = getting_odometry_data.value();
   const rclcpp::Time& stamp = helpers::Time::now();
 
   /**
@@ -153,15 +162,8 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
   /**
    * ODOMETRY
    */
-
-  /*
-   * can be called via getRobotPosture
-   * but this would require a proper URDF
-   * with a base_link and base_footprint in the base
-   */
-  std::vector<float> al_odometry_data = p_motion_.call<std::vector<float> >( "getPosition", "Torso", 1, true );
-  const rclcpp::Time& odom_stamp = helpers::Time::now();
-  const float& odomX  =  al_odometry_data[0];
+  const rclcpp::Time &odom_stamp = stamp;
+  const float &odomX = al_odometry_data[0];
   const float& odomY  =  al_odometry_data[1];
   const float& odomZ  =  al_odometry_data[2];
   const float& odomWX =  al_odometry_data[3];
