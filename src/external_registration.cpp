@@ -105,19 +105,16 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  // Register the ROS-Driver service and init the driver node
-  session->registerService("ROS-Driver", bs);
-
   // Pass the create session to the driver node, and init the node
   bs->setQiSession(session);
 
-  // Run the driver node. Stop it on SIGINT
+  // Run the driver node. Stop it on SIGINT.
   driver_weak = bs;
   signal(SIGINT, sigint_handler);
   bs->run();
   driver_weak.reset();
 
-  // Close the qi::Session and stop ROS
+  // Close the qi::Session and shutdown ROS.
   app.session()->close();
   rclcpp::shutdown();
   return EXIT_SUCCESS;
