@@ -38,7 +38,7 @@ EventRegister<Converter, Publisher, Recorder>::EventRegister()
 template <typename Converter, typename Publisher, typename Recorder>
 EventRegister<Converter, Publisher, Recorder>::EventRegister( const std::string& key, const qi::SessionPtr& session )
   : key_(key),
-    p_memory_( session->service("ALMemory") ),
+    p_memory_( session->service("ALMemory").value()),
     isStarted_(false),
     isPublishing_(false),
     isRecording_(false),
@@ -133,8 +133,7 @@ void EventRegister<Converter, Publisher, Recorder>::isDumping(bool state)
 template <typename Converter, typename Publisher, typename Recorder>
 void EventRegister<Converter, Publisher, Recorder>::registerCallback()
 {
-  signalID_ = signal_.connect("signal", (boost::function<void(qi::AnyValue)>(boost::bind(&EventRegister<Converter, Publisher, Recorder>::onEvent,
-                                                                            this))));
+  signalID_ = signal_.connect("signal", [&](qi::AnyValue value) { onEvent(); }).value();
 }
 
 template <typename Converter, typename Publisher, typename Recorder>

@@ -186,7 +186,7 @@ CameraConverter::CameraConverter(
   const int& camera_source,
   const int& resolution,
   const bool& has_stereo) : BaseConverter( name, frequency, session ),
-    p_video_( session->service("ALVideoDevice") ),
+    p_video_( session->service("ALVideoDevice").value()),
     camera_source_(camera_source),
     resolution_(resolution),
     // change in case of depth camera
