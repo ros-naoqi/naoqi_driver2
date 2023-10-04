@@ -39,9 +39,7 @@ TouchEventRegister<T>::TouchEventRegister()
 
 template<class T>
 TouchEventRegister<T>::TouchEventRegister( const std::string& name, const std::vector<std::string> keys, const float& frequency, const qi::SessionPtr& session )
-  : serviceId(0),
-    p_memory_( session->service("ALMemory")),
-    session_(session),
+  : p_memory_( session->service("ALMemory").value()),
     isStarted_(false),
     isPublishing_(false),
     isRecording_(false),
@@ -87,16 +85,13 @@ void TouchEventRegister<T>::startProcess()
   boost::mutex::scoped_lock start_lock(mutex_);
   if (!isStarted_)
   {
-    if(!serviceId)
+    if (subscriptions_.empty())
     {
-      //std::string serviceName = std::string("ROS-Driver-") + typeid(T).name();
-      std::string serviceName = std::string("ROS-Driver-") + keys_[0];
-      serviceId = session_->registerService(serviceName, this->shared_from_this());
-      for(std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it) {
-        std::cerr << *it << std::endl;
-        p_memory_.call<void>("subscribeToEvent",it->c_str(), serviceName, "touchCallback");
+      for (const auto& key : keys_) {
+        auto subscriber = p_memory_.call<qi::AnyObject>("subscriber", key);
+        qi::SignalLink subscription = subscriber.connect("signal", [=](const qi::AnyValue& v){ touchCallback(key, v); }).value();
+        subscriptions_.emplace_back(std::move(subscriber), std::move(subscription));
       }
-      std::cout << serviceName << " : Start" << std::endl;
     }
     isStarted_ = true;
   }
@@ -108,20 +103,16 @@ void TouchEventRegister<T>::stopProcess()
   boost::mutex::scoped_lock stop_lock(mutex_);
   if (isStarted_)
   {
-    //std::string serviceName = std::string("ROS-Driver-") + typeid(T).name();
-    std::string serviceName = std::string("ROS-Driver-") + keys_[0];
-    if(serviceId){
-      for(std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it) {
+    if (!subscriptions_.empty()){
+      for (const auto& subscription : subscriptions_) {
         try {
-          p_memory_.call<void>("unsubscribeToEvent",it->c_str(), serviceName);
+          subscription.subscriber.disconnect(subscription.link).value();
         } catch (const std::exception& e) {
           std::cerr << "Error attempting to clean-up ALMemory subscription: " << e.what() << std::endl;
         }
       }
-      session_->unregisterService(serviceId);
-      serviceId = 0;
+      subscriptions_.clear();
     }
-    std::cout << serviceName << " : Stop" << std::endl;
     isStarted_ = false;
   }
 }
@@ -173,13 +164,10 @@ void TouchEventRegister<T>::unregisterCallback()
 }
 
 template<class T>
-void TouchEventRegister<T>::touchCallback(std::string &key, qi::AnyValue &value, qi::AnyValue &message)
+void TouchEventRegister<T>::touchCallback(const std::string &key, const qi::AnyValue& value)
 {
   T msg = T();
-
   bool state =  value.toFloat() > 0.5f;
-
-  //std::cerr << key << " " << state << std::endl;
 
   touchCallbackMessage(key, state, msg);
 
@@ -208,7 +196,7 @@ void TouchEventRegister<T>::touchCallback(std::string &key, qi::AnyValue &value,
 }
 
 template<class T>
-void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::msg::Bumper &msg)
+void TouchEventRegister<T>::touchCallbackMessage(const std::string &key, bool &state, naoqi_bridge_msgs::msg::Bumper &msg)
 {
   int i = 0;
   for(std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it, ++i)
@@ -221,7 +209,7 @@ void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, 
 }
 
 template<class T>
-void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::msg::HandTouch &msg)
+void TouchEventRegister<T>::touchCallbackMessage(const std::string &key, bool &state, naoqi_bridge_msgs::msg::HandTouch &msg)
 {
   int i = 0;
   for(std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it, ++i)
@@ -234,7 +222,7 @@ void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, 
 }
 
 template<class T>
-void TouchEventRegister<T>::touchCallbackMessage(std::string &key, bool &state, naoqi_bridge_msgs::msg::HeadTouch &msg)
+void TouchEventRegister<T>::touchCallbackMessage(const std::string &key, bool &state, naoqi_bridge_msgs::msg::HeadTouch &msg)
 {
   int i = 0;
   for(std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it, ++i)
