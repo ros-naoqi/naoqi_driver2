@@ -24,7 +24,7 @@
  * ROS includes
  */
 //#include <tf/transform_datatypes.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include "../helpers/transform_helpers.hpp"
 
@@ -36,7 +36,7 @@ namespace subscriber
 MovetoSubscriber::MovetoSubscriber( const std::string& name, const std::string& topic, const qi::SessionPtr& session,
                                     const boost::shared_ptr<tf2_ros::Buffer>& tf2_buffer):
   BaseSubscriber( name, topic, session ),
-  p_motion_( session->service("ALMotion") ),
+  p_motion_( session->service("ALMotion").value() ),
   tf2_buffer_( tf2_buffer )
 {}
 
