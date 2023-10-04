@@ -1,4 +1,4 @@
-name: ros2-irons-jammy
+name: ros2-iron-jammy
 
 on:
   push
