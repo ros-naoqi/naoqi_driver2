@@ -47,6 +47,11 @@ void AudioEventConverter::registerCallback( const message_actions::MessageAction
   callbacks_[action] = cb;
 }
 
+void AudioEventConverter::unregisterCallback( const message_actions::MessageAction action )
+{
+  callbacks_.erase(action);
+}
+
 void AudioEventConverter::callAll(const std::vector<message_actions::MessageAction>& actions, naoqi_bridge_msgs::msg::AudioBuffer& msg)
 {
   msg_ = msg;
