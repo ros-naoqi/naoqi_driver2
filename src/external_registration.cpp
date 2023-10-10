@@ -104,6 +104,8 @@ int main(int argc, char** argv)
     std::cout << BOLDRED << connection.error() <<  RESETCOLOR << std::endl;
     return EXIT_FAILURE;
   }
+  // The session needs to listen on the network to process audio callbacks.
+  session->listen("tcp://0.0.0.0:0");
 
   // Pass the create session to the driver node, and init the node
   bs->setQiSession(session);

@@ -55,9 +55,9 @@ public:
 
   virtual inline bool isSubscribed() const
   {
-    if (is_initialized_ == false){
+    if (is_initialized_ == false) {
       return false;
-    } else{
+    } else {
       return helpers::Node::count_subscribers(topic_) > 0;
     }
   }

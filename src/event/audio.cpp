@@ -18,8 +18,6 @@
 #include <iostream>
 #include <vector>
 
-#include <boost/make_shared.hpp>
-
 #include <rclcpp/rclcpp.hpp>
 
 #include <qi/anyobject.hpp>
@@ -31,13 +29,15 @@
 
 namespace naoqi
 {
+static const std::string AUDIO_EXTRACTOR_NAME = "ROS-Driver-Audio";
 
 AudioEventRegister::AudioEventRegister( const std::string& name, const float& frequency, const qi::SessionPtr& session )
-  : serviceId(0),
-    p_audio_( session->service("ALAudioDevice")),
-    p_robot_model_(session->service("ALRobotModel")),
-    session_(session),
-    naoqi_version_(helpers::driver::getNaoqiVersion(session)),
+  : session_(session),
+    publisher_(name),
+    recorder_(name),
+    converter_(name, frequency, session),
+    p_audio_( session->service("ALAudioDevice").value()),
+    serviceId(0),
     isStarted_(false),
     isPublishing_(false),
     isRecording_(false),
@@ -45,18 +45,16 @@ AudioEventRegister::AudioEventRegister( const std::string& name, const float& fr
 {
   // _getMicrophoneConfig is used for NAOqi < 2.9, _getConfigMap for NAOqi > 2.9
   int micConfig;
-
-  if (helpers::driver::isNaoqiVersionLesser(naoqi_version_, 2, 8))
+  auto robotModel = session->service("ALRobotModel").value();
+  const auto &naoqiVersion = helpers::driver::getNaoqiVersion(session);
+  if (helpers::driver::isNaoqiVersionLesser(naoqiVersion, 2, 8))
   {
-    micConfig = p_robot_model_.call<int>("_getMicrophoneConfig");
+    micConfig = robotModel.call<int>("_getMicrophoneConfig");
   }
   else
   {
-    std::map<std::string, std::string> config_map =\
-      p_robot_model_.call<std::map<std::string, std::string> >("_getConfigMap");
-
-    micConfig = std::atoi(
-      config_map["RobotConfig/Head/Device/Micro/Version"].c_str());
+    auto config_map = robotModel.call<std::map<std::string, std::string> >("_getConfigMap");
+    micConfig = std::atoi(config_map["RobotConfig/Head/Device/Micro/Version"].c_str());
   }
 
   if(micConfig){
@@ -71,29 +69,27 @@ AudioEventRegister::AudioEventRegister( const std::string& name, const float& fr
     channelMap.push_back(1);
     channelMap.push_back(4);
   }
-  publisher_ = boost::make_shared<publisher::BasicPublisher<naoqi_bridge_msgs::msg::AudioBuffer> >( name );
-  recorder_ = boost::make_shared<recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::AudioBuffer> >( name );
-  converter_ = boost::make_shared<converter::AudioEventConverter>( name, frequency, session );
-
-  converter_->registerCallback( message_actions::PUBLISH, boost::bind(&publisher::BasicPublisher<naoqi_bridge_msgs::msg::AudioBuffer>::publish, publisher_, _1) );
-  converter_->registerCallback( message_actions::RECORD, boost::bind(&recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::AudioBuffer>::write, recorder_, _1) );
-  converter_->registerCallback( message_actions::LOG, boost::bind(&recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::AudioBuffer>::bufferize, recorder_, _1) );
-
+  converter_.registerCallback( message_actions::PUBLISH, [&](auto msg){ publisher_.publish(msg); });
+  converter_.registerCallback( message_actions::RECORD, [&](auto msg){ recorder_.write(msg); });
+  converter_.registerCallback( message_actions::LOG, [&](auto msg){ recorder_.bufferize(msg); });
 }
 
 AudioEventRegister::~AudioEventRegister()
 {
   stopProcess();
+  converter_.unregisterCallback(message_actions::PUBLISH);
+  converter_.unregisterCallback(message_actions::RECORD);
+  converter_.unregisterCallback(message_actions::LOG);
 }
 
 void AudioEventRegister::resetPublisher(rclcpp::Node* node)
 {
-  publisher_->reset(node);
+  publisher_.reset(node);
 }
 
 void AudioEventRegister::resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr )
 {
-  recorder_->reset(gr, converter_->frequency());
+  recorder_.reset(gr, converter_.frequency());
 }
 
 void AudioEventRegister::startProcess()
@@ -103,15 +99,15 @@ void AudioEventRegister::startProcess()
   {
     if(!serviceId)
     {
-      serviceId = session_->registerService("ROS-Driver-Audio", shared_from_this()).value();
+      serviceId = session_->registerService(AUDIO_EXTRACTOR_NAME, shared_from_this()).value();
       p_audio_.call<void>(
               "setClientPreferences",
-              "ROS-Driver-Audio",
+              AUDIO_EXTRACTOR_NAME,
               48000,
               0,
               0
               );
-      p_audio_.call<void>("subscribe","ROS-Driver-Audio");
+      p_audio_.call<void>("subscribe", AUDIO_EXTRACTOR_NAME);
       std::cout << "Audio Extractor: Start" << std::endl;
     }
     isStarted_ = true;
@@ -124,7 +120,7 @@ void AudioEventRegister::stopProcess()
   if (isStarted_)
   {
     if(serviceId){
-      p_audio_.call<void>("unsubscribe", "ROS-Driver-Audio");
+      p_audio_.call<void>("unsubscribe", AUDIO_EXTRACTOR_NAME);
       session_->unregisterService(serviceId);
       serviceId = 0;
     }
@@ -137,13 +133,13 @@ void AudioEventRegister::writeDump(const rclcpp::Time& time)
 {
   if (isStarted_)
   {
-    recorder_->writeDump(time);
+    recorder_.writeDump(time);
   }
 }
 
 void AudioEventRegister::setBufferDuration(float duration)
 {
-  recorder_->setBufferDuration(duration);
+  recorder_.setBufferDuration(duration);
 }
 
 void AudioEventRegister::isRecording(bool state)
@@ -189,7 +185,7 @@ void AudioEventRegister::processRemote(int nbOfChannels, int samplesByChannel, q
   boost::mutex::scoped_lock callback_lock(processing_mutex_);
   if (isStarted_) {
     // CHECK FOR PUBLISH
-    if ( isPublishing_ && publisher_->isSubscribed() )
+    if ( isPublishing_ && publisher_.isSubscribed() )
     {
       actions.push_back(message_actions::PUBLISH);
     }
@@ -204,7 +200,7 @@ void AudioEventRegister::processRemote(int nbOfChannels, int samplesByChannel, q
     }
     if (actions.size() >0)
     {
-      converter_->callAll( actions, msg );
+      converter_.callAll( actions, msg );
     }
   }
 

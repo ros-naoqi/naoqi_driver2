@@ -83,17 +83,14 @@ private:
   void onEvent();
 
 private:
-  boost::shared_ptr<converter::AudioEventConverter> converter_;
-  boost::shared_ptr<publisher::BasicPublisher<naoqi_bridge_msgs::msg::AudioBuffer> > publisher_;
-  boost::shared_ptr<recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::AudioBuffer> > recorder_;
-
   qi::SessionPtr session_;
+  publisher::BasicPublisher<naoqi_bridge_msgs::msg::AudioBuffer> publisher_;
+  recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::AudioBuffer> recorder_;
+  converter::AudioEventConverter converter_;
   qi::AnyObject p_audio_;
-  qi::AnyObject p_robot_model_;
   qi::FutureSync<qi::AnyObject> p_audio_extractor_request;
   std::vector<uint8_t> channelMap;
   unsigned int serviceId;
-  const robot::NaoqiVersion& naoqi_version_;
 
   boost::mutex subscription_mutex_;
   boost::mutex processing_mutex_;
