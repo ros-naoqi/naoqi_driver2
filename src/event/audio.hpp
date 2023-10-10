@@ -85,7 +85,7 @@ private:
 private:
   qi::SessionPtr session_;
   publisher::BasicPublisher<naoqi_bridge_msgs::msg::AudioBuffer> publisher_;
-  recorder::BasicEveNntRecorder<naoqi_bridge_msgs::msg::AudioBuffer> recorder_;
+  recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::AudioBuffer> recorder_;
   converter::AudioEventConverter converter_;
   qi::AnyObject p_audio_;
   qi::FutureSync<qi::AnyObject> p_audio_extractor_request;
