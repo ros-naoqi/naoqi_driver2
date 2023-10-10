@@ -2,11 +2,11 @@ repositories:
   # NAOqi-specific deps
   naoqi_libqi:
     type: git
-    url: https://github.com/victorpaleologue/libqi.git
+    url: https://github.com/ros-naoqi/libqi.git
     version: ros2
   naoqi_libqicore:
     type: git
-    url: https://github.com/victorpaleologue/libqicore.git
+    url: https://github.com/ros-naoqi/libqicore.git
     version: ros2
   naoqi_bridge_msgs2:
     type: git
