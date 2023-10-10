@@ -48,9 +48,10 @@ EventRegister<Converter, Publisher, Recorder>::EventRegister( const std::string&
   recorder_ = boost::make_shared<Recorder>( key_ );
   converter_ = boost::make_shared<Converter>( key_, 0, session, key_ );
 
-  converter_->registerCallback( message_actions::PUBLISH, boost::bind(&Publisher::publish, publisher_, _1) );
-  converter_->registerCallback( message_actions::RECORD, boost::bind(&Recorder::write, recorder_, _1) );
-  converter_->registerCallback( message_actions::LOG, boost::bind(&Recorder::bufferize, recorder_, _1) );
+  namespace ph = boost::placeholders;
+  converter_->registerCallback( message_actions::PUBLISH, boost::bind(&Publisher::publish, publisher_, ph::_1) );
+  converter_->registerCallback( message_actions::RECORD, boost::bind(&Recorder::write, recorder_, ph::_1) );
+  converter_->registerCallback( message_actions::LOG, boost::bind(&Recorder::bufferize, recorder_, ph::_1) );
 
   signal_ = p_memory_.call<qi::AnyObject>("subscriber", key_);
 }
