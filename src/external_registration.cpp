@@ -50,6 +50,7 @@ int main(int argc, char** argv)
   std::string user;
   std::string password;
   std::string network_interface;
+  std::string listen_url;
 
   // Initialize ROS and create the driver Node
   rclcpp::init(argc, argv);
@@ -64,12 +65,14 @@ int main(int argc, char** argv)
   bs->declare_parameter<std::string>("user", "nao");
   bs->declare_parameter<std::string>("password", no_password);
   bs->declare_parameter<std::string>("network_interface", "eth0");
+  bs->declare_parameter<std::string>("qi_listen_url", "tcp://0.0.0.0:0");
 
   bs->get_parameter("nao_ip", nao_ip);
   bs->get_parameter("nao_port", nao_port);
   bs->get_parameter("user", user);
   bs->get_parameter("password", password);
   bs->get_parameter("network_interface", network_interface);
+  bs->get_parameter("qi_listen_url", listen_url);
 
   if (password.compare(no_password) != 0) {
 #if LIBQI_VERSION >= 29
@@ -105,7 +108,8 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
   // The session needs to listen on the network to process audio callbacks.
-  session->listen("tcp://0.0.0.0:0");
+  if (!listen_url.empty())
+    session->listen(listen_url);
 
   // Pass the create session to the driver node, and init the node
   bs->setQiSession(session);
