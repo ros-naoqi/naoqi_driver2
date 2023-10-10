@@ -137,6 +137,7 @@ Driver::~Driver()
 void Driver::run()
 {
   loadBootConfig();
+  auto robot_desc_pub = tools::publishRobotDescription(this, robot_);
   registerDefaultConverter();
   registerDefaultSubscriber();
   registerDefaultServices();
@@ -667,13 +668,14 @@ void Driver::registerDefaultConverter()
   /** Info publisher **/
   if ( info_enabled )
   {
-    boost::shared_ptr<publisher::InfoPublisher> inp = boost::make_shared<publisher::InfoPublisher>( "info" , robot_);
-    boost::shared_ptr<recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped> > inr = boost::make_shared<recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped> >( "info" );
-    boost::shared_ptr<converter::InfoConverter> inc = boost::make_shared<converter::InfoConverter>( "info", 0, sessionPtr_ );
-    inc->registerCallback( message_actions::PUBLISH, boost::bind(&publisher::InfoPublisher::publish, inp, _1) );
-    inc->registerCallback( message_actions::RECORD, boost::bind(&recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped>::write, inr, _1) );
-    inc->registerCallback( message_actions::LOG, boost::bind(&recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped>::bufferize, inr, _1) );
-    registerConverter( inc, inp, inr );
+    static const auto topic = "info";
+    auto inp = boost::make_shared<publisher::InfoPublisher>(topic);
+    auto inr = boost::make_shared<recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped> >(topic);
+    boost::shared_ptr<converter::InfoConverter> inc = boost::make_shared<converter::InfoConverter>(topic, 0, sessionPtr_);
+    inc->registerCallback( message_actions::PUBLISH, boost::bind(&publisher::InfoPublisher::publish, inp, ph::_1));
+    inc->registerCallback( message_actions::RECORD, boost::bind(&recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped>::write, inr, ph::_1));
+    inc->registerCallback( message_actions::LOG, boost::bind(&recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped>::bufferize, inr, ph::_1));
+    registerConverter(inc, inp, inr);
   }
 
 
