@@ -49,7 +49,6 @@ set(
 set(
   PUBLISHER_SRC
   src/publishers/camera.cpp
-  src/publishers/info.cpp
   src/publishers/joint_state.cpp
   src/publishers/log.cpp
   src/publishers/sonar.cpp

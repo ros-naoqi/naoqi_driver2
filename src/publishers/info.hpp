@@ -22,12 +22,10 @@
 * LOCAL includes
 */
 #include "basic.hpp"
-#include <naoqi_driver/tools.hpp>
 
 /*
 * ROS includes
 */
-#include <rclcpp/rclcpp.hpp>
 #include <naoqi_bridge_msgs/msg/string_stamped.hpp>
 
 namespace naoqi
@@ -38,17 +36,14 @@ namespace publisher
 class InfoPublisher : public BasicPublisher<naoqi_bridge_msgs::msg::StringStamped>
 {
 public:
-  InfoPublisher( const std::string& topic, const robot::Robot& robot_type );
-
-  void reset( rclcpp::Node* node );
+  InfoPublisher(const std::string& topic) : BasicPublisher(topic)
+  {
+  }
 
   virtual inline bool isSubscribed() const
   {
     return true;
   }
-
-protected:
-  const robot::Robot& robot_;
 };
 
 } //publisher
