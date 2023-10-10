@@ -27,6 +27,10 @@ def generate_launch_description():
             default_value="eth0",
             description='Network interface to be used'),
         launch.actions.DeclareLaunchArgument(
+            'qi_listen_url',
+            default_value="tcp://0.0.0.0:0",
+            description='Endpoint to listen for incoming NAOqi connections (for audio)'),
+        launch.actions.DeclareLaunchArgument(
             'namespace',
             default_value="naoqi_driver",
             description='Name of the namespace to be used'),
@@ -37,6 +41,8 @@ def generate_launch_description():
                 'nao_ip': launch.substitutions.LaunchConfiguration('nao_ip'),
                 'nao_port': launch.substitutions.LaunchConfiguration('nao_port'),
                 'password': launch.substitutions.LaunchConfiguration('password'),
-                'network_interface': launch.substitutions.LaunchConfiguration('network_interface')}],
+                'network_interface': launch.substitutions.LaunchConfiguration('network_interface'),
+                'qi_listen_url': launch.substitutions.LaunchConfiguration('qi_listen_url'),
+            }],
             output="screen")
     ])
