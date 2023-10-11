@@ -68,7 +68,7 @@ qicli call ALMotion.wakeUp
 The driver can be launched using the following command:
 
 ```sh
-source /opt/ros/<distro>/setup.bash # or <ws>/install/setup.bash if built from source
+source /opt/ros/<distro>/setup.bash # or source <ws>/install/setup.bash if built from source
 ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host>
 ```
 
@@ -88,6 +88,16 @@ Check that the driver is connected:
 ros2 node info /naoqi_driver
 ```
 
+### Hello, world
+
+Make the robot say hello:
+
+```sh
+ros2 topic pub --once /speech std_msgs/String "data: hello"
+```
+
+### Move the head
+
 Check that you can move the head by publishing on `/joint_angles`:
 
 ```sh
@@ -95,6 +105,8 @@ ros2 topic pub --once /joint_angles naoqi_bridge_msgs/JointAnglesWithSpeed "{hea
 ```
 
 You can see the published message with `ros2 topic echo /joint_angles`
+
+### Move around
 
 Check that you can move the robot by publishing on `cmd_vel` to make the robot move:
 
