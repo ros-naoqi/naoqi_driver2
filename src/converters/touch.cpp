@@ -20,11 +20,6 @@
 */
 #include "touch.hpp"
 
-/*
-* BOOST includes
-*/
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
 
 namespace naoqi{
 
@@ -55,7 +50,7 @@ template <class T>
 void TouchEventConverter<T>::callAll(const std::vector<message_actions::MessageAction>& actions, T& msg)
 {
   msg_ = msg;
-  for_each( message_actions::MessageAction action, actions )
+  for( message_actions::MessageAction action: actions )
   {
     callbacks_[action](msg_);
   }

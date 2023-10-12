@@ -16,6 +16,16 @@
 */
 
 /*
+ * BOOST
+ */
+#include <boost/property_tree/json_parser.hpp>
+
+/*
+ * ROS
+ */
+#include <tf2_ros/buffer.h>
+
+/*
  * PUBLIC INTERFACE
  */
 #include <naoqi_driver/naoqi_driver.hpp>
@@ -98,19 +108,7 @@
 #include "helpers/naoqi_helpers.hpp"
 #include "helpers/driver_helpers.hpp"
 
-/*
- * ROS
- */
-#include <tf2_ros/buffer.h>
 
-/*
- * BOOST
- */
-#include <boost/foreach.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#define for_each BOOST_FOREACH
-
-#define DEBUG 0
 
 namespace ph = boost::placeholders;
 
@@ -164,17 +162,17 @@ void Driver::run()
       // we just need to reset the registered publisher
       // using the ROS node
       typedef std::map< std::string, publisher::Publisher > publisher_map;
-      for_each( publisher_map::value_type &pub, pub_map_ )
+      for( publisher_map::value_type &pub: pub_map_ )
       {
         pub.second.reset(this);
       }
 
-      for_each( subscriber::Subscriber& sub, subscribers_ )
+      for (subscriber::Subscriber &sub; subscribers_)
       {
         sub.reset(this);
       }
 
-      for_each( service::Service& srv, services_ )
+      for( service::Service& srv: services_ )
       {
         srv.reset(this);
       }
@@ -182,7 +180,7 @@ void Driver::run()
 
     if (!event_map_.empty()) {
       typedef std::map< std::string, event::Event > event_map;
-      for_each( event_map::value_type &event, event_map_ )
+      for( event_map::value_type &event: event_map_ )
       {
         event.second.resetPublisher(this);
       }
@@ -398,7 +396,7 @@ std::string Driver::minidumpConverters(const std::string& prefix, const std::vec
   boost::mutex::scoped_lock lock_record( mutex_record_ );
 
   bool is_started = false;
-  for_each( const std::string& name, names)
+  for( const std::string& name: names)
   {
     RecIter it = rec_map_.find(name);
     if ( it != rec_map_.end() )
@@ -992,7 +990,7 @@ void Driver::registerDefaultServices()
 std::vector<std::string> Driver::getAvailableConverters()
 {
   std::vector<std::string> conv_list;
-  for_each( const converter::Converter& conv, converters_ )
+  for( const converter::Converter& conv: converters_ )
   {
     conv_list.push_back(conv.name());
   }
@@ -1042,7 +1040,7 @@ void Driver::startRecording()
 {
   boost::mutex::scoped_lock lock_record( mutex_record_ );
   recorder_->startRecord();
-  for_each( converter::Converter& conv, converters_ )
+  for( converter::Converter& conv: converters_ )
   {
     RecIter it = rec_map_.find(conv.name());
     if ( it != rec_map_.end() )
@@ -1068,7 +1066,7 @@ void Driver::startRecordingConverters(const std::vector<std::string>& names)
   boost::mutex::scoped_lock lock_record( mutex_record_ );
 
   bool is_started = false;
-  for_each( const std::string& name, names)
+  for( const std::string& name: names)
   {
     RecIter it_rec = rec_map_.find(name);
     EventIter it_ev = event_map_.find(name);
@@ -1121,7 +1119,7 @@ std::string Driver::stopRecording()
 {
   boost::mutex::scoped_lock lock_record( mutex_record_ );
   record_enabled_ = false;
-  for_each( converter::Converter& conv, converters_ )
+  for( converter::Converter& conv: converters_ )
   {
     RecIter it = rec_map_.find(conv.name());
     if ( it != rec_map_.end() )
@@ -1202,7 +1200,7 @@ void Driver::addMemoryConverters(std::string filepath){
 
   std::vector<std::string> list;
   try{
-    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("memKeys"))
+    for(boost::property_tree::ptree::value_type &v: pt.get_child("memKeys"))
     {
       std::string topic = v.second.get_value<std::string>();
       list.push_back(topic);

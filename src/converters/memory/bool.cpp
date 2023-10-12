@@ -20,11 +20,6 @@
 */
 #include "bool.hpp"
 
-/*
-* BOOST includes
-*/
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
 
 namespace naoqi
 {
@@ -59,7 +54,7 @@ bool MemoryBoolConverter::convert()
 void MemoryBoolConverter::callAll( const std::vector<message_actions::MessageAction>& actions )
 {
   if (convert()) {
-    for_each( message_actions::MessageAction action, actions )
+    for( message_actions::MessageAction action: actions )
     {
       callbacks_[action]( msg_ );
     }

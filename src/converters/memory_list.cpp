@@ -20,11 +20,6 @@
 */
 #include "memory_list.hpp"
 
-/*
-* BOOST includes
-*/
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
 
 namespace naoqi {
 
@@ -76,7 +71,7 @@ void MemoryListConverter::callAll(const std::vector<message_actions::MessageActi
     }
   }
 
-  for_each( message_actions::MessageAction action, actions )
+  for( message_actions::MessageAction action: actions )
   {
     callbacks_[action]( _msg);
   }
