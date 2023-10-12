@@ -124,7 +124,7 @@ static const char* laserMemoryKeys[] = {
 
 LaserConverter::LaserConverter( const std::string& name, const float& frequency, const qi::SessionPtr& session ):
   BaseConverter( name, frequency, session ),
-  p_memory_(session->service("ALMemory"))
+  p_memory_(session->service("ALMemory").value())
 {
 }
 

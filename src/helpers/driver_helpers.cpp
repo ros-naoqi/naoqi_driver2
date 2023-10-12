@@ -40,14 +40,14 @@ static naoqi_bridge_msgs::msg::RobotInfo& getRobotInfoLocal( const qi::SessionPt
 
   // Get the robot type
   std::cout << "Receiving information about robot model" << std::endl;
-  qi::AnyObject p_memory = session->service("ALMemory");
+  qi::AnyObject p_memory = session->service("ALMemory").value();
   std::string robot = p_memory.call<std::string>("getData", "RobotConfig/Body/Type" );
   std::string hardware_version = p_memory.call<std::string>("getData", "RobotConfig/Body/BaseVersion" );
   robot::NaoqiVersion naoqi_version = getNaoqiVersion(session);
   std::transform(robot.begin(), robot.end(), robot.begin(), ::tolower);
-  
+
   std::cout << BOLDYELLOW << "Robot detected/NAOqi version: " << RESETCOLOR;
-  
+
   if (std::string(robot) == "nao")
   {
     info.type = naoqi_bridge_msgs::msg::RobotInfo::NAO;
@@ -67,7 +67,7 @@ static naoqi_bridge_msgs::msg::RobotInfo& getRobotInfoLocal( const qi::SessionPt
   std::cout << BOLDCYAN << " / " << naoqi_version.text << RESETCOLOR << std::endl;
 
   // Get the data from RobotConfig
-  qi::AnyObject p_motion = session->service("ALMotion");
+  qi::AnyObject p_motion = session->service("ALMotion").value();
   std::vector<std::vector<qi::AnyValue> > config = p_motion.call<std::vector<std::vector<qi::AnyValue> > >("getRobotConfig");
 
   // TODO, fill with the proper string matches from http://doc.aldebaran.com/2-1/naoqi/motion/tools-general-api.html#ALMotionProxy::getRobotConfig
@@ -199,23 +199,23 @@ const robot::Robot& getRobot( const qi::SessionPtr& session )
 
 /**
  * @brief Function that retrieves the NAOqi version of the robot
- * 
- * @param session 
- * @return const robot::NaoqiVersion& 
+ *
+ * @param session
+ * @return const robot::NaoqiVersion&
  */
 const robot::NaoqiVersion& getNaoqiVersion( const qi::SessionPtr& session )
 {
   static robot::NaoqiVersion naoqi_version;
 
   try {
-    qi::AnyObject p_system = session->service("ALSystem");
+    qi::AnyObject p_system = session->service("ALSystem").value();
     naoqi_version.text = p_system.call<std::string>("systemVersion");
 
   } catch (const std::exception& e) {
     std::cerr << "Could not retrieve the version of NAOqi: "
       << e.what()
       << std::endl;
-    
+
     naoqi_version.text = "unknown";
     return naoqi_version;
   }
@@ -271,7 +271,7 @@ bool& setLanguage( const qi::SessionPtr& session, const std::shared_ptr<naoqi_br
   static bool success;
   std::cout << "Receiving service call of setting speech language" << std::endl;
   try{
-    qi::AnyObject p_text_to_speech = session->service("ALTextToSpeech");
+    qi::AnyObject p_text_to_speech = session->service("ALTextToSpeech").value();
     p_text_to_speech.call<void>("setLanguage", request->data);
     success = true;
     return success;
@@ -288,7 +288,7 @@ std::string& getLanguage( const qi::SessionPtr& session )
 {
   static std::string language;
   std::cout << "Receiving service call of getting speech language" << std::endl;
-  qi::AnyObject p_text_to_speech = session->service("ALTextToSpeech");
+  qi::AnyObject p_text_to_speech = session->service("ALTextToSpeech").value();
   language = p_text_to_speech.call<std::string>("getLanguage");
   return language;
 }
@@ -300,7 +300,7 @@ bool isDepthStereo(const qi::SessionPtr &session) {
  std::vector<std::string> sensor_names;
 
  try {
-   qi::AnyObject p_motion = session->service("ALMotion");
+   qi::AnyObject p_motion = session->service("ALMotion").value();
    sensor_names = p_motion.call<std::vector<std::string> >("getSensorNames");
 
    if (std::find(sensor_names.begin(),
@@ -322,14 +322,14 @@ bool isDepthStereo(const qi::SessionPtr &session) {
 /**
  * @brief Function that returns true if the provided naoqi_version is
  * (strictly) lesser than the specified one (major.minor.patch.build).
- * 
- * @param naoqi_version 
- * @param major 
- * @param minor 
- * @param patch 
- * @param build 
- * @return true 
- * @return false 
+ *
+ * @param naoqi_version
+ * @param major
+ * @param minor
+ * @param patch
+ * @param build
+ * @return true
+ * @return false
  */
 bool isNaoqiVersionLesser(
     const robot::NaoqiVersion& naoqi_version,

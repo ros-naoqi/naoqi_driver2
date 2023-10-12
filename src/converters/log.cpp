@@ -111,7 +111,7 @@ void logCallback(const qi::LogMessage& msg)
 
 LogConverter::LogConverter( const std::string& name, float frequency, const qi::SessionPtr& session )
   : BaseConverter( name, frequency, session ),
-    logger_( session->service("LogManager") ),
+    logger_( session->service("LogManager").value() ),
     // Default log level is info
     log_level_(qi::LogLevel_Info)
 {
@@ -125,7 +125,7 @@ LogConverter::LogConverter( const std::string& name, float frequency, const qi::
   LogLevel(qi::LogLevel_Debug, rcl_interfaces::msg::Log::DEBUG, RCUTILS_LOG_SEVERITY_DEBUG);
 
   // TEMPORARY CODE, WEIRD BUG
-  qi::AnyObject p_manager = session->service("LogManager");
+  qi::AnyObject p_manager = session->service("LogManager").value();
   auto test_obj = p_manager.call<qi::AnyObject>("getListener");
   qi::LogListenerPtr test = static_cast<qi::LogListenerPtr>(test_obj);
   test->onLogMessage.connect(logCallback);
