@@ -16,6 +16,7 @@
 */
 
 #include "set_language.hpp"
+#include <iostream>
 #include "../helpers/driver_helpers.hpp"
 
 namespace naoqi
@@ -38,9 +39,9 @@ void SetLanguageService::reset( rclcpp::Node* node )
 
 void SetLanguageService::callback( const std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Request> req, std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Response> resp )
 {
+  std::cout << "Receiving service call of setting language" << std::endl;
   resp->success = helpers::driver::setLanguage(session_, req);
 }
-
 
 }
 }
