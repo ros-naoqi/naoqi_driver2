@@ -56,6 +56,7 @@ public:
     for(const LogLevel& log_level: all_)
       if (log_level.qi_ == qi)
         return log_level;
+    throw std::invalid_argument("unknown qi log level");
   }
 
   static const LogLevel& get_from_ros_msg(rcl_interfaces::msg::Log::_level_type ros_msg)
@@ -63,6 +64,7 @@ public:
     for(const LogLevel& log_level: all_)
       if (log_level.ros_msg_ == ros_msg)
         return log_level;
+      throw std::invalid_argument("unknown ROS message log level type");
   }
 
   static const LogLevel& get_from_log_severity(int severity)
@@ -70,6 +72,7 @@ public:
     for(const LogLevel& log_level: all_)
       if (log_level.severity_ == severity)
         return log_level;
+    throw std::invalid_argument("unknown log severity");
   }
 
   qi::LogLevel qi_;
