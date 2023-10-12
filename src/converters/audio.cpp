@@ -20,11 +20,6 @@
 */
 #include "audio.hpp"
 
-/*
-* BOOST includes
-*/
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
 
 namespace naoqi{
 
@@ -55,7 +50,7 @@ void AudioEventConverter::unregisterCallback( const message_actions::MessageActi
 void AudioEventConverter::callAll(const std::vector<message_actions::MessageAction>& actions, naoqi_bridge_msgs::msg::AudioBuffer& msg)
 {
   msg_ = msg;
-  for_each( message_actions::MessageAction action, actions )
+  for( message_actions::MessageAction action: actions )
   {
     callbacks_[action](msg_);
   }

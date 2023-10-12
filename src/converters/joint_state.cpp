@@ -22,12 +22,6 @@
 #include "nao_footprint.hpp"
 
 /*
-* BOOST includes
-*/
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
-
-/*
 * ROS includes
 */
 #include <urdf/model.h>
@@ -199,7 +193,7 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
     tf2_buffer_.reset();
   }
 
-  for_each( message_actions::MessageAction action, actions )
+  for( message_actions::MessageAction action: actions )
   {
     callbacks_[action]( msg_joint_states_, tf_transforms_ );
   }

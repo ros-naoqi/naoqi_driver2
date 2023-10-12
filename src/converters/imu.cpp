@@ -27,11 +27,6 @@
 //#include <tf/transform_datatypes.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-/*
-* BOOST includes
-*/
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
 
 namespace naoqi
 {
@@ -126,7 +121,7 @@ namespace converter {
     msg_imu_.linear_acceleration_covariance[0] = -1;
 
 
-    for_each( message_actions::MessageAction action, actions )
+    for( message_actions::MessageAction action: actions )
     {
       callbacks_[action]( msg_imu_ );
     }

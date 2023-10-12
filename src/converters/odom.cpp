@@ -21,12 +21,6 @@
 #include "odom.hpp"
 #include "../tools/from_any_value.hpp"
 
-/*
-* BOOST includes
-*/
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
-
 
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
@@ -92,7 +86,7 @@ void OdomConverter::callAll( const std::vector<message_actions::MessageAction>& 
   msg_odom.twist.twist.angular.y = 0;
   msg_odom.twist.twist.angular.z = dWZ;
 
-  for_each( message_actions::MessageAction action, actions )
+  for( message_actions::MessageAction action: actions )
   {
     callbacks_[action](msg_odom);
 

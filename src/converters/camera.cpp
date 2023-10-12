@@ -33,11 +33,6 @@
 */
 #include <opencv2/imgproc/imgproc.hpp>
 
-/*
-* BOOST includes
-*/
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
 
 namespace naoqi
 {
@@ -290,7 +285,7 @@ void CameraConverter::callAll( const std::vector<message_actions::MessageAction>
   //msg_->header.stamp.nsec = image.timestamp_us*1000;
   camera_info_.header.stamp = msg_->header.stamp;
 
-  for_each( const message_actions::MessageAction& action, actions )
+  for( const message_actions::MessageAction& action: actions )
   {
     callbacks_[action]( msg_, camera_info_ );
   }

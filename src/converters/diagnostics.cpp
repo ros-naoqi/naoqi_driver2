@@ -26,11 +26,6 @@
 */
 #include <diagnostic_updater/diagnostic_status_wrapper.hpp>
 
-/*
-* BOOST includes
-*/
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
 
 namespace
 {
@@ -306,7 +301,7 @@ void DiagnosticsConverter::callAll( const std::vector<message_actions::MessageAc
 
   // TODO: wifi and ethernet statuses should be obtained from DBUS
 
-  for_each( message_actions::MessageAction action, actions )
+  for( message_actions::MessageAction action: actions )
   {
     callbacks_[action]( msg);
   }

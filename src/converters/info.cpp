@@ -25,8 +25,6 @@
 * BOOST includes
 */
 #include <boost/assign/list_of.hpp>
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
 
 namespace naoqi
 {
@@ -86,7 +84,7 @@ void InfoConverter::callAll( const std::vector<message_actions::MessageAction>& 
     if (i != keys_.size()-1)
     msg.data += " ; ";
   }
-  for_each( const message_actions::MessageAction& action, actions )
+  for( const message_actions::MessageAction& action: actions )
   {
     callbacks_[action](msg);
   }

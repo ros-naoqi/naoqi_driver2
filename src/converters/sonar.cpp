@@ -21,11 +21,6 @@
 #include "sonar.hpp"
 #include "../tools/from_any_value.hpp"
 
-/*
-* BOOST includes
-*/
-#include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
 
 namespace naoqi
 {
@@ -116,7 +111,7 @@ void SonarConverter::callAll( const std::vector<message_actions::MessageAction>&
     msgs_[i].range = float(values[i]);
   }
 
-  for_each( message_actions::MessageAction action, actions )
+  for( message_actions::MessageAction action: actions )
   {
     callbacks_[action]( msgs_ );
   }
