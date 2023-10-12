@@ -96,6 +96,15 @@ Make the robot say hello:
 ros2 topic pub --once /speech std_msgs/String "data: hello"
 ```
 
+### Listen to words
+
+You can setup speech recognition and get one result.
+
+```sh
+ros2 action send_goal listen naoqi_bridge_msgs/action/Listen "expected: [\"hello\"]
+language: \"en\""
+```
+
 ### Move the head
 
 Check that you can move the head by publishing on `/joint_angles`:
