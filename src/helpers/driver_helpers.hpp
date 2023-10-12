@@ -40,9 +40,9 @@ const robot::NaoqiVersion& getNaoqiVersion(const qi::SessionPtr& session);
 
 const naoqi_bridge_msgs::msg::RobotInfo& getRobotInfo( const qi::SessionPtr& session );
 
-bool& setLanguage( const qi::SessionPtr& session, const std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Request> request );
+bool setLanguage( const qi::SessionPtr& session, const std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Request> request );
 
-std::string& getLanguage( const qi::SessionPtr& session );
+std::string getLanguage( const qi::SessionPtr& session );
 
 bool isDepthStereo(const qi::SessionPtr &session);
 

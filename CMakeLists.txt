@@ -3,6 +3,7 @@ project(naoqi_driver)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
@@ -20,7 +21,6 @@ find_package(tf2_ros REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost QUIET COMPONENTS chrono filesystem program_options regex system thread random)
 
-# define source files that can be used by qibuild or catkin
 set(
   CONVERTERS_SRC
   src/converters/audio.cpp
@@ -69,6 +69,11 @@ set(
   )
 
 set(
+  ACTIONS_SRC
+  src/actions/listen.cpp
+)
+
+set(
   RECORDER_SRC
   src/recorder/camera.cpp
   src/recorder/diagnostics.cpp
@@ -94,23 +99,11 @@ add_definitions(-DLIBQI_VERSION=${naoqi_libqi_VERSION_MAJOR}${naoqi_libqi_VERSIO
 # Add pre-processor compile flag indicating ament
 add_definitions( -DAMENT_BUILD )
 
-include_directories(include
+include_directories(
+  "include"
   ${naoqi_libqi_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
 )
-
-# create the different libraries
-# add_library(
-#   naoqi_driver_module
-#   SHARED
-#   src/autoload_registration.cpp
-# )
-
-# target_link_libraries(naoqi_driver_module ${naoqi_libqi_LIBRARIES})
-# ament_target_dependencies(naoqi_driver_module
-#     naoqi_libqi)
-
-# install(TARGETS naoqi_driver_module DESTINATION lib/${PROJECT_NAME})
 
 add_library(
   naoqi_driver
@@ -120,12 +113,14 @@ add_library(
   ${PUBLISHER_SRC}
   ${SUBSCRIBER_SRC}
   ${SERVICES_SRC}
+  ${ACTIONS_SRC}
   ${RECORDER_SRC}
   ${TOOLS_SRC}
 )
 
 ament_target_dependencies(naoqi_driver
   rclcpp
+  rclcpp_action
   cv_bridge
   diagnostic_msgs
   diagnostic_updater
@@ -141,13 +136,11 @@ ament_target_dependencies(naoqi_driver
   tf2_msgs
   tf2_ros
   OpenCV
-  Boost)
+  Boost
+
+)
 
 install(TARGETS naoqi_driver DESTINATION lib/)
-
-# target_link_libraries(naoqi_driver_module
-#   naoqi_driver
-# )
 
 # create the binary of the bridge
 add_executable(naoqi_driver_node src/external_registration.cpp)
@@ -161,19 +154,10 @@ target_link_libraries(naoqi_driver_node
 install(TARGETS naoqi_driver_node DESTINATION lib/${PROJECT_NAME})
 
 # install the urdf for runtime loading
-# file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/share DESTINATION ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/)
-# install(DIRECTORY share DESTINATION "${CATKIN_PACKAGE_SHARE_DESTINATION}")
 install(DIRECTORY share DESTINATION share/${PROJECT_NAME})
 
 # install the launch files
-# install(DIRECTORY launch DESTINATION "${CATKIN_PACKAGE_SHARE_DESTINATION}")
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
-# make sure there is a file describing a naoqi module
-# file(WRITE ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_SHARE_DESTINATION}/qi/module/naoqi_driver_module.mod "cpp")
-# install(FILES ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_SHARE_DESTINATION}/qi/module/naoqi_driver_module.mod DESTINATION ${CATKIN_GLOBAL_SHARE_DESTINATION}/qi/module/)
-# file(WRITE share/${PROJECT_NAME}/qi/module/naoqi_driver_module.mod "cpp")
-
-# ament_export_libraries(naoqi_driver_module naoqi_driver)
 ament_export_libraries(naoqi_driver)
 ament_package()

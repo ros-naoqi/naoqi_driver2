@@ -38,6 +38,7 @@ void GetLanguageService::reset( rclcpp::Node* node )
 
 void GetLanguageService::callback( const std::shared_ptr<naoqi_bridge_msgs::srv::GetString::Request> req, std::shared_ptr<naoqi_bridge_msgs::srv::GetString::Response> resp )
 {
+  std::cout << "Receiving service call of getting language" << std::endl;
   resp->data = helpers::driver::getLanguage(session_);
 }
 

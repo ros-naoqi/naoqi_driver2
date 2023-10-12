@@ -100,6 +100,11 @@
 #include "event/touch.hpp"
 
 /*
+ * ACTIONS
+ */
+#include "actions/listen.hpp"
+
+/*
  * STATIC FUNCTIONS INCLUDE
  */
 #include "ros_env.hpp"
@@ -140,6 +145,9 @@ void Driver::run()
   registerDefaultSubscriber();
   registerDefaultServices();
 
+  // Setting up action servers.
+  auto listen_server = action::createListenServer(this, sessionPtr_);
+
   // A single iteration will propagate registrations, etc...
   rosIteration();
 
@@ -167,7 +175,7 @@ void Driver::run()
         pub.second.reset(this);
       }
 
-      for (subscriber::Subscriber &sub; subscribers_)
+      for (subscriber::Subscriber &sub: subscribers_)
       {
         sub.reset(this);
       }
