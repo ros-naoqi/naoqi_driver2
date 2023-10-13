@@ -151,6 +151,11 @@ void Driver::run()
   // A single iteration will propagate registrations, etc...
   rosIteration();
 
+  std::cout << BOLDYELLOW
+            << "naoqi_driver initialized"
+            << RESETCOLOR
+            << std::endl;
+
   {
     boost::mutex::scoped_lock lock( mutex_conv_queue_ );
 
