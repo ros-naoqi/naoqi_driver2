@@ -185,6 +185,13 @@ docker build -t ros2-naoqi-driver .
 > colcon build --event-handlers console_direct+ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug
 > ```
 
+> Plus, in order to avoid building the meshes (only available on x86(_64) processors):
+>
+> ```sh
+> colcon build --packages-skip nao_meshes pepper_meshes --event-handlers console_direct+ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug
+> ```
+
+
 
 ## Build status
 
