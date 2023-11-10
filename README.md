@@ -24,10 +24,10 @@ It can be disabled by setting `qi_listen_url:=` when audio is not required.
 
 To run, the driver requires the [`naoqi_libqi`](https://github.com/ros-naoqi/libqi),
 [`naoqi_libqicore`](https://github.com/ros-naoqi/libqicore)
-and [`naoqi_bridge_msgs`](https://github.com/ros-naoqi/naoqi_bridge_msgs) packages.
+and [`naoqi_bridge_msgs`](https://github.com/ros-naoqi/naoqi_bridge_msgs2) packages.
 Those can be installed using apt-get (if they have been released for your ROS distro) or from source.
-Additionally, [`pepper_meshes`](https://github.com/ros-naoqi/pepper_meshes)
-and/or [`nao_meshes`](https://github.com/ros-naoqi/nao_meshes) can be useful to display the robot in RViz.
+Additionally, [`pepper_meshes`](https://github.com/ros-naoqi/pepper_meshes2)
+and/or [`nao_meshes`](https://github.com/ros-naoqi/nao_meshes2) can be useful to display the robot in RViz.
 
 On Ubuntu, install them using:
 
@@ -53,6 +53,29 @@ Then build the workspace:
 cd <ws>
 colcon build --symlink-install
 ```
+
+#### License of the meshes
+
+The source repositories include
+[`pepper_meshes2`](https://github.com/ros-naoqi/pepper_meshes2)
+and [`nao_meshes2`](https://github.com/ros-naoqi/nao_meshes2),
+which require an interactive agreement to be provided.
+If you agree to their license terms (
+[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode.en):
+[`pepper_meshes2` LICENSE](https://github.com/ros-naoqi/pepper_meshes/blob/master/LICENSE),
+[`nao_meshes2` LICENSE](https://github.com/ros-naoqi/nao_meshes/blob/master/LICENSE)).
+you may skip the interactive prompt by setting
+the `AGREE_TO_NAO_MESHES_LICENSE` and `I_AGREE_TO_PEPPER_MESHES_LICENSE` environment variables:
+
+```sh
+I_AGREE_TO_NAO_MESHES_LICENSE=1 I_AGREE_TO_PEPPER_MESHES_LICENSE=1 colcon build --symlink-install
+```
+
+Automated jobs on non-interactive environments
+(`DEBIAN_FRONTEND=noninteractive`)
+defaults to agreeing to the licenses,
+assuming the author of the job has agreed to the license terms.
+
 
 ## Launch
 
