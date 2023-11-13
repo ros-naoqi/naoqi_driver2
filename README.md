@@ -191,6 +191,12 @@ docker build -t ros2-naoqi-driver .
 > ```sh
 > colcon build --event-handlers console_direct+ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug
 > ```
+>
+> It works also when running tests:
+>
+> ```sh
+> colcon test --packages-skip nao_meshes pepper_meshes --event-handlers console_direct+ --ctest-args tests
+> ```
 
 
 ## Build status
