@@ -26,7 +26,7 @@
 /*
 * ROS includes
 */
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
 
 /*
 * CV includes
