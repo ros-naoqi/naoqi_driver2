@@ -47,6 +47,8 @@ cd <ws>
 rosdep install --from-paths src --ignore-src --rosdistro <distro> -y
 ```
 
+> To install vcs: `sudo apt-get install python3-vcstool`
+
 Then build the workspace:
 
 ```sh
