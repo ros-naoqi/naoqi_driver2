@@ -2,6 +2,41 @@
 Changelog for package naoqi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* New "Listen" action
+* Remove usages of BOOST_FOREACH
+* New `qi_listen_url` option and update README
+* Track `ros2` branch of `nao_meshes`
+* Get odom at the same time as joint states
+* No need to register the driver as a NAOqi service
+* Simplify starting and stopping the node
+  An extra thread is not required anymore to run the ROS loop.
+* Safer unsubscription from ALMemory
+* Switch to NAOqi 2 subscribers for touch events
+* Fix build warnings
+  * libqi-related warnings
+    * Use .value() when getting a Qi service
+  * Fix lack of return value in `camera.cpp`
+  * Fix deprecated include to `image_transport.h`
+  * Remove unused mentions to behavior trees
+* Better error messages
+  * Transform computation
+* Experimental running the driver and for dev
+  Adapted from https://github.com/sea-bass/turtlebot3_behavior_demos
+* Support NAOqi 2.8 (NAO v6)
+  * Repair audio
+* Support for humble & iron
+  * RViz files converted to RViz2 ones
+  * Update use of placeholders
+  * Update robot description code
+  * Remove mentions to catkin
+* Update README:
+  * New details about building meshes
+  * How to build from source now
+* Remove dependence to `orocos-kdl`
+* Contributors: Maxime Busy, Victor Paleologue, Victor Paléologue
+
 2.0.0 (2022-09-13)
 ------------------
 * Update README, add buildfarm status badges
