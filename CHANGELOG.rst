@@ -2,8 +2,8 @@
 Changelog for package naoqi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2023-11-23)
+------------------
 * New "Listen" action
 * Remove usages of BOOST_FOREACH
 * New `qi_listen_url` option and update README
