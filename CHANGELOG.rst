@@ -2,8 +2,8 @@
 Changelog for package naoqi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.1 (2023-12-05)
+------------------
 * Drop testing of `foxy` and `galactic`
 * README: remove extraneous args in example
 * Update code and instructions about Docker
