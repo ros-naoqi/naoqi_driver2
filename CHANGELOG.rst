@@ -2,6 +2,15 @@
 Changelog for package naoqi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Drop testing of `foxy` and `galactic`
+* README: remove extraneous args in example
+* Update code and instructions about Docker
+* Fix build for humble
+* Improve README about audio service
+* Contributors: Victor Paléologue
+
 2.1.0 (2023-11-23)
 ------------------
 * New "Listen" action
