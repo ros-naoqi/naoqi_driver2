@@ -8,14 +8,13 @@ This repo defines the __naoqi_driver__ package for ROS2. The driver is in charge
 The __naoqi_driver__ is a ROS node.
 It connects to a robot running NAOqi using libQi.
 
-It also listens to a libQi endpoint (specified by the option `qi_listen_url`).
-This endpoint should be public (*e.g.* `qi_listen_url:=0.0.0.0:0`)
-to enable collecting audio buffers remotely.
-It should be set to a local address (*e.g.* `qi_listen_url:=127.0.0.1:0`)
-when running on the robot.
-It can be disabled by setting `qi_listen_url:=` when audio is not required.
+To support the audio features, __naoqi_driver__ opens a libQi endpoint.
+It is set by default to `127.0.0.1:0` (random port on local host),
+so it should be set with the option `qi_listen_url`,
+*e.g.* `qi_listen_url:=0.0.0.0:0` to allow collecting audio buffers remotely.
 
-> Audio can be disabled in [boot_config.json](src/naoqi_driver2/share/boot_config.json).
+Audio features are enabled by default and can be disabled in
+[boot_config.json](src/naoqi_driver2/share/boot_config.json).
 
 
 ## Installation
@@ -88,6 +87,8 @@ assuming the author of the job has agreed to the license terms.
 
 ## Launch
 
+### Avoid interference with autonomous life
+
 To have full control of the robot with ROS,
 you may want to disable autonomous behaviors first:
 
@@ -97,20 +98,48 @@ qicli call ALAutonomousLife.setState disabled
 qicli call ALMotion.wakeUp
 ```
 
-The driver can be launched using the following command:
+
+### NAOqi 2.8 and lower
+
+The driver can be launched from a remote machine this way:
 
 ```sh
 source /opt/ros/<distro>/setup.bash # or source <ws>/install/setup.bash if built from source
-ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host>
+ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host> qi_listen_url:=0.0.0.0:0
 ```
+
+
+### NAOqi 2.9 and higher
 
 Username and password arguments are required
 for robots running NAOqi 2.9 or greater:
 
 ```sh
-ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host> nao_username:=nao nao_password:=<robot_password>
+ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host> nao_username:=nao nao_password:=<robot_password> qi_listen_url:=0.0.0.0:0
 ```
 
+
+### From a Docker container
+
+If you run __naoqi_driver__ from a Docker container with audio features enabled,
+you must specify the libQi endpoint with, *e.g.* for port 56000:
+
+```sh
+source /opt/ros/<distro>/setup.bash # or source <ws>/install/setup.bash if built from source
+ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host> qi_listen_url:=0.0.0.0:56000
+```
+
+Then you must [expose](https://docs.docker.com/engine/reference/commandline/run/#publish) it from the container.
+
+
+### On the robot or on the same machine
+
+If you run the driver directly from the robot (or your machine running a virtual robot),
+you can omit the options:
+
+```sh
+ros2 launch naoqi_driver naoqi_driver.launch.py
+```
 
 ## Check that the node is running correctly
 
