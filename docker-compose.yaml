@@ -1,32 +1,30 @@
-# Docker Compose file for TurtleBot3 Behavior Examples
+# Docker Compose file for developer containers
 #
 # Usage:
 #
-# To build the images:
-#   docker compose build
-#
-# To start up a specific service by name:
-#   docker compose up <service_name>
+# ROS_DISTRO=<distro> docker compose up dev --build
 #
 # To open an interactive shell to a running container:
-#   docker exec -it <container_name> bash
+#   docker exec -it naoqi_driver-dev-1 bash
 
 version: "3.9"
 services:
-  # Developer container
   dev:
-    image: ros2-naoqi-driver:dev
+    image: naoqi-driver:dev-$ROS_DISTRO
     build:
       context: .
       dockerfile: docker/Dockerfile
       target: dev
+      args:
+        - ROS_DISTRO=$ROS_DISTRO
 
     # Interactive shell
     stdin_open: true
     tty: true
+
     # Networking and IPC for ROS 2
     network_mode: host
     ipc: host
     volumes:
       # Mount the source code
-      - .:/ws/src/naoqi_driver2:rw
+      - .:/ws/src/naoqi_driver:rw

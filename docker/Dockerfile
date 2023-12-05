@@ -6,7 +6,7 @@ SHELL ["/bin/bash", "-c"]
 
 # Create Colcon workspace with the project and its deps
 ENV WS=/ws
-ENV PROJ_SRC=${WS}/src/naoqi_driver2
+ENV PROJ_SRC=${WS}/src/naoqi_driver
 COPY . $PROJ_SRC
 WORKDIR $WS/src
 RUN apt install -y git python3-vcstool

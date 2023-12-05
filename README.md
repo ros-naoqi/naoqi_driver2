@@ -210,10 +210,10 @@ angular:
 ## Development
 
 Check how to [install the driver from source](#installing-from-source),
-or use the [`Dockerfile`](Dockerfile) to get setup a reproducible dev environment:
+or use `docker compose` to get a more reproducible dev environment:
 
 ```sh
-docker build -t ros2-naoqi-driver .
+ROS_DISTRO=iron docker compose up dev --build
 ```
 
 > To get all logs in live and build debuggable binaries,
