@@ -226,7 +226,7 @@ ROS_DISTRO=iron docker compose up dev --build
 > It works also when running tests:
 >
 > ```sh
-> colcon test --packages-skip nao_meshes pepper_meshes --event-handlers console_direct+ --ctest-args tests
+> colcon test --event-handlers console_direct+ --ctest-args tests
 > ```
 
 
