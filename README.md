@@ -14,7 +14,7 @@ so it should be set with the option `qi_listen_url`,
 *e.g.* `qi_listen_url:=0.0.0.0:0` to allow collecting audio buffers remotely.
 
 Audio features are enabled by default and can be disabled in
-[boot_config.json](src/naoqi_driver2/share/boot_config.json).
+[boot_config.json](share/boot_config.json).
 
 
 ## Installation
