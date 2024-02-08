@@ -117,6 +117,8 @@ for robots running NAOqi 2.9 or greater:
 ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host> nao_username:=nao nao_password:=<robot_password> qi_listen_url:=tcp://0.0.0.0:0
 ```
 
+Warning: If you have a `connection refused error` such as [this issue](https://github.com/ros-naoqi/naoqi_driver/issues/162)
+(from ROS1 driver version) when using robots running NAOqi 2.8 and greater, please try to give `nao_port:=9503` explicitly.
 
 ### From a Docker container
 
