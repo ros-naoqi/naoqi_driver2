@@ -7,14 +7,13 @@ This repo defines the __naoqi_driver__ package for ROS2. The driver is in charge
 
 The __naoqi_driver__ is a ROS node.
 It connects to a robot running NAOqi using libQi.
+To support the audio features, __naoqi_driver__ opens a public endpoint, on a random port by default.
 
-To support the audio features, __naoqi_driver__ opens a libQi endpoint.
-It is set by default to `127.0.0.1:0` (random port on local host),
-so it should be set with the option `qi_listen_url`,
-*e.g.* `qi_listen_url:=0.0.0.0:0` to allow collecting audio buffers remotely.
-
-Audio features are enabled by default and can be disabled in
-[boot_config.json](share/boot_config.json).
+> To avoid opening a public endpoint,
+> you would need to disable the audio features
+> by setting the `audio` argument to `false` in [boot_config.json](share/boot_config.json),
+> and then set  `qi_listen_url` to listen to a local endpoint,
+> *e.g.* `qi_listen_url:=tcp://127.0.0.1:12345`.
 
 
 ## Installation
