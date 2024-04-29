@@ -45,6 +45,7 @@ set(
   TOOLS_SRC
   src/tools/robot_description.cpp
   src/tools/from_any_value.cpp
+  src/tools/subscribe_almemory.cpp
   )
 
 set(
