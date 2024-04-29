@@ -9,7 +9,7 @@ namespace naoqi
  * This implementation works for NAOqi 2.8 and higher only, using a recent
  * libqi.
  */
-class QiALMemorySubscriber : ALMemorySubscriber
+class QiALMemorySubscriber : public ALMemorySubscriber
 {
   public:
   QiALMemorySubscriber(qi::AnyObject subscriber, qi::SignalLink link_id)
@@ -22,16 +22,16 @@ class QiALMemorySubscriber : ALMemorySubscriber
     int link_id = _link_id.swap(0);
     if (link_id == 0)
       {
-        return;
+        return qi::Future<void>(nullptr);
       }
 
-    _subscriber->disconnect(link_id).value();
+    return _subscriber.disconnect(link_id);
   }
 
   private:
   qi::AnyObject _subscriber;
   qi::Atomic<qi::SignalLink> _link_id;
-}
+};
 
 /**
  * Subscribes to an ALMemory event by registering a service with a callback.
@@ -40,7 +40,7 @@ class QiALMemorySubscriber : ALMemorySubscriber
  * This implementation is the only one compatible when connecting to NAOqi 2.5
  * from a recent libqi.
  */
-class LegacyALMemorySubscriber : ALMemorySubscriber
+class LegacyALMemorySubscriber : public ALMemorySubscriber
 {
   public:
   LegacyALMemorySubscriber(qi::SessionPtr session, int service_id)
@@ -53,16 +53,16 @@ class LegacyALMemorySubscriber : ALMemorySubscriber
     int service_id = _service_id.swap(0);
     if (service_id == 0)
       {
-        return;
+        return qi::Future<void>(nullptr);
       }
 
-    _session->unregisterService(service_id).value();
+    return _session->unregisterService(service_id);
   }
 
   private:
   qi::SessionPtr _session;
   qi::Atomic<int> _service_id;
-}
+};
 
 /**
  * A service dedicated to receive ALMemory events and forward them to an
@@ -77,7 +77,7 @@ class ALMemorySubscriberService
   }
 
   void onEvent(const std::string& /*key*/, const qi::AnyValue& value,
-               const AL::ALValue& /* message */)
+               const qi::AnyValue& /* message */)
   {
     _callback(value);
   }
@@ -96,7 +96,7 @@ subscribe(const robot::NaoqiVersion& naoqi_version, qi::SessionPtr session,
           const std::string& key, std::function<void(qi::AnyValue)> callback)
 {
   auto memory = session->service("ALMemory").value();
-  if (helpers::driver::isNaoqiVersionLesser(naoqi_version_, 2, 8))
+  if (helpers::driver::isNaoqiVersionLesser(naoqi_version, 2, 8))
     {
       // Create one service per subscription.
       auto subscriber_service =
@@ -116,7 +116,7 @@ subscribe(const robot::NaoqiVersion& naoqi_version, qi::SessionPtr session,
     }
   else
     {
-      auto qi_subscriber = memory->subscribe(key).value();
+      auto qi_subscriber = memory.call<qi::AnyObject>("subscribe", key);
       auto signal_link =
           qi_subscriber.connect("signal", std::move(callback)).value();
       return std::make_unique<QiALMemorySubscriber>(std::move(qi_subscriber),
