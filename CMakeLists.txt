@@ -94,6 +94,7 @@ set(
   src/event/touch.cpp
 )
 
+message(STATUS "Defining LIBQI_VERSION=${naoqi_libqi_VERSION_MAJOR}${naoqi_libqi_VERSION_MINOR})")
 add_definitions(-DLIBQI_VERSION=${naoqi_libqi_VERSION_MAJOR}${naoqi_libqi_VERSION_MINOR})
 
 # Add pre-processor compile flag indicating ament
