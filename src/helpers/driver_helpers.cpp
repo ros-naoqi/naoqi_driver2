@@ -16,6 +16,8 @@
 */
 
 #include "driver_helpers.hpp"
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
 namespace naoqi
 {
@@ -23,6 +25,9 @@ namespace helpers
 {
 namespace driver
 {
+namespace pt = boost::property_tree;
+
+static pt::ptree empty_ptree;
 
 /** Function that returns the type of a robot
  */
@@ -68,111 +73,171 @@ static naoqi_bridge_msgs::msg::RobotInfo& getRobotInfoLocal( const qi::SessionPt
 
   // Get the data from RobotConfig
   qi::AnyObject p_motion = session->service("ALMotion").value();
-  std::vector<std::vector<qi::AnyValue> > config = p_motion.call<std::vector<std::vector<qi::AnyValue> > >("getRobotConfig");
-
-  // TODO, fill with the proper string matches from http://doc.aldebaran.com/2-1/naoqi/motion/tools-general-api.html#ALMotionProxy::getRobotConfig
-
-  for (size_t i=0; i<config[0].size();++i)
+  try
   {
-    if (config[0][i].as<std::string>() == "Model Type")
+    std::vector<std::vector<qi::AnyValue> > config = p_motion.call<std::vector<std::vector<qi::AnyValue> > >("getRobotConfig");
+
+    // TODO, fill with the proper string matches from http://doc.aldebaran.com/2-1/naoqi/motion/tools-general-api.html#ALMotionProxy::getRobotConfig
+
+    for (size_t i=0; i<config[0].size();++i)
     {
-      try{
-        info.model = config[1][i].as<std::string>();
-      }
-      catch(const std::exception& e)
+      if (config[0][i].as<std::string>() == "Model Type")
       {
-        std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+        try{
+          info.model = config[1][i].as<std::string>();
+        }
+        catch(const std::exception& e)
+        {
+          std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+        }
       }
+
+      if (config[0][i].as<std::string>() == "Head Version")
+      {
+        try{
+          info.head_version = config[1][i].as<std::string>();
+        }
+        catch(const std::exception& e)
+        {
+          std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+        }
+      }
+
+      if (config[0][i].as<std::string>() == "Body Version")
+      {
+        try{
+          info.body_version = config[1][i].as<std::string>();
+        }
+        catch(const std::exception& e)
+        {
+          std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+        }
+      }
+
+      if (config[0][i].as<std::string>() == "Arm Version")
+      {
+        try{
+          info.arm_version = config[1][i].as<std::string>();
+        }
+        catch(const std::exception& e)
+        {
+          std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+        }
+      }
+
+      if (config[0][i].as<std::string>() == "Laser")
+      {
+        try{
+          info.has_laser = config[1][i].as<bool>();
+        }
+        catch(const std::exception& e)
+        {
+          std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+        }
+      }
+
+      if (config[0][i].as<std::string>() == "Extended Arms")
+      {
+        try{
+          info.has_extended_arms = config[1][i].as<bool>();
+        }
+        catch(const std::exception& e)
+        {
+          std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+        }
+      }
+
+      if (config[0][i].as<std::string>() == "Number of Legs")
+      {
+        try{
+          info.number_of_legs = config[1][i].as<int>();
+        }
+        catch(const std::exception& e)
+        {
+          std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+        }
+      }
+
+      if (config[0][i].as<std::string>() == "Number of Arms")
+      {
+        try{
+          info.number_of_arms = config[1][i].as<int>();
+        }
+        catch(const std::exception& e)
+        {
+          std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+        }
+      }
+
+      if (config[0][i].as<std::string>() == "Number of Hands")
+      {
+        try{
+          info.number_of_hands = config[1][i].as<int>();
+        }
+        catch(const std::exception& e)
+        {
+          std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+        }
+      }
+
+    }
+  }
+  catch (...)
+  {
+    // NAOqi 2.9
+    std::cout << "ALMotion.getRobotConfig failed (" /*<< e.what()*/ << "), trying with newer service ALRobotModel" << std::endl;
+    auto p_robot_model = session->service("ALRobotModel").value();
+
+    try
+    {
+      info.model = p_robot_model.call<std::string>("getRobotType");
+    }
+    catch (const std::exception &e)
+    {
+      std::cout << "Error getting robot type (with ALRobotModel.getRobotType): " << e.what() << std::endl;
     }
 
-    if (config[0][i].as<std::string>() == "Head Version")
+    try
     {
-      try{
-        info.head_version = config[1][i].as<std::string>();
-      }
-      catch(const std::exception& e)
-      {
-        std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
-      }
+      info.number_of_legs = p_robot_model.call<bool>("hasLegs") ? 1 : 0;
+    }
+    catch (const std::exception &e)
+    {
+      std::cout << "Error getting robot type (with ALRobotModel.getRobotType): " << e.what() << std::endl;
     }
 
-    if (config[0][i].as<std::string>() == "Body Version")
+    try
     {
-      try{
-        info.body_version = config[1][i].as<std::string>();
-      }
-      catch(const std::exception& e)
-      {
-        std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
+      std::istringstream config_data(p_robot_model.call<std::string>("getConfig"));
+      pt::ptree tree;
+      pt::read_xml(config_data, tree);
+
+      auto preferences = tree.get_child("ModulePreference");
+      for (const auto& pref: preferences) {
+        if (pref.first != "Preference")
+          continue;
+        const pt::ptree& attributes = pref.second.get_child("<xmlattr>", empty_ptree);
+
+        const auto& memory_key = attributes.get<std::string>("memoryName");
+        if (memory_key == "RobotConfig/Head/Version") {
+          info.head_version = attributes.get<std::string>("value");
+        } else if (memory_key == "RobotConfig/Body/Version") {
+          info.body_version = attributes.get<std::string>("value");
+        } else if (memory_key == "RobotConfig/Body/Device/LeftArm/Version") {
+          info.arm_version = attributes.get<std::string>("value");
+        }
       }
     }
-
-    if (config[0][i].as<std::string>() == "Arm Version")
+    catch (const std::exception &e)
     {
-      try{
-        info.arm_version = config[1][i].as<std::string>();
-      }
-      catch(const std::exception& e)
-      {
-        std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
-      }
+      std::cout << "Error getting head version (with ALRobotModel.getConfig): " << e.what() << std::endl;
     }
 
-    if (config[0][i].as<std::string>() == "Laser")
-    {
-      try{
-        info.has_laser = config[1][i].as<bool>();
-      }
-      catch(const std::exception& e)
-      {
-        std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
-      }
-    }
-
-    if (config[0][i].as<std::string>() == "Extended Arms")
-    {
-      try{
-        info.has_extended_arms = config[1][i].as<bool>();
-      }
-      catch(const std::exception& e)
-      {
-        std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
-      }
-    }
-
-    if (config[0][i].as<std::string>() == "Number of Legs")
-    {
-      try{
-        info.number_of_legs = config[1][i].as<int>();
-      }
-      catch(const std::exception& e)
-      {
-        std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
-      }
-    }
-
-    if (config[0][i].as<std::string>() == "Number of Arms")
-    {
-      try{
-        info.number_of_arms = config[1][i].as<int>();
-      }
-      catch(const std::exception& e)
-      {
-        std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
-      }
-    }
-
-    if (config[0][i].as<std::string>() == "Number of Hands")
-    {
-      try{
-        info.number_of_hands = config[1][i].as<int>();
-      }
-      catch(const std::exception& e)
-      {
-        std::cout << "Error in robot config variable " << (config[0][i]).as<std::string>() << std::endl;
-      }
-    }
-
+    // Some data is missing, but anyways only Pepper 1.8 is supported by NAOqi 2.9.
+    info.has_laser = false;
+    info.has_extended_arms = false;
+    info.number_of_arms = 2;
+    info.number_of_hands = 2;
   }
   return info;
 }
