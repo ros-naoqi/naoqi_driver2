@@ -77,9 +77,10 @@ int main(int argc, char** argv)
   if (password.compare(no_password) != 0) {
 #if LIBQI_VERSION >= 29
     protocol = "tcps://";
+    nao_port = (nao_port == 9559) ? 9503 : nao_port;
 #else
     std::cout << BOLDRED
-              << "No need to set a password"
+              << "No need to set a password, ignored."
               << RESETCOLOR
               << std::endl;
 #endif
