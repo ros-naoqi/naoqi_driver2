@@ -30,6 +30,7 @@
  */
 #include <naoqi_driver/naoqi_driver.hpp>
 #include <naoqi_driver/message_actions.h>
+#include <naoqi_driver/tools.hpp>
 
 /*
  * CONVERTERS
@@ -215,15 +216,17 @@ void Driver::run()
 }
 
 /**
- * @brief Sets the Driver sessionPtr, robot and has_stereo objects
+ * Sets the Qi Session to use,
+ * sets robot and has_stereo objects.
+ * Must be called before the run function.
  *
- * @param sessionPtr
+ * @param session
  */
-void Driver::setQiSession(const qi::SessionPtr& sessionPtr)
+void Driver::setQiSession(const qi::SessionPtr& session)
 {
-  sessionPtr_ = sessionPtr;
-  robot_ = helpers::driver::getRobot(sessionPtr);
-  has_stereo = helpers::driver::isDepthStereo(sessionPtr);
+  this->sessionPtr_ = session;
+  robot_ = helpers::driver::getRobot(session);
+  has_stereo = helpers::driver::isDepthStereo(session);
 }
 
 void Driver::loadBootConfig()
@@ -232,7 +235,7 @@ void Driver::loadBootConfig()
   std::cout << "load boot config from " << file_path << std::endl;
   if (!file_path.empty())
   {
-    boost::property_tree::read_json( file_path, boot_config_ );
+    boost::property_tree::read_json( file_path, this->boot_config_ );
   }
 }
 
@@ -872,14 +875,20 @@ void Driver::registerDefaultConverter()
 
   if ( audio_enabled ) {
     /** Audio */
-    boost::shared_ptr<AudioEventRegister> event_register =
-        boost::make_shared<AudioEventRegister>( "audio", 0, sessionPtr_ );
-    insertEventConverter("audio", event_register);
-    if (keep_looping) {
-      event_map_.find("audio")->second.startProcess();
-    }
-    if (publish_enabled_) {
-      event_map_.find("audio")->second.isPublishing(true);
+    if (this->sessionPtr_->endpoints().empty())
+    {
+      std::cout << "The Qi Session is not configured to listen to calls from the audio service (missing --qi_listen_url?)." << std::endl;
+      std::cout << BOLDRED << "Audio is being disabled automatically." << std::endl;
+    } else {
+      boost::shared_ptr<AudioEventRegister> event_register =
+          boost::make_shared<AudioEventRegister>( "audio", 0, sessionPtr_ );
+      insertEventConverter("audio", event_register);
+      if (keep_looping) {
+        event_map_.find("audio")->second.startProcess();
+      }
+      if (publish_enabled_) {
+        event_map_.find("audio")->second.isPublishing(true);
+      }
     }
   }
 
@@ -1364,7 +1373,6 @@ void Driver::removeFiles(std::vector<std::string> files)
 }
 
 QI_REGISTER_OBJECT( Driver,
-                    _whoIsYourDaddy,
                     minidump,
                     minidumpConverters,
                     setBufferDuration,
