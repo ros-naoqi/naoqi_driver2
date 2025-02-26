@@ -875,20 +875,22 @@ void Driver::registerDefaultConverter()
 
   if ( audio_enabled ) {
     /** Audio */
-    if (this->sessionPtr_->endpoints().empty())
-    {
-      std::cout << "The Qi Session is not configured to listen to calls from the audio service (missing --qi_listen_url?)." << std::endl;
-      std::cout << BOLDRED << "Audio is being disabled automatically." << std::endl;
-    } else {
-      boost::shared_ptr<AudioEventRegister> event_register =
-          boost::make_shared<AudioEventRegister>( "audio", 0, sessionPtr_ );
-      insertEventConverter("audio", event_register);
-      if (keep_looping) {
+    auto event_register = boost::make_shared<AudioEventRegister>("audio", 0, sessionPtr_);
+    insertEventConverter("audio", event_register);
+    if (keep_looping) {
+      try
+      {
         event_map_.find("audio")->second.startProcess();
       }
-      if (publish_enabled_) {
-        event_map_.find("audio")->second.isPublishing(true);
+      catch(const std::exception& e)
+      {
+        std::cerr << "Failed to start audio extraction: " << e.what() << std::endl;
+        std::cout << "Audio is being disabled automatically." << std::endl
+                  << "Try specifying the --qi_listen_url option to an endpoint reachable by the robot fix that." << std::endl;
       }
+    }
+    if (publish_enabled_) {
+      event_map_.find("audio")->second.isPublishing(true);
     }
   }
 

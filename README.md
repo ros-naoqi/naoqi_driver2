@@ -7,13 +7,11 @@ This repo defines the __naoqi_driver__ package for ROS2. The driver is in charge
 
 The __naoqi_driver__ is a ROS node.
 It connects to a robot running NAOqi using libQi.
-To support the audio features, __naoqi_driver__ opens a public endpoint, on a random port by default.
+To support audio extraction, __naoqi_driver__ opens a public endpoint, on a random port by default.
 
-> To avoid opening a public endpoint,
-> you would need to disable the audio features
-> by setting the `audio` argument to `false` in [boot_config.json](share/boot_config.json),
-> and then set  `qi_listen_url` to listen to a local endpoint,
+> You can set a local endpoint instead by setting the `qi_listen_url` argument,
 > *e.g.* `qi_listen_url:=tcp://127.0.0.1:12345`.
+> In turn, audio extraction will be disabled.
 
 
 ## Installation
@@ -104,7 +102,7 @@ The driver can be launched from a remote machine this way:
 
 ```sh
 source /opt/ros/<distro>/setup.bash # or source <ws>/install/setup.bash if built from source
-ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host> qi_listen_url:=tcp://0.0.0.0:0
+ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host>
 ```
 
 
@@ -114,14 +112,17 @@ Username and password arguments are required
 for robots running NAOqi 2.9 or greater:
 
 ```sh
-ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host> nao_username:=nao nao_password:=<robot_password> qi_listen_url:=tcp://0.0.0.0:0
+ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host> password:=<robot_password>
 ```
+
+> When password is set, the driver automatically switches TLS on, and switches to port 9503.
 
 
 ### From a Docker container
 
-If you run __naoqi_driver__ from a Docker container with audio features enabled,
-you must specify the libQi endpoint with, *e.g.* for port 56000:
+It should work as usual from a Docker container,
+but to enable audio features, you will need to forward the port the driver listens to.
+In turn, you should specify the port libQi should listen, *e.g.* for port 56000:
 
 ```sh
 source /opt/ros/<distro>/setup.bash # or source <ws>/install/setup.bash if built from source
