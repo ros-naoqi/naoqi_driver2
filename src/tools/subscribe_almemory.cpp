@@ -21,9 +21,9 @@ class QiALMemorySubscriber : public ALMemorySubscriber
   {
     int link_id = _link_id.swap(0);
     if (link_id == 0)
-      {
-        return qi::Future<void>(nullptr);
-      }
+    {
+      return qi::Future<void>(nullptr);
+    }
 
     return _subscriber.disconnect(link_id);
   }
@@ -52,9 +52,9 @@ class LegacyALMemorySubscriber : public ALMemorySubscriber
   {
     int service_id = _service_id.swap(0);
     if (service_id == 0)
-      {
-        return qi::Future<void>(nullptr);
-      }
+    {
+      return qi::Future<void>(nullptr);
+    }
 
     return _session->unregisterService(service_id);
   }
@@ -76,8 +76,8 @@ class ALMemorySubscriberService
   {
   }
 
-  void onEvent(const std::string& /*key*/, const qi::AnyValue& value,
-               const qi::AnyValue& /* message */)
+  void
+  onEvent(const std::string& /*key*/, const qi::AnyValue& value, const qi::AnyValue& /* message */)
   {
     _callback(value);
   }
@@ -91,37 +91,32 @@ QI_REGISTER_OBJECT(ALMemorySubscriberService, onEvent)
 /**
  * Subscribes to an ALMemory event the right way for the given NAOqi version.
  */
-std::unique_ptr<ALMemorySubscriber>
-subscribe(const robot::NaoqiVersion& naoqi_version, qi::SessionPtr session,
-          const std::string& key, std::function<void(qi::AnyValue)> callback)
+std::unique_ptr<ALMemorySubscriber> subscribe(const robot::NaoqiVersion& naoqi_version,
+                                              qi::SessionPtr session,
+                                              const std::string& key,
+                                              std::function<void(qi::AnyValue)> callback)
 {
   auto memory = session->service("ALMemory").value();
   if (helpers::driver::isNaoqiVersionLesser(naoqi_version, 2, 8))
-    {
-      // Create one service per subscription.
-      auto subscriber_service =
-          boost::make_shared<ALMemorySubscriberService>(std::move(callback));
-      // Yes the service name might get into collision. Let us not bother
-      // until it happens.
-      auto service_id =
-          session
-              ->registerService(std::string("ROSDriver_subscriber_") + key,
-                                subscriber_service)
-              .value();
-      // Note that the service is only owned by the session it is
-      // registered to. It will be destructed when unregistering (when
-      // calling `unsubscribe`).
-      return std::make_unique<LegacyALMemorySubscriber>(std::move(session),
-                                                        std::move(service_id));
-    }
+  {
+    // Create one service per subscription.
+    auto subscriber_service = boost::make_shared<ALMemorySubscriberService>(std::move(callback));
+    // Yes the service name might get into collision. Let us not bother
+    // until it happens.
+    auto service_id =
+        session->registerService(std::string("ROSDriver_subscriber_") + key, subscriber_service)
+            .value();
+    // Note that the service is only owned by the session it is
+    // registered to. It will be destructed when unregistering (when
+    // calling `unsubscribe`).
+    return std::make_unique<LegacyALMemorySubscriber>(std::move(session), std::move(service_id));
+  }
   else
-    {
-      auto qi_subscriber = memory.call<qi::AnyObject>("subscribe", key);
-      auto signal_link =
-          qi_subscriber.connect("signal", std::move(callback)).value();
-      return std::make_unique<QiALMemorySubscriber>(std::move(qi_subscriber),
-                                                    std::move(signal_link));
-    }
+  {
+    auto qi_subscriber = memory.call<qi::AnyObject>("subscribe", key);
+    auto signal_link = qi_subscriber.connect("signal", std::move(callback)).value();
+    return std::make_unique<QiALMemorySubscriber>(std::move(qi_subscriber), std::move(signal_link));
+  }
 }
 
 }  // namespace naoqi
