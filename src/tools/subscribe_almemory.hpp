@@ -31,7 +31,8 @@ class ALMemorySubscriber
 /**
  * Subscribes to an ALMemory event the right way for the given NAOqi version.
  */
-std::unique_ptr<ALMemorySubscriber>
-subscribe(const robot::NaoqiVersion& naoqi_version, qi::SessionPtr session,
-          const std::string& key, std::function<void(qi::AnyValue)> callback);
+std::unique_ptr<ALMemorySubscriber> subscribe(const robot::NaoqiVersion& naoqi_version,
+                                              qi::SessionPtr session,
+                                              const std::string& key,
+                                              std::function<void(qi::AnyValue)> callback);
 }  // namespace naoqi
