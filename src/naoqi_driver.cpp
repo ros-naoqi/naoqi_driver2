@@ -225,9 +225,9 @@ void Driver::loadBootConfig()
   const std::string& file_path = helpers::filesystem::getBootConfigFile();
   std::cout << "load boot config from " << file_path << std::endl;
   if (!file_path.empty())
-  {
-    boost::property_tree::read_json( file_path, this->boot_config_ );
-  }
+    {
+      boost::property_tree::read_json(file_path, this->boot_config_);
+    }
 }
 
 void Driver::rosIteration()
@@ -1137,26 +1137,33 @@ void Driver::registerDefaultConverter()
       registerConverter(usc, usp, usr);
     }
 
-  if ( audio_enabled ) {
-    /** Audio */
-    auto event_register = boost::make_shared<AudioEventRegister>("audio", 0, sessionPtr_);
-    insertEventConverter("audio", event_register);
-    if (keep_looping) {
-      try
-      {
-        event_map_.find("audio")->second.startProcess();
-      }
-      catch(const std::exception& e)
-      {
-        std::cerr << "Failed to start audio extraction: " << e.what() << std::endl;
-        std::cout << "Audio is being disabled automatically." << std::endl
-                  << "Try specifying the --qi_listen_url option to an endpoint reachable by the robot fix that." << std::endl;
-      }
+  if (audio_enabled)
+    {
+      /** Audio */
+      auto event_register =
+          boost::make_shared<AudioEventRegister>("audio", 0, sessionPtr_);
+      insertEventConverter("audio", event_register);
+      if (keep_looping)
+        {
+          try
+            {
+              event_map_.find("audio")->second.startProcess();
+            }
+          catch (const std::exception& e)
+            {
+              std::cerr << "Failed to start audio extraction: " << e.what()
+                        << std::endl;
+              std::cout << "Audio is being disabled automatically." << std::endl
+                        << "Try specifying the --qi_listen_url option to an "
+                           "endpoint reachable by the robot fix that."
+                        << std::endl;
+            }
+        }
+      if (publish_enabled_)
+        {
+          event_map_.find("audio")->second.isPublishing(true);
+        }
     }
-    if (publish_enabled_) {
-      event_map_.find("audio")->second.isPublishing(true);
-    }
-  }
 
   /** TOUCH **/
   if (bumper_enabled)
@@ -1283,7 +1290,7 @@ void Driver::registerDefaultSubscriber()
   if (!subscribers_.empty())
     return;
   registerSubscriber(boost::make_shared<naoqi::subscriber::TeleopSubscriber>(
-      "teleop", "/cmd_vel", "/joint_angles", sessionPtr_));
+      "teleop", "/cmd_vel", "/joint_angles", "/joint_trajectory", sessionPtr_));
   registerSubscriber(boost::make_shared<naoqi::subscriber::MovetoSubscriber>(
       "moveto", "/move_base_simple/goal", sessionPtr_, tf2_buffer_));
   registerSubscriber(boost::make_shared<naoqi::subscriber::SpeechSubscriber>(
@@ -1764,24 +1771,11 @@ void Driver::removeFiles(std::vector<std::string> files)
     }
 }
 
-QI_REGISTER_OBJECT( Driver,
-                    minidump,
-                    minidumpConverters,
-                    setBufferDuration,
-                    getBufferDuration,
-                    startPublishing,
-                    stopPublishing,
-                    getAvailableConverters,
-                    getSubscribedPublishers,
-                    addMemoryConverters,
-                    registerMemoryConverter,
-                    registerEventConverter,
-                    getFilesList,
-                    removeAllFiles,
-                    removeFiles,
-                    startRecording,
-                    startRecordingConverters,
-                    stopRecording,
-                    startLogging,
-                    stopLogging );
-} //naoqi
+QI_REGISTER_OBJECT(Driver, minidump, minidumpConverters, setBufferDuration,
+                   getBufferDuration, startPublishing, stopPublishing,
+                   getAvailableConverters, getSubscribedPublishers,
+                   addMemoryConverters, registerMemoryConverter,
+                   registerEventConverter, getFilesList, removeAllFiles,
+                   removeFiles, startRecording, startRecordingConverters,
+                   stopRecording, startLogging, stopLogging);
+}  // namespace naoqi
