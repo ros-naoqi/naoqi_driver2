@@ -15,7 +15,6 @@
  *
  */
 
-
 #ifndef TELEOP_SUBSCRIBER_HPP
 #define TELEOP_SUBSCRIBER_HPP
 
@@ -27,38 +26,39 @@
 /*
  * ROS includes
  */
-#include "rclcpp/rclcpp.hpp"
 #include <geometry_msgs/msg/twist.hpp>
 #include <naoqi_bridge_msgs/msg/joint_angles_with_speed.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <trajectory_msgs/msg/joint_trajectory.hpp>
 
 namespace naoqi
 {
 namespace subscriber
 {
 
-class TeleopSubscriber: public BaseSubscriber<TeleopSubscriber>
+class TeleopSubscriber : public BaseSubscriber<TeleopSubscriber>
 {
-public:
-  TeleopSubscriber( const std::string& name, const std::string& cmd_vel_topic, const std::string& joint_angles_topic, const qi::SessionPtr& session );
-  ~TeleopSubscriber(){}
+  public:
+  TeleopSubscriber(const std::string& name, const std::string& cmd_vel_topic,
+                   const std::string& joint_angles_topic,
+                   const std::string& joint_trajectory_topic,
+                   const qi::SessionPtr& session);
+  void reset(rclcpp::Node* node);
 
-  void reset( rclcpp::Node* node );
-  void cmd_vel_callback( const geometry_msgs::msg::Twist::SharedPtr twist_msg );
-  void joint_angles_callback( const naoqi_bridge_msgs::msg::JointAnglesWithSpeed::SharedPtr js_msg );
-
-private:
-
+  private:
   std::string cmd_vel_topic_;
   std::string joint_angles_topic_;
+  std::string joint_trajectory_topic_;
 
   qi::AnyObject p_motion_;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_cmd_vel_;
-  rclcpp::Subscription<naoqi_bridge_msgs::msg::JointAnglesWithSpeed>::SharedPtr sub_joint_angles_;
+  rclcpp::Subscription<naoqi_bridge_msgs::msg::JointAnglesWithSpeed>::SharedPtr
+      sub_joint_angles_;
+  rclcpp::Subscription<trajectory_msgs::msg::JointTrajectory>::SharedPtr
+      sub_joint_trajectory_;
 
+};  // class Teleop
 
-
-}; // class Teleop
-
-} // subscriber
-}// naoqi
+}  // namespace subscriber
+}  // namespace naoqi
 #endif
