@@ -113,7 +113,7 @@ std::unique_ptr<ALMemorySubscriber> subscribe(const robot::NaoqiVersion& naoqi_v
   }
   else
   {
-    auto qi_subscriber = memory.call<qi::AnyObject>("subscribe", key);
+    auto qi_subscriber = memory.call<qi::AnyObject>("subscriber", key);
     auto signal_link = qi_subscriber.connect("signal", std::move(callback)).value();
     return std::make_unique<QiALMemorySubscriber>(std::move(qi_subscriber), std::move(signal_link));
   }
