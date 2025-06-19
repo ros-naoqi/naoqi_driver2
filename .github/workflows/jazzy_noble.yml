@@ -1,0 +1,14 @@
+name: ros2-jazzy-noble
+
+on: push
+
+jobs:
+  ros2_jazzy_noble_ci:
+    name: jazzy (noble)
+    uses: ./.github/workflows/ros2.yml
+    with:
+      ROS_DISTRO: jazzy
+      ROS_REPO: testing
+      OS_NAME: ubuntu
+      OS_CODE_NAME: noble
+      ALLOW_FAIL: false
