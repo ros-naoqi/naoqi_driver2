@@ -30,12 +30,11 @@ jobs:
       - name: Check out the naoqi_driver2 repo
         uses: actions/checkout@v2
       - name: Fetch/store directory used by ccache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ccache-${{ inputs.ROS_DISTRO }}-${{ inputs.ROS_REPO }}-${{github.run_id}}
-          restore-keys: |
-            ccache-${{ inputs.ROS_DISTRO }}-${{ inputs.ROS_REPO }}-
+          restore-keys: ccache-${{ inputs.ROS_DISTRO }}-${{ inputs.ROS_REPO }}-
       - name: Run industrial CI
-        uses: 'ros-industrial/industrial_ci@master'
+        uses: "ros-industrial/industrial_ci@master"
         env: ${{ inputs }}
