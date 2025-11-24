@@ -34,6 +34,14 @@ def generate_launch_description():
             'namespace',
             default_value="naoqi_driver",
             description='Name of the namespace to be used'),
+        launch.actions.DeclareLaunchArgument(
+            'emulation_mode',
+            default_value="false",
+            description='Enable emulation mode (fake NAOqi without real robot)'),
+        launch.actions.DeclareLaunchArgument(
+            'robot_type',
+            default_value="nao",
+            description='Robot type for emulation (nao, pepper, or romeo)'),
         launch_ros.actions.Node(
             package='naoqi_driver',
             executable='naoqi_driver_node',
@@ -43,6 +51,8 @@ def generate_launch_description():
                 'password': launch.substitutions.LaunchConfiguration('password'),
                 'network_interface': launch.substitutions.LaunchConfiguration('network_interface'),
                 'qi_listen_url': launch.substitutions.LaunchConfiguration('qi_listen_url'),
+                'emulation_mode': launch.substitutions.LaunchConfiguration('emulation_mode'),
+                'robot_type': launch.substitutions.LaunchConfiguration('robot_type'),
             }],
             output="screen")
     ])

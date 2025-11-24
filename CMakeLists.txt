@@ -85,6 +85,14 @@ set(
   )
 
 set(
+  FAKE_NAOQI_SRC
+  src/fake_naoqi/fake_naoqi.cpp
+  src/fake_naoqi/fake_almotion.cpp
+  src/fake_naoqi/fake_almemory.cpp
+  src/fake_naoqi/fake_services.cpp
+)
+
+set(
   DRIVER_SRC
   src/naoqi_driver.cpp
   src/helpers/driver_helpers.cpp
@@ -119,6 +127,7 @@ add_library(
   ${ACTIONS_SRC}
   ${RECORDER_SRC}
   ${TOOLS_SRC}
+  ${FAKE_NAOQI_SRC}
 )
 
 ament_target_dependencies(naoqi_driver
