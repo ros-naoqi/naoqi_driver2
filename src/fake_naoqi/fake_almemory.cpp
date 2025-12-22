@@ -168,7 +168,7 @@ void FakeALMemory::setData(const std::string& key, const qi::AnyValue& value)
   {
     try
     {
-      subscriber_to_trigger.call<void>("signal", value);
+      subscriber_to_trigger.post("signal", value);
     }
     catch (...)
     {
