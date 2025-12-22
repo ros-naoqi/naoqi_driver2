@@ -88,7 +88,7 @@ int main(int argc, char** argv)
 
   if (emulation_mode)
   {
-    // Emulation mode: create fake NAOqi session
+    // Emulation mode: create fake NAOqi services
     std::cout << BOLDCYAN << "Starting in emulation mode (fake NAOqi)" << RESETCOLOR << std::endl;
     session = naoqi::fake::createFakeNaoqiSession(robot_type);
   }
