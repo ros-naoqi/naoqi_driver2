@@ -2,6 +2,12 @@
 
 This repo defines the __naoqi_driver__ package for ROS2. The driver is in charge of providing bridging capabilities between ROS2 and NAOqiOS.
 
+In this document, it is assumed that the environment variable `ROS_DISTRO` is set to your ROS2 distribution name (e.g. `iron`), and that your ROS2 workspace path is stored in the `WS` variable (e.g. `/ws`). You can set them like this:
+
+```sh
+export ROS_DISTRO=iron
+export WS=/ws
+```
 
 ## How it works
 
@@ -28,7 +34,7 @@ and/or [`nao_meshes`](https://github.com/ros-naoqi/nao_meshes2) can be useful to
 On Ubuntu, install them using:
 
 ```sh
-sudo apt-get install ros-<distro>-naoqi-libqi ros-<distro>-naoqi-libqicore ros-<distro>-naoqi-bridge-msgs ros-<distro>-pepper-meshes ros-<distro>-nao-meshes
+sudo apt-get install ros-$ROS_DISTRO-naoqi-libqi ros-$ROS_DISTRO-naoqi-libqicore ros-$ROS_DISTRO-naoqi-bridge-msgs ros-$ROS_DISTRO-pepper-meshes ros-$ROS_DISTRO-nao-meshes
 ```
 
 ### Installing from source
@@ -36,11 +42,11 @@ sudo apt-get install ros-<distro>-naoqi-libqi ros-<distro>-naoqi-libqicore ros-<
 In your ROS2 workspace, clone the repo and its dependencies:
 
 ```sh
-cd <ws>/src
+cd $WS/src
 git clone https://github.com/ros-naoqi/naoqi_driver2.git
 vcs import < naoqi_driver2/dependencies.repos
-cd <ws>
-rosdep install --from-paths src --ignore-src --rosdistro <distro> -y
+cd $WS
+rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
 ```
 
 > To install vcs: `sudo apt-get install python3-vcstool`
@@ -48,7 +54,7 @@ rosdep install --from-paths src --ignore-src --rosdistro <distro> -y
 Then build the workspace:
 
 ```sh
-cd <ws>
+cd $WS
 colcon build --symlink-install
 ```
 
@@ -101,7 +107,7 @@ qicli call ALMotion.wakeUp
 The driver can be launched from a remote machine this way:
 
 ```sh
-source /opt/ros/<distro>/setup.bash # or source <ws>/install/setup.bash if built from source
+source /opt/ros/$ROS_DISTRO/setup.bash # or source $WS/install/setup.bash if built from source
 ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host>
 ```
 
@@ -125,7 +131,7 @@ but to enable audio features, you will need to forward the port the driver liste
 In turn, you should specify the port libQi should listen, *e.g.* for port 56000:
 
 ```sh
-source /opt/ros/<distro>/setup.bash # or source <ws>/install/setup.bash if built from source
+source /opt/ros/$ROS_DISTRO/setup.bash # or source $WS/install/setup.bash if built from source
 ros2 launch naoqi_driver naoqi_driver.launch.py nao_ip:=<robot_host> qi_listen_url:=tcp://0.0.0.0:56000
 ```
 
@@ -157,17 +163,22 @@ Available robot types:
 - `romeo` - Romeo robot
 
 In emulation mode:
-- All NAOqi services are simulated with realistic behavior
+- Most NAOqi services are simulated with realistic behavior
 - Joint trajectories are interpolated smoothly at 100Hz
 - Joint states reflect commanded positions
 - No network connection or authentication required
+
+Related source files are to be found in `src/fake_naoqi/`.
 
 ### Testing emulation mode
 
 An automated test suite is provided to validate the emulation mode:
 
 ```sh
-./test_emulation.sh
+source /opt/ros/$ROS_DISTRO/setup.bash
+source $WS/install/setup.bash
+cd $WS
+src/naoqi_driver/test_emulation.sh
 ```
 
 This script tests:

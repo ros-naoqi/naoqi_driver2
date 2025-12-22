@@ -23,11 +23,99 @@ echo ""
 print_result() {
     if [ $1 -eq 0 ]; then
         echo -e "${GREEN}✓ PASSED${NC}: $2"
-        ((TESTS_PASSED++))
+        ((TESTS_PASSED+=1))
     else
         echo -e "${RED}✗ FAILED${NC}: $2"
-        ((TESTS_FAILED++))
+        ((TESTS_FAILED+=1))
     fi
+}
+
+abs_delta_exceeds() {
+    local a="$1"
+    local b="$2"
+    local min_delta="$3"
+    awk -v a="$a" -v b="$b" -v min="$min_delta" 'BEGIN {d=b-a; if (d<0) d=-d; exit !(d>min)}'
+}
+
+# Extract a joint position from two CSV strings:
+# - names_csv: "HeadYaw, HeadPitch, ..."
+# - pos_csv:   "0.0, 0.1, ..."
+get_joint_position_from_csv_lists() {
+    local names_csv="$1"
+    local pos_csv="$2"
+    local joint_name="$3"
+
+    if [ -z "$names_csv" ] || [ -z "$pos_csv" ]; then
+        return 1
+    fi
+
+    local -a names_arr
+    local -a pos_arr
+    IFS=',' read -r -a names_arr <<< "$names_csv"
+    IFS=',' read -r -a pos_arr <<< "$pos_csv"
+
+    local i
+    for i in "${!names_arr[@]}"; do
+        local n
+        n=$(echo "${names_arr[$i]}" | sed -E 's/^[[:space:]]*//; s/[[:space:]]*$//' | tr -d "'\"[]")
+        if [ "$n" = "$joint_name" ]; then
+            echo "${pos_arr[$i]}" | sed -E 's/^[[:space:]]*//; s/[[:space:]]*$//' | tr -d "'\"[]"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+# Given a full JointState CSV line (from --csv), extract:
+# - names_csv: comma-separated joint names (no header fields)
+# - pos_csv:   comma-separated joint positions
+# Assumes message is flattened as: header(3 cols) + name(N) + position(N) + velocity(N) + effort(N)
+extract_names_and_positions_from_joint_state_flat_csv() {
+    local csv_file="$1"
+
+    if [ ! -s "$csv_file" ]; then
+        return 1
+    fi
+
+    local nf
+    nf=$(awk -F',' 'NR==1{print NF; exit}' "$csv_file" 2>/dev/null || true)
+    if [ -z "$nf" ]; then
+        return 1
+    fi
+
+    local header_cols=3
+    local remainder=$((nf - header_cols))
+    if [ "$remainder" -le 0 ]; then
+        return 1
+    fi
+
+    # Expect 4 equal-sized arrays after header
+    if [ $((remainder % 4)) -ne 0 ]; then
+        return 1
+    fi
+    local n=$((remainder / 4))
+    if [ "$n" -le 0 ]; then
+        return 1
+    fi
+
+    local names_start=4
+    local names_end=$((header_cols + n))
+    local pos_start=$((header_cols + n + 1))
+    local pos_end=$((header_cols + 2*n))
+
+    local names_csv
+    local pos_csv
+    names_csv=$(cut -d',' -f"${names_start}-${names_end}" "$csv_file" | tr -d '\n')
+    pos_csv=$(cut -d',' -f"${pos_start}-${pos_end}" "$csv_file" | tr -d '\n')
+
+    if [ -z "$names_csv" ] || [ -z "$pos_csv" ]; then
+        return 1
+    fi
+
+    # Print both on separate lines for easy capture.
+    echo "$names_csv"
+    echo "$pos_csv"
 }
 
 # Function to check if process is running
@@ -45,18 +133,19 @@ cleanup() {
     sleep 2
 }
 
-# Trap cleanup on exit
-trap cleanup EXIT
+on_error() {
+    local exit_status="$1"
+    print_result 1 "Last command failed, exit status: ${exit_status}"
+}
 
-# Source ROS environment
-echo "Setting up ROS environment..."
-source /opt/ros/iron/setup.bash
-source install/setup.bash
+# Trap cleanup on exit; report errors via ERR trap
+trap cleanup EXIT
+trap 'on_error $?' ERR
 
 # Test 1: Build the package
 echo ""
 echo "Test 1: Building naoqi_driver package..."
-if colcon build --packages-select naoqi_driver 2>&1 | grep -q "Finished <<<"; then
+if colcon build --packages-select naoqi_driver; then
     print_result 0 "Package builds successfully"
 else
     print_result 1 "Package build failed"
@@ -66,7 +155,7 @@ fi
 # Test 2: Launch driver in emulation mode (NAO)
 echo ""
 echo "Test 2: Launching driver in emulation mode (NAO)..."
-timeout 10 ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=nao > /tmp/naoqi_test_nao.log 2>&1 &
+ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=nao > /tmp/naoqi_test_nao.log 2>&1 &
 LAUNCH_PID=$!
 sleep 5
 
@@ -125,15 +214,95 @@ if check_process "naoqi_driver_node"; then
 
     # Test 6: Test joint_states topic is publishing
     echo ""
-    echo "Test 6: Testing /joint_states publishes data..."
-    if timeout 3 ros2 topic echo /joint_states --once > /tmp/joint_states.txt 2>&1; then
-        if grep -q "name:" /tmp/joint_states.txt && grep -q "position:" /tmp/joint_states.txt; then
-            print_result 0 "/joint_states publishes valid data"
-        else
-            print_result 1 "/joint_states data format invalid"
-        fi
+    echo "Test 6: Publishing /joint_angles and verifying /joint_states updates..."
+
+    # Capture a baseline joint state
+    timeout 3 ros2 topic echo /joint_states --once --csv > /tmp/joint_states_before.csv
+    if [ ! -s /tmp/joint_states_before.csv ]; then
+        print_result 1 "Failed to capture baseline /joint_states (empty or missing)"
+        exit 1
+    fi
+
+    # Publish a joint command
+    echo "Publishing /joint_angles command..."
+    timeout 3 ros2 topic pub --once /joint_angles naoqi_bridge_msgs/msg/JointAnglesWithSpeed "{header: {stamp: now, frame_id: ''}, joint_names: ['HeadYaw', 'HeadPitch'], joint_angles: [0.5, 0.1], speed: 0.1, relative: 0}"
+
+    # Read joint states again and check HeadYaw/HeadPitch changed
+    echo "Capturing /joint_states after publishing..."
+    timeout 3 ros2 topic echo /joint_states --once --csv > /tmp/joint_states_after.csv
+    if [ ! -s /tmp/joint_states_after.csv ]; then
+        print_result 1 "Failed to capture baseline /joint_states (empty or missing)"
+        exit 1
+    fi
+
+    NAMES_BEFORE=""
+    POS_BEFORE=""
+    NAMES_AFTER=""
+    POS_AFTER=""
+
+    if ! readarray -t BEFORE_LINES < <(extract_names_and_positions_from_joint_state_flat_csv /tmp/joint_states_before.csv 2>/dev/null); then
+        print_result 1 "CSV parse failed for /joint_states baseline"
+        echo "  Baseline CSV (first 300 chars):"
+        head -c 300 /tmp/joint_states_before.csv 2>/dev/null || true
+        echo "  Publish output (for debugging):"
+        tail -50 /tmp/joint_angles_pub.txt || true
+    elif ! readarray -t AFTER_LINES < <(extract_names_and_positions_from_joint_state_flat_csv /tmp/joint_states_after.csv 2>/dev/null); then
+        print_result 1 "CSV parse failed for /joint_states after publish"
+        echo "  After CSV (first 300 chars):"
+        head -c 300 /tmp/joint_states_after.csv 2>/dev/null || true
+        echo "  Publish output (for debugging):"
+        tail -50 /tmp/joint_angles_pub.txt || true
     else
-        print_result 1 "/joint_states not publishing (this is expected until subscriber fix)"
+        NAMES_BEFORE="${BEFORE_LINES[0]:-}"
+        POS_BEFORE="${BEFORE_LINES[1]:-}"
+        NAMES_AFTER="${AFTER_LINES[0]:-}"
+        POS_AFTER="${AFTER_LINES[1]:-}"
+
+        BEFORE_YAW=$(get_joint_position_from_csv_lists "$NAMES_BEFORE" "$POS_BEFORE" HeadYaw || true)
+        BEFORE_PITCH=$(get_joint_position_from_csv_lists "$NAMES_BEFORE" "$POS_BEFORE" HeadPitch || true)
+        AFTER_YAW=$(get_joint_position_from_csv_lists "$NAMES_AFTER" "$POS_AFTER" HeadYaw || true)
+        AFTER_PITCH=$(get_joint_position_from_csv_lists "$NAMES_AFTER" "$POS_AFTER" HeadPitch || true)
+
+        # If CSV is usable, these must be present.
+        if [ -z "$AFTER_YAW" ] || [ -z "$AFTER_PITCH" ]; then
+            print_result 1 "CSV did not contain HeadYaw/HeadPitch"
+            echo "  CSV extraction (for debugging):"
+            echo "    names_before: ${NAMES_BEFORE:0:200}"
+            echo "    pos_before:   ${POS_BEFORE:0:200}"
+            echo "    names_after:  ${NAMES_AFTER:0:200}"
+            echo "    pos_after:    ${POS_AFTER:0:200}"
+            echo "  Publish output (for debugging):"
+            tail -50 /tmp/joint_angles_pub.txt || true
+        else
+            MIN_DELTA=0.02
+            OK=true
+
+            if [ -z "$BEFORE_YAW" ]; then BEFORE_YAW="$AFTER_YAW"; fi
+            if [ -z "$BEFORE_PITCH" ]; then BEFORE_PITCH="$AFTER_PITCH"; fi
+
+            if ! abs_delta_exceeds "$BEFORE_YAW" "$AFTER_YAW" "$MIN_DELTA"; then
+                OK=false
+            fi
+            if ! abs_delta_exceeds "$BEFORE_PITCH" "$AFTER_PITCH" "$MIN_DELTA"; then
+                OK=false
+            fi
+
+            if $OK; then
+                print_result 0 "/joint_states updated after publishing /joint_angles"
+            else
+                print_result 1 "/joint_states did not update after publishing /joint_angles"
+                echo "  Extracted positions (before -> after):"
+                echo "    HeadYaw:   ${BEFORE_YAW:-<missing>} -> ${AFTER_YAW:-<missing>}"
+                echo "    HeadPitch: ${BEFORE_PITCH:-<missing>} -> ${AFTER_PITCH:-<missing>}"
+                echo "  CSV extraction (for debugging):"
+                echo "    names_before: ${NAMES_BEFORE:0:200}"
+                echo "    pos_before:   ${POS_BEFORE:0:200}"
+                echo "    names_after:  ${NAMES_AFTER:0:200}"
+                echo "    pos_after:    ${POS_AFTER:0:200}"
+                echo "  Publish output (for debugging):"
+                tail -50 /tmp/joint_angles_pub.txt || true
+            fi
+        fi
     fi
 
 else
@@ -148,7 +317,7 @@ sleep 2
 # Test 7: Launch driver in emulation mode (Pepper)
 echo ""
 echo "Test 7: Testing Pepper emulation mode..."
-timeout 10 ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=pepper > /tmp/naoqi_test_pepper.log 2>&1 &
+ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=pepper > /tmp/naoqi_test_pepper.log 2>&1 &
 sleep 5
 
 if check_process "naoqi_driver_node"; then
@@ -173,7 +342,7 @@ sleep 2
 # Test 9: Launch driver in emulation mode (Romeo)
 echo ""
 echo "Test 9: Testing Romeo emulation mode..."
-timeout 10 ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=romeo > /tmp/naoqi_test_romeo.log 2>&1 &
+ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=romeo > /tmp/naoqi_test_romeo.log 2>&1 &
 sleep 5
 
 if check_process "naoqi_driver_node"; then
