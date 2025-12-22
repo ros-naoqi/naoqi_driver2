@@ -90,7 +90,7 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
   auto getting_odometry_data = p_motion_.async<std::vector<float> >( "getPosition", "Torso", 1, true );
 
   // get joint state values
-  std::vector<double> al_joint_angles = p_motion_.call<std::vector<double> >("getAngles", "Body", true );
+  msg_joint_states_.position = p_motion_.call<std::vector<double>>("getAngles", "Body", true);
   std::vector<double> al_joint_velocities;
   std::vector<double> al_joint_torques;
 
@@ -101,9 +101,6 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
    * JOINT STATE PUBLISHER
    */
   msg_joint_states_.header.stamp = stamp;
-
-  // STUPID CONVERTION FROM FLOAT TO DOUBLE ARRAY --> OPTIMIZE THAT!
-  msg_joint_states_.position = std::vector<double>( al_joint_angles.begin(), al_joint_angles.end() );
 
   /**
    * ROBOT STATE PUBLISHER
