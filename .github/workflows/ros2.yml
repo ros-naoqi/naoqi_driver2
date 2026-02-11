@@ -30,7 +30,7 @@ jobs:
       - name: Check out the naoqi_driver2 repo
         uses: actions/checkout@v2
       - name: Fetch/store directory used by ccache
-        uses: actions/cache@v2
+        uses: actions/cache@v5
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ccache-${{ inputs.ROS_DISTRO }}-${{ inputs.ROS_REPO }}-${{github.run_id}}
