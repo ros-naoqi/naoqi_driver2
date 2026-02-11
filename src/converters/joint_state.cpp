@@ -71,7 +71,23 @@ void JointStateConverter::reset()
     }
   }
   // pre-fill joint states message
-  msg_joint_states_.name = p_motion_.call<std::vector<std::string> >("getBodyNames", "Body" );
+
+  // precompute ALMemory keys: [positions..., velocities..., torques...]
+  const size_t n = msg_joint_states_.name.size();
+  memory_keys_.clear();
+  memory_keys_.reserve(3 * n);
+  for (const auto& name : msg_joint_states_.name)
+  {
+    memory_keys_.push_back("Device/SubDeviceList/" + name + "/Position/Sensor/Value");
+  }
+  for (const auto& name : msg_joint_states_.name)
+  {
+    memory_keys_.push_back("Motion/Velocity/Sensor/" + name);
+  }
+  for (const auto& name : msg_joint_states_.name)
+  {
+    memory_keys_.push_back("Motion/Torque/Sensor/" + name);
+  }
 }
 
 void JointStateConverter::registerCallback( const message_actions::MessageAction action, Callback_t cb )
@@ -79,23 +95,64 @@ void JointStateConverter::registerCallback( const message_actions::MessageAction
   callbacks_[action] = cb;
 }
 
-void JointStateConverter::callAll( const std::vector<message_actions::MessageAction>& actions )
+namespace
 {
+constexpr int FRAME_TORSO = 0;
+constexpr int FRAME_WORLD = 1;
+constexpr int FRAME_ROBOT = 2;
+}  // namespace
+
+void JointStateConverter::callAll(const std::vector<message_actions::MessageAction>& actions)
+{
+  auto step_time = helpers::Time::now();
+  auto lap = [&step_time](const char* step) {
+    auto now = helpers::Time::now();
+    RCLCPP_DEBUG(helpers::Node::get_logger(), "JointState::%s took %ld ns",
+                step, now.nanoseconds() - step_time.nanoseconds());
+    step_time = now;
+  };
+
   /*
    * get torso position for odometry at the same time as joint states
    * can be called via getRobotPosture
    * but this would require a proper URDF
    * with a base_link and base_footprint in the base
    */
-  auto getting_odometry_data = p_motion_.async<std::vector<float> >( "getPosition", "Torso", 1, true );
+  auto getting_odometry_data =
+      p_motion_.async<std::vector<float>>("getPosition", "Torso", FRAME_WORLD, true);
 
-  // get joint state values
-  msg_joint_states_.position = p_motion_.call<std::vector<double>>("getAngles", "Body", true);
-  std::vector<double> al_joint_velocities;
-  std::vector<double> al_joint_torques;
+  // Batch-fetch positions, velocities and torques in one call
+  auto getting_memory_data =
+      p_memory_.async<std::vector<qi::AnyValue>>("getListData", memory_keys_);
+
+  // Take the timestamp right after launching the async calls
+  const rclcpp::Time& stamp = helpers::Time::now();
 
   std::vector<float> al_odometry_data = getting_odometry_data.value();
-  const rclcpp::Time& stamp = helpers::Time::now();
+  const size_t n_joints = msg_joint_states_.name.size();
+  std::vector<qi::AnyValue> memory_data = getting_memory_data.value();
+  lap("getData(pos,vel,torque)");
+
+  // Conversion to double. For some joints like hands, the velocity and torque values do not exist, so a void is returned.
+  auto to_double = [](const qi::AnyValue& v) {
+    if (v.kind() == qi::TypeKind_Void) {
+      return 0.0;
+    }
+    return v.toDouble();
+  };
+
+  // Layout: [0..N) = positions, [N..2N) = velocities, [2N..3N) = torques
+  msg_joint_states_.position.resize(n_joints);
+  std::transform(memory_data.begin(), memory_data.begin() + n_joints,
+                 msg_joint_states_.position.begin(), to_double);
+
+  msg_joint_states_.velocity.resize(n_joints);
+  std::transform(memory_data.begin() + n_joints, memory_data.begin() + 2 * n_joints,
+                 msg_joint_states_.velocity.begin(), to_double);
+
+  msg_joint_states_.effort.resize(n_joints);
+  std::transform(memory_data.begin() + 2 * n_joints, memory_data.begin() + 3 * n_joints,
+                 msg_joint_states_.effort.begin(), to_double);
 
   /**
    * JOINT STATE PUBLISHER
@@ -106,36 +163,12 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
    * ROBOT STATE PUBLISHER
    */
   // put joint states in tf broadcaster
-  std::map< std::string, double > joint_state_map;
-  // stupid version --> change this with std::transform c++11 ??!
-//  std::transform( msg_joint_states_.name.begin(), msg_joint_states_.name.end(), msg_joint_states_.position.begin(),
-//                  std::inserter( joint_state_map, joint_state_map.end() ),
-//                  std::make_pair);
-  std::vector<double>::const_iterator itPos = msg_joint_states_.position.begin();
-  for(std::vector<std::string>::const_iterator itName = msg_joint_states_.name.begin();
-      itName != msg_joint_states_.name.end();
-      ++itName, ++itPos)
+  std::map<std::string, double> joint_state_map;
+  for (size_t i = 0; i < n_joints; ++i)
   {
-    joint_state_map[*itName] = *itPos;
-
-    try {
-      al_joint_velocities.push_back(p_memory_.call<double>(
-        "getData",
-        "Motion/Velocity/Sensor/" + (*itName)));
-
-      al_joint_torques.push_back(p_memory_.call<double>(
-        "getData",
-        "Motion/Torque/Sensor/" + (*itName)));
-
-    } catch (qi::FutureUserException e) {
-        // Sets the velocity and torques field to nan if no info is provided
-        al_joint_velocities.push_back(std::numeric_limits<double>::quiet_NaN());
-        al_joint_torques.push_back(std::numeric_limits<double>::quiet_NaN());
-    }
+    joint_state_map[msg_joint_states_.name[i]] = msg_joint_states_.position[i];
   }
-
-  msg_joint_states_.velocity = al_joint_velocities;
-  msg_joint_states_.effort = al_joint_torques;
+  lap("parseData(pos,vel,torque)");
 
   // for mimic map
   for(MimicMap::iterator i = mimic_.begin(); i != mimic_.end(); i++){
@@ -189,11 +222,13 @@ void JointStateConverter::callAll( const std::vector<message_actions::MessageAct
   {
     tf2_buffer_.reset();
   }
+  lap("odometry");
 
   for( message_actions::MessageAction action: actions )
   {
     callbacks_[action]( msg_joint_states_, tf_transforms_ );
   }
+  lap("callbacks");
 }
 
 

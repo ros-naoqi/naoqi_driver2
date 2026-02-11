@@ -83,6 +83,10 @@ private:
   /** JointState Message **/
   sensor_msgs::msg::JointState msg_joint_states_;
 
+  /** Precomputed ALMemory keys for batch retrieval:
+   *  [0..N) = velocity keys, [N..2N) = torque keys */
+  std::vector<std::string> memory_keys_;
+
   /** Transform Messages **/
   std::vector<geometry_msgs::msg::TransformStamped> tf_transforms_;
 
