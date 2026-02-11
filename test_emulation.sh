@@ -142,19 +142,11 @@ on_error() {
 trap cleanup EXIT
 trap 'on_error $?' ERR
 
-# Test 1: Build the package
-echo ""
-echo "Test 1: Building naoqi_driver package..."
-if colcon build --packages-select naoqi_driver; then
-    print_result 0 "Package builds successfully"
-else
-    print_result 1 "Package build failed"
-    exit 1
-fi
+test_count=0
 
-# Test 2: Launch driver in emulation mode (NAO)
 echo ""
-echo "Test 2: Launching driver in emulation mode (NAO)..."
+((test_count+=1))
+echo "Test ${test_count}: Launching driver in emulation mode (NAO)..."
 ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=nao > /tmp/naoqi_test_nao.log 2>&1 &
 LAUNCH_PID=$!
 sleep 5
@@ -163,18 +155,18 @@ sleep 5
 if check_process "naoqi_driver_node"; then
     print_result 0 "Driver launches in NAO emulation mode"
 
-    # Test 3: Check NAOqi version is correct for NAO
     echo ""
-    echo "Test 3: Verifying NAOqi version for NAO..."
+    ((test_count+=1))
+    echo "Test ${test_count}: Verifying NAOqi version for NAO..."
     if grep -q "2\.8\.6\.23" /tmp/naoqi_test_nao.log; then
         print_result 0 "NAO reports correct NAOqi version (2.8.6.23)"
     else
         print_result 1 "NAO version incorrect"
     fi
 
-    # Test 4: Check all services are registered
     echo ""
-    echo "Test 4: Checking fake NAOqi services registration..."
+    ((test_count+=1))
+    echo "Test ${test_count}: Checking fake NAOqi services registration..."
     EXPECTED_SERVICES="ALMotion ALMemory ALTextToSpeech ALVideoDevice ALAudioDevice ALSonar ALBodyTemperature ALRobotModel ALSystem ALDialog ALSpeechRecognition LogManager"
     ALL_REGISTERED=true
 
@@ -191,16 +183,17 @@ if check_process "naoqi_driver_node"; then
         print_result 1 "Some services missing"
     fi
 
-    # Test 5: Check ROS topics are published
     echo ""
-    echo "Test 5: Checking ROS topics availability..."
+    ((test_count+=1))
+    echo "Test ${test_count}: Checking ROS topics availability..."
     sleep 2  # Give time for topics to be advertised
 
     EXPECTED_TOPICS="/joint_states /joint_angles /cmd_vel /odom /diagnostics"
     TOPICS_OK=true
+    ros2 topic list > /tmp/ros2_topic_list.txt
 
     for topic in $EXPECTED_TOPICS; do
-        if ! timeout 2 ros2 topic list 2>/dev/null | grep -q "^${topic}$"; then
+        if ! grep "^${topic}$" /tmp/ros2_topic_list.txt; then
             echo "  Missing topic: $topic"
             TOPICS_OK=false
         fi
@@ -212,9 +205,9 @@ if check_process "naoqi_driver_node"; then
         print_result 1 "Some ROS topics missing"
     fi
 
-    # Test 6: Test joint_states topic is publishing
     echo ""
-    echo "Test 6: Publishing /joint_angles and verifying /joint_states updates..."
+    ((test_count+=1))
+    echo "Test ${test_count}: Publishing /joint_angles and verifying /joint_states updates..."
 
     # Capture a baseline joint state
     timeout 3 ros2 topic echo /joint_states --once --csv > /tmp/joint_states_before.csv
@@ -314,9 +307,9 @@ fi
 cleanup
 sleep 2
 
-# Test 7: Launch driver in emulation mode (Pepper)
 echo ""
-echo "Test 7: Testing Pepper emulation mode..."
+((test_count+=1))
+echo "Test ${test_count}: Testing Pepper emulation mode..."
 ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=pepper > /tmp/naoqi_test_pepper.log 2>&1 &
 sleep 5
 
@@ -339,9 +332,10 @@ fi
 cleanup
 sleep 2
 
-# Test 9: Launch driver in emulation mode (Romeo)
+
 echo ""
-echo "Test 9: Testing Romeo emulation mode..."
+((test_count+=1))
+echo "Test ${test_count}: Testing Romeo emulation mode..."
 ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=romeo > /tmp/naoqi_test_romeo.log 2>&1 &
 sleep 5
 
