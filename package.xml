@@ -27,6 +27,7 @@
   <depend>robot_state_publisher</depend>
   <depend>tf2_ros</depend>
   <depend>boost</depend>
+  <depend>ament_index_cpp</depend>
 
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>diagnostic_updater</build_depend>
