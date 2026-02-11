@@ -19,8 +19,8 @@
 #ifndef NAOQI_DRIVER_HPP
 #define NAOQI_DRIVER_HPP
 
+#include <map>
 #include <vector>
-#include <queue>
 
 /*
 * BOOST
@@ -245,8 +245,6 @@ private:
   bool keep_looping;
   bool has_stereo;
 
-  const size_t freq_;
-
   boost::shared_ptr<recorder::GlobalRecorder> recorder_;
 
   /* boot config */
@@ -269,8 +267,6 @@ private:
     registerConverter( mfc, mfp, mfr );
   }
 
-  void rosIteration();
-
   boost::mutex mutex_conv_queue_;
   boost::mutex mutex_record_;
 
@@ -290,24 +286,11 @@ private:
 
   float buffer_duration_;
 
-  /** Pub Publisher to execute at a specific time */
-  struct ScheduledConverter {
-    ScheduledConverter(const rclcpp::Time& schedule, size_t conv_index) :
-       schedule_(schedule), conv_index_(conv_index)
-    {
-    }
+  /** Per-converter timers that drive converter callbacks at their configured frequency */
+  std::map<std::string, rclcpp::TimerBase::SharedPtr> conv_timers_;
 
-    bool operator < (const ScheduledConverter& sp_in) const {
-      return schedule_ > sp_in.schedule_;
-    }
-    /** Time at which the publisher will be called */
-    rclcpp::Time schedule_;
-    /** Time at which the publisher will be called */
-    size_t conv_index_;
-  };
-
-  /** Priority queue to process the publishers according to their frequency */
-  std::priority_queue<ScheduledConverter> conv_queue_;
+  /** Create a wall timer for a converter at the given index */
+  void scheduleConverter(size_t conv_index);
 
   /** tf2 buffer that will be shared between different publishers/subscribers
    * This is only for performance improvements

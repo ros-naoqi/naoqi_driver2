@@ -118,8 +118,8 @@ namespace naoqi
 {
 
 Driver::Driver()
-    : rclcpp::Node("naoqi_driver"), freq_(15), publish_enabled_(false),
-      record_enabled_(false), log_enabled_(false), keep_looping(true),
+    : rclcpp::Node("naoqi_driver"), publish_enabled_(false), record_enabled_(false),
+      log_enabled_(false), keep_looping(true),
       recorder_(boost::make_shared<recorder::GlobalRecorder>("naoqi_driver")),
       buffer_duration_(helpers::recorder::bufferDefaultDuration)
 {
@@ -141,9 +141,6 @@ void Driver::run()
 
   // Setting up action servers.
   auto listen_server = action::createListenServer(this, sessionPtr_);
-
-  // A single iteration will propagate registrations, etc...
-  rosIteration();
 
   std::cout << BOLDYELLOW << "naoqi_driver initialized" << RESETCOLOR
             << std::endl;
@@ -198,12 +195,10 @@ void Driver::run()
 
   std::cout << BOLDYELLOW << "naoqi_driver initialized" << RESETCOLOR
             << std::endl;
-  std::cout << "Starting ROS loop" << std::endl;
+  std::cout << "Starting ROS spin" << std::endl;
 
-  while (keep_looping)
-  {
-    this->rosIteration();
-  }
+  // Use rclcpp::spin to process callbacks (timers, subscriptions, services, etc.)
+  rclcpp::spin(this->get_node_base_interface());
 }
 
 /**
@@ -230,84 +225,72 @@ void Driver::loadBootConfig()
   }
 }
 
-void Driver::rosIteration()
+void Driver::scheduleConverter(size_t conv_index)
 {
-  std::vector<message_actions::MessageAction> actions;
+  converter::Converter& conv = converters_[conv_index];
+  bool one_shot = (conv.frequency() == 0);
 
-  {
+  // For one-shot converters (0 Hz), use an arbitrary short delay;
+  // otherwise derive the period from the configured frequency.
+  auto period = one_shot ? std::chrono::nanoseconds(std::chrono::milliseconds(100))
+                         : std::chrono::nanoseconds(static_cast<int64_t>(1e9 / conv.frequency()));
+
+  RCLCPP_DEBUG(this->get_logger(),
+               "Scheduling converter %s with period %ld ns",
+               conv.name().c_str(),
+               period.count());
+  auto timer = this->create_timer(period, [this, conv_index, one_shot]() {
+    auto start_time = this->now();
+    RCLCPP_DEBUG(this->get_logger(),
+                 "Converter %s is being called (%ld ns)",
+                 converters_[conv_index].name().c_str(),
+                 start_time.nanoseconds());
     boost::mutex::scoped_lock lock(mutex_conv_queue_);
-    if (!conv_queue_.empty())
+    converter::Converter& conv = converters_[conv_index];
+
+    std::vector<message_actions::MessageAction> actions;
+
+    PubConstIter pub_it = pub_map_.find(conv.name());
+    if (publish_enabled_ && pub_it != pub_map_.end() && pub_it->second.isSubscribed())
     {
-      // Wait for the next Publisher to be ready
-      size_t conv_index = conv_queue_.top().conv_index_;
-      converter::Converter& conv = converters_[conv_index];
-      rclcpp::Time schedule = conv_queue_.top().schedule_;
+      actions.push_back(message_actions::PUBLISH);
+    }
 
-      // check the publishing condition
-      // 1. publishing enabled
-      // 2. has to be registered
-      // 3. has to be subscribed
-      PubConstIter pub_it = pub_map_.find(conv.name());
-      if (publish_enabled_ && pub_it != pub_map_.end() &&
-          pub_it->second.isSubscribed())
+    RecConstIter rec_it = rec_map_.find(conv.name());
+    {
+      boost::mutex::scoped_lock lock_record(mutex_record_, boost::try_to_lock);
+      if (lock_record && record_enabled_ && rec_it != rec_map_.end() &&
+          rec_it->second.isSubscribed())
       {
-        actions.push_back(message_actions::PUBLISH);
-      }
-
-      // check the recording condition
-      // 1. recording enabled
-      // 2. has to be registered
-      // 3. has to be subscribed (configured to be recorded)
-      RecConstIter rec_it = rec_map_.find(conv.name());
-      {
-        boost::mutex::scoped_lock lock_record(mutex_record_,
-                                              boost::try_to_lock);
-        if (lock_record && record_enabled_ && rec_it != rec_map_.end() &&
-            rec_it->second.isSubscribed())
-        {
-          actions.push_back(message_actions::RECORD);
-        }
-      }
-
-      // bufferize data in recorder
-      if (log_enabled_ && rec_it != rec_map_.end() && conv.frequency() != 0)
-      {
-        actions.push_back(message_actions::LOG);
-      }
-
-      // only call when we have at least one action to perform
-      if (actions.size() > 0)
-      {
-        conv.callAll(actions);
-      }
-
-      rclcpp::Duration d(schedule - this->now());
-      if (d > rclcpp::Duration(0, 0))
-      {
-        rclcpp::sleep_for(d.to_chrono<std::chrono::nanoseconds>());
-      }
-
-      // Schedule for a future time or not
-      conv_queue_.pop();
-      if (conv.frequency() != 0)
-      {
-        conv_queue_.push(ScheduledConverter(
-            schedule + rclcpp::Duration(0, (1.0f / conv.frequency()) * 1e9),
-            conv_index));
+        actions.push_back(message_actions::RECORD);
       }
     }
-    else  // conv_queue is empty.
-    {
-      // sleep one second
-      rclcpp::sleep_for(
-          rclcpp::Duration(1, 0).to_chrono<std::chrono::nanoseconds>());
-    }
-  }  // mutex scope
 
-  if (publish_enabled_)
-  {
-    rclcpp::spin_some(this->get_node_base_interface());
-  }
+    if (log_enabled_ && rec_it != rec_map_.end() && !one_shot)
+    {
+      actions.push_back(message_actions::LOG);
+    }
+
+    if (!actions.empty())
+    {
+      conv.callAll(actions);
+    }
+
+    if (one_shot)
+    {
+      auto timer_it = conv_timers_.find(conv.name());
+      if (timer_it != conv_timers_.end())
+      {
+        timer_it->second->cancel();
+      }
+    }
+
+    RCLCPP_DEBUG(this->get_logger(),
+                 "Converter %s finished calling, took %ld ns",
+                 conv.name().c_str(),
+                 this->now().nanoseconds() - start_time.nanoseconds());
+  });
+  conv_timers_[conv.name()] = timer;
 }
 
 std::string Driver::minidump(const std::string& prefix)
@@ -506,7 +489,7 @@ void Driver::registerConverter(converter::Converter& conv)
   int conv_index = converters_.size();
   converters_.push_back(conv);
   conv.reset();
-  conv_queue_.push(ScheduledConverter(this->now(), conv_index));
+  scheduleConverter(conv_index);
 }
 
 void Driver::registerPublisher(const std::string& conv_name,
@@ -1470,6 +1453,17 @@ void Driver::stopLogging()
 void Driver::stop()
 {
   keep_looping = false;
+
+  // Cancel all converter timers
+  for (auto& timer_pair : conv_timers_)
+  {
+    if (timer_pair.second)
+    {
+      timer_pair.second->cancel();
+    }
+  }
+  conv_timers_.clear();
+
   for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
        iterator++)
   {
@@ -1479,7 +1473,9 @@ void Driver::stop()
   converters_.clear();
   subscribers_.clear();
   event_map_.clear();
-  rclcpp::spin_some(this->get_node_base_interface());
+
+  // Shut down rclcpp to exit the spin
+  rclcpp::shutdown();
 }
 
 void Driver::parseJsonFile(std::string filepath,
