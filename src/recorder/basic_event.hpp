@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef BASIC_EVENT_RECORDER_HPP
 #define BASIC_EVENT_RECORDER_HPP
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include <naoqi_driver/recorder/globalrecorder.hpp>
 #include <naoqi_driver/ros_helpers.hpp>
-#include "../helpers/recorder_helpers.hpp"
 #include <rclcpp/duration.hpp>
+#include "../helpers/recorder_helpers.hpp"
 
 /*
-* STANDARD includes
-*/
+ * STANDARD includes
+ */
 #include <string>
 
 namespace naoqi
@@ -36,61 +36,52 @@ namespace naoqi
 namespace recorder
 {
 
-template<class T>
+template <class T>
 class BasicEventRecorder
 {
 
-public:
-  BasicEventRecorder( const std::string& topic ):
-    topic_( topic ),
-    buffer_duration_( helpers::recorder::bufferDefaultDuration ),
-    is_initialized_( false ),
-    is_subscribed_( false )
-  {}
+  public:
+  BasicEventRecorder(const std::string& topic)
+      : topic_(topic), buffer_duration_(helpers::recorder::bufferDefaultDuration),
+        is_initialized_(false), is_subscribed_(false)
+  {
+  }
 
   virtual ~BasicEventRecorder() {}
 
-  inline std::string topic() const
-  {
-    return topic_;
-  }
+  inline std::string topic() const { return topic_; }
 
-  inline bool isInitialized() const
-  {
-    return is_initialized_;
-  }
+  inline bool isInitialized() const { return is_initialized_; }
 
-  inline void subscribe( bool state)
-  {
-    is_subscribed_ = state;
-  }
+  inline void subscribe(bool state) { is_subscribed_ = state; }
 
-  inline bool isSubscribed() const
-  {
-    return is_subscribed_;
-  }
+  inline bool isSubscribed() const { return is_subscribed_; }
 
   virtual void write(const T& msg)
   {
-    if (!helpers::recorder::isZero(msg.header.stamp)) {
+    if (!helpers::recorder::isZero(msg.header.stamp))
+    {
       gr_->write(topic_, msg, msg.header.stamp);
     }
-    else {
+    else
+    {
       gr_->write(topic_, msg);
     }
   }
 
   virtual void writeDump(const rclcpp::Time& time)
   {
-    boost::mutex::scoped_lock lock_write_buffer( mutex_ );
+    boost::mutex::scoped_lock lock_write_buffer(mutex_);
     removeOlderThan(time);
     typename std::list<T>::iterator it;
     for (it = buffer_.begin(); it != buffer_.end(); it++)
     {
-      if (!helpers::recorder::isZero(it->header.stamp)) {
+      if (!helpers::recorder::isZero(it->header.stamp))
+      {
         gr_->write(topic_, *it, it->header.stamp);
       }
-      else {
+      else
+      {
         gr_->write(topic_, *it);
       }
     }
@@ -98,11 +89,10 @@ public:
 
   virtual void bufferize(const T& msg)
   {
-    boost::mutex::scoped_lock lock_bufferize( mutex_ );
+    boost::mutex::scoped_lock lock_bufferize(mutex_);
     typename std::list<T>::iterator it;
     removeOld();
     buffer_.push_back(msg);
-
   }
 
   virtual void reset(boost::shared_ptr<GlobalRecorder> gr, float conv_frequency)
@@ -113,11 +103,11 @@ public:
 
   virtual void setBufferDuration(float duration)
   {
-    boost::mutex::scoped_lock lock_bufferize( mutex_ );
+    boost::mutex::scoped_lock lock_bufferize(mutex_);
     buffer_duration_ = duration;
   }
 
-protected:
+  protected:
   bool isTooOld(const T& msg)
   {
     rclcpp::Duration d(helpers::Time::now() - msg.header.stamp);
@@ -164,9 +154,9 @@ protected:
   bool is_subscribed_;
 
   boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr_;
-}; // class
+};  // class
 
-} // recorder
-} // naoqi
+}  // namespace recorder
+}  // namespace naoqi
 
 #endif

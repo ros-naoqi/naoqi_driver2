@@ -127,8 +127,7 @@ Driver::Driver()
 
 Driver::~Driver()
 {
-  std::cout << BOLDCYAN << "naoqi driver is shutting down.." << RESETCOLOR
-            << std::endl;
+  std::cout << BOLDCYAN << "naoqi driver is shutting down.." << RESETCOLOR << std::endl;
 }
 
 void Driver::run()
@@ -142,8 +141,7 @@ void Driver::run()
   // Setting up action servers.
   auto listen_server = action::createListenServer(this, sessionPtr_);
 
-  std::cout << BOLDYELLOW << "naoqi_driver initialized" << RESETCOLOR
-            << std::endl;
+  std::cout << BOLDYELLOW << "naoqi_driver initialized" << RESETCOLOR << std::endl;
 
   {
     boost::mutex::scoped_lock lock(mutex_conv_queue_);
@@ -153,8 +151,7 @@ void Driver::run()
       // If there is no converters, create them
       // (converters only depends on Naoqi, resetting the
       // Ros node has no impact on them)
-      std::cout << BOLDRED << "going to register converters" << RESETCOLOR
-                << std::endl;
+      std::cout << BOLDRED << "going to register converters" << RESETCOLOR << std::endl;
       registerDefaultConverter();
       registerDefaultSubscriber();
     }
@@ -193,8 +190,7 @@ void Driver::run()
     startPublishing();
   }
 
-  std::cout << BOLDYELLOW << "naoqi_driver initialized" << RESETCOLOR
-            << std::endl;
+  std::cout << BOLDYELLOW << "naoqi_driver initialized" << RESETCOLOR << std::endl;
   std::cout << "Starting ROS spin" << std::endl;
 
   // Use rclcpp::spin to process callbacks (timers, subscriptions, services, etc.)
@@ -297,8 +293,7 @@ std::string Driver::minidump(const std::string& prefix)
 {
   if (!log_enabled_)
   {
-    const std::string& err =
-        "Log is not enabled, please enable logging before calling minidump";
+    const std::string& err = "Log is not enabled, please enable logging before calling minidump";
     std::cout << BOLDRED << err << std::endl << RESETCOLOR << std::endl;
     return err;
   }
@@ -313,10 +308,8 @@ std::string Driver::minidump(const std::string& prefix)
               << "No more space on robot. You need to upload the presents "
                  "bags and remove them to make new ones."
               << std::endl
-              << "To remove all the presents bags, you can run this command:"
-              << std::endl
-              << "\t$ qicli call ROS-Driver.removeFiles" << RESETCOLOR
-              << std::endl;
+              << "To remove all the presents bags, you can run this command:" << std::endl
+              << "\t$ qicli call ROS-Driver.removeFiles" << RESETCOLOR << std::endl;
     return "No more space on robot. You need to upload the presents bags and "
            "remove them to make new ones.";
   }
@@ -329,8 +322,7 @@ std::string Driver::minidump(const std::string& prefix)
 
   // STOP BUFFERIZING
   log_enabled_ = false;
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.isDumping(true);
   }
@@ -341,21 +333,18 @@ std::string Driver::minidump(const std::string& prefix)
   recorder_->startRecord(prefix);
 
   // WRITE ALL BUFFER INTO THE ROSBAG
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.writeDump(time);
   }
-  for (RecIter iterator = rec_map_.begin(); iterator != rec_map_.end();
-       iterator++)
+  for (RecIter iterator = rec_map_.begin(); iterator != rec_map_.end(); iterator++)
   {
     iterator->second.writeDump(time);
   }
 
   // RESTART BUFFERIZING
   log_enabled_ = true;
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.isDumping(false);
   }
@@ -367,8 +356,7 @@ std::string Driver::minidumpConverters(const std::string& prefix,
 {
   if (!log_enabled_)
   {
-    const std::string& err =
-        "Log is not enabled, please enable logging before calling minidump";
+    const std::string& err = "Log is not enabled, please enable logging before calling minidump";
     std::cout << BOLDRED << err << std::endl << RESETCOLOR << std::endl;
     return err;
   }
@@ -383,10 +371,8 @@ std::string Driver::minidumpConverters(const std::string& prefix,
               << "No more space on robot. You need to upload the presents "
                  "bags and remove them to make new ones."
               << std::endl
-              << "To remove all the presents bags, you can run this command:"
-              << std::endl
-              << "\t$ qicli call ROS-Driver.removeFiles" << RESETCOLOR
-              << std::endl;
+              << "To remove all the presents bags, you can run this command:" << std::endl
+              << "\t$ qicli call ROS-Driver.removeFiles" << RESETCOLOR << std::endl;
     return "No more space on robot. You need to upload the presents bags and "
            "remove them to make new ones.";
   }
@@ -399,8 +385,7 @@ std::string Driver::minidumpConverters(const std::string& prefix,
 
   // STOP BUFFERIZING
   log_enabled_ = false;
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.isDumping(true);
   }
@@ -438,8 +423,7 @@ std::string Driver::minidumpConverters(const std::string& prefix,
   }
   // RESTART BUFFERIZING
   log_enabled_ = true;
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.isDumping(false);
   }
@@ -449,14 +433,12 @@ std::string Driver::minidumpConverters(const std::string& prefix,
   }
   else
   {
-    std::cout
-        << BOLDRED << "Could not find any topic in recorders" << RESETCOLOR
-        << std::endl
-        << BOLDYELLOW
-        << "To get the list of all available converter's name, please run:"
-        << RESETCOLOR << std::endl
-        << GREEN << "\t$ qicli call ROS-Driver.getAvailableConverters"
-        << RESETCOLOR << std::endl;
+    std::cout << BOLDRED << "Could not find any topic in recorders" << RESETCOLOR << std::endl
+              << BOLDYELLOW
+              << "To get the list of all available converter's name, please run:" << RESETCOLOR
+              << std::endl
+              << GREEN << "\t$ qicli call ROS-Driver.getAvailableConverters" << RESETCOLOR
+              << std::endl;
     return "Could not find any topic in converters. To get the list of all "
            "available converter's name, please run: $ qicli call "
            "ROS-Driver.getAvailableConverters";
@@ -465,13 +447,11 @@ std::string Driver::minidumpConverters(const std::string& prefix,
 
 void Driver::setBufferDuration(float duration)
 {
-  for (RecIter iterator = rec_map_.begin(); iterator != rec_map_.end();
-       iterator++)
+  for (RecIter iterator = rec_map_.begin(); iterator != rec_map_.end(); iterator++)
   {
     iterator->second.setBufferDuration(duration);
   }
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.setBufferDuration(duration);
   }
@@ -492,8 +472,7 @@ void Driver::registerConverter(converter::Converter& conv)
   scheduleConverter(conv_index);
 }
 
-void Driver::registerPublisher(const std::string& conv_name,
-                               publisher::Publisher& pub)
+void Driver::registerPublisher(const std::string& conv_name, publisher::Publisher& pub)
 {
   if (publish_enabled_)
   {
@@ -501,38 +480,36 @@ void Driver::registerPublisher(const std::string& conv_name,
   }
   // Concept classes don't have any default constructors needed by operator[]
   // Cannot use this operator here. So we use insert
-  pub_map_.insert(
-      std::map<std::string, publisher::Publisher>::value_type(conv_name, pub));
+  pub_map_.insert(std::map<std::string, publisher::Publisher>::value_type(conv_name, pub));
 }
 
 void Driver::registerRecorder(const std::string& conv_name,
-                              recorder::Recorder& rec, float frequency)
+                              recorder::Recorder& rec,
+                              float frequency)
 {
   // Concept classes don't have any default constructors needed by operator[]
   // Cannot use this operator here. So we use insert
   rec.reset(recorder_, frequency);
-  rec_map_.insert(
-      std::map<std::string, recorder::Recorder>::value_type(conv_name, rec));
+  rec_map_.insert(std::map<std::string, recorder::Recorder>::value_type(conv_name, rec));
 }
 
 void Driver::insertEventConverter(const std::string& key, event::Event event)
 {
   // event.reset(*nhPtr_, recorder_);
   event.resetRecorder(recorder_);
-  event_map_.insert(
-      std::map<std::string, event::Event>::value_type(key, event));
+  event_map_.insert(std::map<std::string, event::Event>::value_type(key, event));
 }
 
 void Driver::registerConverter(converter::Converter conv,
-                               publisher::Publisher pub, recorder::Recorder rec)
+                               publisher::Publisher pub,
+                               recorder::Recorder rec)
 {
   registerConverter(conv);
   registerPublisher(conv.name(), pub);
   registerRecorder(conv.name(), rec, conv.frequency());
 }
 
-void Driver::registerPublisher(converter::Converter conv,
-                               publisher::Publisher pub)
+void Driver::registerPublisher(converter::Converter conv, publisher::Publisher pub)
 {
   registerConverter(conv);
   registerPublisher(conv.name(), pub);
@@ -544,7 +521,8 @@ void Driver::registerRecorder(converter::Converter conv, recorder::Recorder rec)
   registerRecorder(conv.name(), rec, conv.frequency());
 }
 
-bool Driver::registerMemoryConverter(const std::string& key, float frequency,
+bool Driver::registerMemoryConverter(const std::string& key,
+                                     float frequency,
                                      const dataType::DataType& type)
 {
   dataType::DataType data_type;
@@ -556,8 +534,7 @@ bool Driver::registerMemoryConverter(const std::string& key, float frequency,
   }
   catch (const std::exception& e)
   {
-    std::cout << BOLDRED
-              << "Could not get data in memory for the key: " << BOLDCYAN << key
+    std::cout << BOLDRED << "Could not get data in memory for the key: " << BOLDCYAN << key
               << RESETCOLOR << std::endl;
     return false;
   }
@@ -570,17 +547,14 @@ bool Driver::registerMemoryConverter(const std::string& key, float frequency,
     }
     catch (const std::exception& e)
     {
-      std::cout
-          << BOLDRED
-          << "Could not get a valid data type to register memory converter "
-          << BOLDCYAN << key << RESETCOLOR << std::endl
-          << BOLDRED
-          << "You can enter it yourself, available types are:" << std::endl
-          << "\t > 0 - None" << std::endl
-          << "\t > 1 - Float" << std::endl
-          << "\t > 2 - Int" << std::endl
-          << "\t > 3 - String" << std::endl
-          << "\t > 4 - Bool" << RESETCOLOR << std::endl;
+      std::cout << BOLDRED << "Could not get a valid data type to register memory converter "
+                << BOLDCYAN << key << RESETCOLOR << std::endl
+                << BOLDRED << "You can enter it yourself, available types are:" << std::endl
+                << "\t > 0 - None" << std::endl
+                << "\t > 1 - Float" << std::endl
+                << "\t > 2 - Int" << std::endl
+                << "\t > 3 - String" << std::endl
+                << "\t > 4 - Bool" << RESETCOLOR << std::endl;
       return false;
     }
   }
@@ -595,32 +569,27 @@ bool Driver::registerMemoryConverter(const std::string& key, float frequency,
       return false;
       break;
     case 1:
-      _registerMemoryConverter<
-          publisher::BasicPublisher<naoqi_bridge_msgs::msg::FloatStamped>,
-          recorder::BasicRecorder<naoqi_bridge_msgs::msg::FloatStamped>,
-          converter::MemoryFloatConverter>(key, frequency);
+      _registerMemoryConverter<publisher::BasicPublisher<naoqi_bridge_msgs::msg::FloatStamped>,
+                               recorder::BasicRecorder<naoqi_bridge_msgs::msg::FloatStamped>,
+                               converter::MemoryFloatConverter>(key, frequency);
       break;
     case 2:
-      _registerMemoryConverter<
-          publisher::BasicPublisher<naoqi_bridge_msgs::msg::IntStamped>,
-          recorder::BasicRecorder<naoqi_bridge_msgs::msg::IntStamped>,
-          converter::MemoryIntConverter>(key, frequency);
+      _registerMemoryConverter<publisher::BasicPublisher<naoqi_bridge_msgs::msg::IntStamped>,
+                               recorder::BasicRecorder<naoqi_bridge_msgs::msg::IntStamped>,
+                               converter::MemoryIntConverter>(key, frequency);
       break;
     case 3:
-      _registerMemoryConverter<
-          publisher::BasicPublisher<naoqi_bridge_msgs::msg::StringStamped>,
-          recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped>,
-          converter::MemoryStringConverter>(key, frequency);
+      _registerMemoryConverter<publisher::BasicPublisher<naoqi_bridge_msgs::msg::StringStamped>,
+                               recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped>,
+                               converter::MemoryStringConverter>(key, frequency);
       break;
     case 4:
-      _registerMemoryConverter<
-          publisher::BasicPublisher<naoqi_bridge_msgs::msg::BoolStamped>,
-          recorder::BasicRecorder<naoqi_bridge_msgs::msg::BoolStamped>,
-          converter::MemoryBoolConverter>(key, frequency);
+      _registerMemoryConverter<publisher::BasicPublisher<naoqi_bridge_msgs::msg::BoolStamped>,
+                               recorder::BasicRecorder<naoqi_bridge_msgs::msg::BoolStamped>,
+                               converter::MemoryBoolConverter>(key, frequency);
       break;
     default: {
-      std::cout << BOLDRED
-                << "Wrong data type. Available type are: " << std::endl
+      std::cout << BOLDRED << "Wrong data type. Available type are: " << std::endl
                 << "\t > 0 - None" << std::endl
                 << "\t > 1 - Float" << std::endl
                 << "\t > 2 - Int" << std::endl
@@ -655,71 +624,51 @@ void Driver::registerDefaultConverter()
   bool diag_enabled = boot_config_.get("converters.diag.enabled", true);
   size_t diag_frequency = boot_config_.get("converters.diag.frequency", 10);
 
-  bool imu_torso_enabled =
-      boot_config_.get("converters.imu_torso.enabled", true);
-  size_t imu_torso_frequency =
-      boot_config_.get("converters.imu_torso.frequency", 10);
+  bool imu_torso_enabled = boot_config_.get("converters.imu_torso.enabled", true);
+  size_t imu_torso_frequency = boot_config_.get("converters.imu_torso.frequency", 10);
 
   bool imu_base_enabled = boot_config_.get("converters.imu_base.enabled", true);
-  size_t imu_base_frequency =
-      boot_config_.get("converters.imu_base.frequency", 10);
+  size_t imu_base_frequency = boot_config_.get("converters.imu_base.frequency", 10);
 
-  bool camera_front_enabled =
-      boot_config_.get("converters.front_camera.enabled", true);
+  bool camera_front_enabled = boot_config_.get("converters.front_camera.enabled", true);
   size_t camera_front_resolution =
       boot_config_.get("converters.front_camera.resolution", 1);  // VGA
   size_t camera_front_fps = boot_config_.get("converters.front_camera.fps", 10);
-  size_t camera_front_recorder_fps =
-      boot_config_.get("converters.front_camera.recorder_fps", 5);
+  size_t camera_front_recorder_fps = boot_config_.get("converters.front_camera.recorder_fps", 5);
 
-  bool camera_bottom_enabled =
-      boot_config_.get("converters.bottom_camera.enabled", true);
+  bool camera_bottom_enabled = boot_config_.get("converters.bottom_camera.enabled", true);
   size_t camera_bottom_resolution =
       boot_config_.get("converters.bottom_camera.resolution", 1);  // VGA
-  size_t camera_bottom_fps =
-      boot_config_.get("converters.bottom_camera.fps", 10);
-  size_t camera_bottom_recorder_fps =
-      boot_config_.get("converters.bottom_camera.recorder_fps", 5);
+  size_t camera_bottom_fps = boot_config_.get("converters.bottom_camera.fps", 10);
+  size_t camera_bottom_recorder_fps = boot_config_.get("converters.bottom_camera.recorder_fps", 5);
 
   size_t camera_depth_resolution;
-  bool camera_depth_enabled =
-      boot_config_.get("converters.depth_camera.enabled", true);
+  bool camera_depth_enabled = boot_config_.get("converters.depth_camera.enabled", true);
   size_t camera_depth_xtion_resolution =
       boot_config_.get("converters.depth_camera.xtion_resolution", 1);  // QVGA
-  size_t camera_depth_stereo_resolution = boot_config_.get(
-      "converters.depth_camera.stereo_resolution", 9);  // Q720p
+  size_t camera_depth_stereo_resolution =
+      boot_config_.get("converters.depth_camera.stereo_resolution", 9);  // Q720p
   size_t camera_depth_fps = boot_config_.get("converters.depth_camera.fps", 10);
-  size_t camera_depth_recorder_fps =
-      boot_config_.get("converters.depth_camera.recorder_fps", 5);
+  size_t camera_depth_recorder_fps = boot_config_.get("converters.depth_camera.recorder_fps", 5);
 
-  bool camera_stereo_enabled =
-      boot_config_.get("converters.stereo_camera.enabled", true);
+  bool camera_stereo_enabled = boot_config_.get("converters.stereo_camera.enabled", true);
   size_t camera_stereo_resolution =
       boot_config_.get("converters.stereo_camera.resolution", 15);  // QQ720px2
-  size_t camera_stereo_fps =
-      boot_config_.get("converters.stereo_camera.fps", 10);
-  size_t camera_stereo_recorder_fps =
-      boot_config_.get("converters.stereo_camera.recorder_fps", 5);
+  size_t camera_stereo_fps = boot_config_.get("converters.stereo_camera.fps", 10);
+  size_t camera_stereo_recorder_fps = boot_config_.get("converters.stereo_camera.recorder_fps", 5);
 
-  bool camera_ir_enabled =
-      boot_config_.get("converters.ir_camera.enabled", true);
-  size_t camera_ir_resolution =
-      boot_config_.get("converters.ir_camera.resolution", 1);  // QVGA
+  bool camera_ir_enabled = boot_config_.get("converters.ir_camera.enabled", true);
+  size_t camera_ir_resolution = boot_config_.get("converters.ir_camera.resolution", 1);  // QVGA
   size_t camera_ir_fps = boot_config_.get("converters.ir_camera.fps", 10);
-  size_t camera_ir_recorder_fps =
-      boot_config_.get("converters.ir_camera.recorder_fps", 5);
+  size_t camera_ir_recorder_fps = boot_config_.get("converters.ir_camera.recorder_fps", 5);
 
-  bool joint_states_enabled =
-      boot_config_.get("converters.joint_states.enabled", true);
-  size_t joint_states_frequency =
-      boot_config_.get("converters.joint_states.frequency", 50);
+  bool joint_states_enabled = boot_config_.get("converters.joint_states.enabled", true);
+  size_t joint_states_frequency = boot_config_.get("converters.joint_states.frequency", 50);
 
   bool laser_enabled = boot_config_.get("converters.laser.enabled", true);
   size_t laser_frequency = boot_config_.get("converters.laser.frequency", 10);
-  float laser_range_min =
-      boot_config_.get<float>("converters.laser.range_min", 0.1);
-  float laser_range_max =
-      boot_config_.get<float>("converters.laser.range_max", 3.0);
+  float laser_range_min = boot_config_.get<float>("converters.laser.range_min", 0.1);
+  float laser_range_max = boot_config_.get<float>("converters.laser.range_max", 3.0);
 
   bool sonar_enabled = boot_config_.get("converters.sonar.enabled", true);
   size_t sonar_frequency = boot_config_.get("converters.sonar.frequency", 10);
@@ -759,23 +708,21 @@ void Driver::registerDefaultConverter()
   {
     static const auto topic = "info";
     auto inp = boost::make_shared<publisher::InfoPublisher>(topic);
-    auto inr = boost::make_shared<
-        recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped>>(topic);
+    auto inr =
+        boost::make_shared<recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped>>(topic);
     boost::shared_ptr<converter::InfoConverter> inc =
         boost::make_shared<converter::InfoConverter>(topic, 0, sessionPtr_);
-    inc->registerCallback(
-        message_actions::PUBLISH,
-        boost::bind(&publisher::InfoPublisher::publish, inp, ph::_1));
+    inc->registerCallback(message_actions::PUBLISH,
+                          boost::bind(&publisher::InfoPublisher::publish, inp, ph::_1));
     inc->registerCallback(
         message_actions::RECORD,
-        boost::bind(&recorder::BasicRecorder<
-                        naoqi_bridge_msgs::msg::StringStamped>::write,
-                    inr, ph::_1));
+        boost::bind(
+            &recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped>::write, inr, ph::_1));
     inc->registerCallback(
         message_actions::LOG,
-        boost::bind(&recorder::BasicRecorder<
-                        naoqi_bridge_msgs::msg::StringStamped>::bufferize,
-                    inr, ph::_1));
+        boost::bind(&recorder::BasicRecorder<naoqi_bridge_msgs::msg::StringStamped>::bufferize,
+                    inr,
+                    ph::_1));
     registerConverter(inc, inp, inr);
   }
 
@@ -783,13 +730,11 @@ void Driver::registerDefaultConverter()
   if (logs_enabled)
   {
     boost::shared_ptr<converter::LogConverter> lc =
-        boost::make_shared<converter::LogConverter>("log", logs_frequency,
-                                                    sessionPtr_);
+        boost::make_shared<converter::LogConverter>("log", logs_frequency, sessionPtr_);
     boost::shared_ptr<publisher::LogPublisher> lp =
         boost::make_shared<publisher::LogPublisher>("/rosout");
-    lc->registerCallback(
-        message_actions::PUBLISH,
-        boost::bind(&publisher::LogPublisher::publish, lp, ph::_1));
+    lc->registerCallback(message_actions::PUBLISH,
+                         boost::bind(&publisher::LogPublisher::publish, lp, ph::_1));
     registerPublisher(lc, lp);
   }
 
@@ -797,26 +742,21 @@ void Driver::registerDefaultConverter()
   if (diag_enabled)
   {
     boost::shared_ptr<converter::DiagnosticsConverter> dc =
-        boost::make_shared<converter::DiagnosticsConverter>(
-            "diag", diag_frequency, sessionPtr_);
-    boost::shared_ptr<
-        publisher::BasicPublisher<diagnostic_msgs::msg::DiagnosticArray>>
-        dp = boost::make_shared<
-            publisher::BasicPublisher<diagnostic_msgs::msg::DiagnosticArray>>(
+        boost::make_shared<converter::DiagnosticsConverter>("diag", diag_frequency, sessionPtr_);
+    boost::shared_ptr<publisher::BasicPublisher<diagnostic_msgs::msg::DiagnosticArray>> dp =
+        boost::make_shared<publisher::BasicPublisher<diagnostic_msgs::msg::DiagnosticArray>>(
             "/diagnostics");
     boost::shared_ptr<recorder::DiagnosticsRecorder> dr =
         boost::make_shared<recorder::DiagnosticsRecorder>("/diagnostics");
     dc->registerCallback(
         message_actions::PUBLISH,
-        boost::bind(&publisher::BasicPublisher<
-                        diagnostic_msgs::msg::DiagnosticArray>::publish,
-                    dp, ph::_1));
-    dc->registerCallback(
-        message_actions::RECORD,
-        boost::bind(&recorder::DiagnosticsRecorder::write, dr, ph::_1));
-    dc->registerCallback(
-        message_actions::LOG,
-        boost::bind(&recorder::DiagnosticsRecorder::bufferize, dr, ph::_1));
+        boost::bind(&publisher::BasicPublisher<diagnostic_msgs::msg::DiagnosticArray>::publish,
+                    dp,
+                    ph::_1));
+    dc->registerCallback(message_actions::RECORD,
+                         boost::bind(&recorder::DiagnosticsRecorder::write, dr, ph::_1));
+    dc->registerCallback(message_actions::LOG,
+                         boost::bind(&recorder::DiagnosticsRecorder::bufferize, dr, ph::_1));
     registerConverter(dc, dp, dr);
   }
 
@@ -824,27 +764,20 @@ void Driver::registerDefaultConverter()
   if (imu_torso_enabled)
   {
     boost::shared_ptr<publisher::BasicPublisher<sensor_msgs::msg::Imu>> imutp =
-        boost::make_shared<publisher::BasicPublisher<sensor_msgs::msg::Imu>>(
-            "imu/torso");
+        boost::make_shared<publisher::BasicPublisher<sensor_msgs::msg::Imu>>("imu/torso");
     boost::shared_ptr<recorder::BasicRecorder<sensor_msgs::msg::Imu>> imutr =
-        boost::make_shared<recorder::BasicRecorder<sensor_msgs::msg::Imu>>(
-            "imu/torso");
-    boost::shared_ptr<converter::ImuConverter> imutc =
-        boost::make_shared<converter::ImuConverter>(
-            "imu_torso", converter::IMU::TORSO, imu_torso_frequency,
-            sessionPtr_);
+        boost::make_shared<recorder::BasicRecorder<sensor_msgs::msg::Imu>>("imu/torso");
+    boost::shared_ptr<converter::ImuConverter> imutc = boost::make_shared<converter::ImuConverter>(
+        "imu_torso", converter::IMU::TORSO, imu_torso_frequency, sessionPtr_);
     imutc->registerCallback(
         message_actions::PUBLISH,
-        boost::bind(&publisher::BasicPublisher<sensor_msgs::msg::Imu>::publish,
-                    imutp, ph::_1));
+        boost::bind(&publisher::BasicPublisher<sensor_msgs::msg::Imu>::publish, imutp, ph::_1));
     imutc->registerCallback(
         message_actions::RECORD,
-        boost::bind(&recorder::BasicRecorder<sensor_msgs::msg::Imu>::write,
-                    imutr, ph::_1));
+        boost::bind(&recorder::BasicRecorder<sensor_msgs::msg::Imu>::write, imutr, ph::_1));
     imutc->registerCallback(
         message_actions::LOG,
-        boost::bind(&recorder::BasicRecorder<sensor_msgs::msg::Imu>::bufferize,
-                    imutr, ph::_1));
+        boost::bind(&recorder::BasicRecorder<sensor_msgs::msg::Imu>::bufferize, imutr, ph::_1));
     registerConverter(imutc, imutp, imutr);
   }
 
@@ -853,30 +786,22 @@ void Driver::registerDefaultConverter()
     /** IMU BASE **/
     if (imu_base_enabled)
     {
-      boost::shared_ptr<publisher::BasicPublisher<sensor_msgs::msg::Imu>>
-          imubp = boost::make_shared<
-              publisher::BasicPublisher<sensor_msgs::msg::Imu>>("imu/base");
+      boost::shared_ptr<publisher::BasicPublisher<sensor_msgs::msg::Imu>> imubp =
+          boost::make_shared<publisher::BasicPublisher<sensor_msgs::msg::Imu>>("imu/base");
       boost::shared_ptr<recorder::BasicRecorder<sensor_msgs::msg::Imu>> imubr =
-          boost::make_shared<recorder::BasicRecorder<sensor_msgs::msg::Imu>>(
-              "imu/base");
+          boost::make_shared<recorder::BasicRecorder<sensor_msgs::msg::Imu>>("imu/base");
       boost::shared_ptr<converter::ImuConverter> imubc =
           boost::make_shared<converter::ImuConverter>(
-              "imu_base", converter::IMU::BASE, imu_base_frequency,
-              sessionPtr_);
+              "imu_base", converter::IMU::BASE, imu_base_frequency, sessionPtr_);
       imubc->registerCallback(
           message_actions::PUBLISH,
-          boost::bind(
-              &publisher::BasicPublisher<sensor_msgs::msg::Imu>::publish, imubp,
-              ph::_1));
+          boost::bind(&publisher::BasicPublisher<sensor_msgs::msg::Imu>::publish, imubp, ph::_1));
       imubc->registerCallback(
           message_actions::RECORD,
-          boost::bind(&recorder::BasicRecorder<sensor_msgs::msg::Imu>::write,
-                      imubr, ph::_1));
+          boost::bind(&recorder::BasicRecorder<sensor_msgs::msg::Imu>::write, imubr, ph::_1));
       imubc->registerCallback(
           message_actions::LOG,
-          boost::bind(
-              &recorder::BasicRecorder<sensor_msgs::msg::Imu>::bufferize, imubr,
-              ph::_1));
+          boost::bind(&recorder::BasicRecorder<sensor_msgs::msg::Imu>::bufferize, imubr, ph::_1));
       registerConverter(imubc, imubp, imubr);
     }
   }  // endif PEPPER
@@ -885,24 +810,18 @@ void Driver::registerDefaultConverter()
   if (camera_front_enabled)
   {
     boost::shared_ptr<publisher::CameraPublisher> fcp =
-        boost::make_shared<publisher::CameraPublisher>("camera/front/image_raw",
-                                                       AL::kTopCamera);
+        boost::make_shared<publisher::CameraPublisher>("camera/front/image_raw", AL::kTopCamera);
     boost::shared_ptr<recorder::CameraRecorder> fcr =
-        boost::make_shared<recorder::CameraRecorder>("camera/front",
-                                                     camera_front_recorder_fps);
+        boost::make_shared<recorder::CameraRecorder>("camera/front", camera_front_recorder_fps);
     boost::shared_ptr<converter::CameraConverter> fcc =
         boost::make_shared<converter::CameraConverter>(
-            "front_camera", camera_front_fps, sessionPtr_, AL::kTopCamera,
-            camera_front_resolution);
-    fcc->registerCallback(
-        message_actions::PUBLISH,
-        boost::bind(&publisher::CameraPublisher::publish, fcp, ph::_1, ph::_2));
-    fcc->registerCallback(
-        message_actions::RECORD,
-        boost::bind(&recorder::CameraRecorder::write, fcr, ph::_1, ph::_2));
-    fcc->registerCallback(
-        message_actions::LOG,
-        boost::bind(&recorder::CameraRecorder::bufferize, fcr, ph::_1, ph::_2));
+            "front_camera", camera_front_fps, sessionPtr_, AL::kTopCamera, camera_front_resolution);
+    fcc->registerCallback(message_actions::PUBLISH,
+                          boost::bind(&publisher::CameraPublisher::publish, fcp, ph::_1, ph::_2));
+    fcc->registerCallback(message_actions::RECORD,
+                          boost::bind(&recorder::CameraRecorder::write, fcr, ph::_1, ph::_2));
+    fcc->registerCallback(message_actions::LOG,
+                          boost::bind(&recorder::CameraRecorder::bufferize, fcr, ph::_1, ph::_2));
     registerConverter(fcc, fcp, fcr);
   }
 
@@ -910,24 +829,22 @@ void Driver::registerDefaultConverter()
   if (camera_bottom_enabled)
   {
     boost::shared_ptr<publisher::CameraPublisher> bcp =
-        boost::make_shared<publisher::CameraPublisher>(
-            "camera/bottom/image_raw", AL::kBottomCamera);
+        boost::make_shared<publisher::CameraPublisher>("camera/bottom/image_raw",
+                                                       AL::kBottomCamera);
     boost::shared_ptr<recorder::CameraRecorder> bcr =
-        boost::make_shared<recorder::CameraRecorder>(
-            "camera/bottom", camera_bottom_recorder_fps);
+        boost::make_shared<recorder::CameraRecorder>("camera/bottom", camera_bottom_recorder_fps);
     boost::shared_ptr<converter::CameraConverter> bcc =
-        boost::make_shared<converter::CameraConverter>(
-            "bottom_camera", camera_bottom_fps, sessionPtr_, AL::kBottomCamera,
-            camera_bottom_resolution);
-    bcc->registerCallback(
-        message_actions::PUBLISH,
-        boost::bind(&publisher::CameraPublisher::publish, bcp, ph::_1, ph::_2));
-    bcc->registerCallback(
-        message_actions::RECORD,
-        boost::bind(&recorder::CameraRecorder::write, bcr, ph::_1, ph::_2));
-    bcc->registerCallback(
-        message_actions::LOG,
-        boost::bind(&recorder::CameraRecorder::bufferize, bcr, ph::_1, ph::_2));
+        boost::make_shared<converter::CameraConverter>("bottom_camera",
+                                                       camera_bottom_fps,
+                                                       sessionPtr_,
+                                                       AL::kBottomCamera,
+                                                       camera_bottom_resolution);
+    bcc->registerCallback(message_actions::PUBLISH,
+                          boost::bind(&publisher::CameraPublisher::publish, bcp, ph::_1, ph::_2));
+    bcc->registerCallback(message_actions::RECORD,
+                          boost::bind(&recorder::CameraRecorder::write, bcr, ph::_1, ph::_2));
+    bcc->registerCallback(message_actions::LOG,
+                          boost::bind(&recorder::CameraRecorder::bufferize, bcr, ph::_1, ph::_2));
     registerConverter(bcc, bcp, bcr);
   }
 
@@ -937,25 +854,24 @@ void Driver::registerDefaultConverter()
     if (camera_depth_enabled)
     {
       boost::shared_ptr<publisher::CameraPublisher> dcp =
-          boost::make_shared<publisher::CameraPublisher>(
-              "camera/depth/image_raw", AL::kDepthCamera);
+          boost::make_shared<publisher::CameraPublisher>("camera/depth/image_raw",
+                                                         AL::kDepthCamera);
       boost::shared_ptr<recorder::CameraRecorder> dcr =
-          boost::make_shared<recorder::CameraRecorder>(
-              "camera/depth", camera_depth_recorder_fps);
+          boost::make_shared<recorder::CameraRecorder>("camera/depth", camera_depth_recorder_fps);
       boost::shared_ptr<converter::CameraConverter> dcc =
-          boost::make_shared<converter::CameraConverter>(
-              "depth_camera", camera_depth_fps, sessionPtr_, AL::kDepthCamera,
-              camera_depth_resolution, this->has_stereo);
+          boost::make_shared<converter::CameraConverter>("depth_camera",
+                                                         camera_depth_fps,
+                                                         sessionPtr_,
+                                                         AL::kDepthCamera,
+                                                         camera_depth_resolution,
+                                                         this->has_stereo);
 
       dcc->registerCallback(message_actions::PUBLISH,
-                            boost::bind(&publisher::CameraPublisher::publish,
-                                        dcp, ph::_1, ph::_2));
-      dcc->registerCallback(
-          message_actions::RECORD,
-          boost::bind(&recorder::CameraRecorder::write, dcr, ph::_1, ph::_2));
+                            boost::bind(&publisher::CameraPublisher::publish, dcp, ph::_1, ph::_2));
+      dcc->registerCallback(message_actions::RECORD,
+                            boost::bind(&recorder::CameraRecorder::write, dcr, ph::_1, ph::_2));
       dcc->registerCallback(message_actions::LOG,
-                            boost::bind(&recorder::CameraRecorder::bufferize,
-                                        dcr, ph::_1, ph::_2));
+                            boost::bind(&recorder::CameraRecorder::bufferize, dcr, ph::_1, ph::_2));
       registerConverter(dcc, dcp, dcr);
     }
 
@@ -963,27 +879,25 @@ void Driver::registerDefaultConverter()
     if (this->has_stereo && camera_stereo_enabled)
     {
       boost::shared_ptr<publisher::CameraPublisher> scp =
-          boost::make_shared<publisher::CameraPublisher>(
-              "camera/stereo/image_raw", AL::kInfraredOrStereoCamera);
+          boost::make_shared<publisher::CameraPublisher>("camera/stereo/image_raw",
+                                                         AL::kInfraredOrStereoCamera);
       boost::shared_ptr<recorder::CameraRecorder> scr =
-          boost::make_shared<recorder::CameraRecorder>(
-              "camera/stereo", camera_stereo_recorder_fps);
+          boost::make_shared<recorder::CameraRecorder>("camera/stereo", camera_stereo_recorder_fps);
 
       boost::shared_ptr<converter::CameraConverter> scc =
-          boost::make_shared<converter::CameraConverter>(
-              "stereo_camera", camera_stereo_fps, sessionPtr_,
-              AL::kInfraredOrStereoCamera, camera_stereo_resolution,
-              this->has_stereo);
+          boost::make_shared<converter::CameraConverter>("stereo_camera",
+                                                         camera_stereo_fps,
+                                                         sessionPtr_,
+                                                         AL::kInfraredOrStereoCamera,
+                                                         camera_stereo_resolution,
+                                                         this->has_stereo);
 
       scc->registerCallback(message_actions::PUBLISH,
-                            boost::bind(&publisher::CameraPublisher::publish,
-                                        scp, ph::_1, ph::_2));
-      scc->registerCallback(
-          message_actions::RECORD,
-          boost::bind(&recorder::CameraRecorder::write, scr, ph::_1, ph::_2));
+                            boost::bind(&publisher::CameraPublisher::publish, scp, ph::_1, ph::_2));
+      scc->registerCallback(message_actions::RECORD,
+                            boost::bind(&recorder::CameraRecorder::write, scr, ph::_1, ph::_2));
       scc->registerCallback(message_actions::LOG,
-                            boost::bind(&recorder::CameraRecorder::bufferize,
-                                        scr, ph::_1, ph::_2));
+                            boost::bind(&recorder::CameraRecorder::bufferize, scr, ph::_1, ph::_2));
       registerConverter(scc, scp, scr);
     }
 
@@ -991,24 +905,22 @@ void Driver::registerDefaultConverter()
     if (camera_ir_enabled)
     {
       boost::shared_ptr<publisher::CameraPublisher> icp =
-          boost::make_shared<publisher::CameraPublisher>(
-              "camera/ir/image_raw", AL::kInfraredOrStereoCamera);
+          boost::make_shared<publisher::CameraPublisher>("camera/ir/image_raw",
+                                                         AL::kInfraredOrStereoCamera);
       boost::shared_ptr<recorder::CameraRecorder> icr =
-          boost::make_shared<recorder::CameraRecorder>("camera/ir",
-                                                       camera_ir_recorder_fps);
+          boost::make_shared<recorder::CameraRecorder>("camera/ir", camera_ir_recorder_fps);
       boost::shared_ptr<converter::CameraConverter> icc =
-          boost::make_shared<converter::CameraConverter>(
-              "infrared_camera", camera_ir_fps, sessionPtr_,
-              AL::kInfraredOrStereoCamera, camera_ir_resolution);
+          boost::make_shared<converter::CameraConverter>("infrared_camera",
+                                                         camera_ir_fps,
+                                                         sessionPtr_,
+                                                         AL::kInfraredOrStereoCamera,
+                                                         camera_ir_resolution);
       icc->registerCallback(message_actions::PUBLISH,
-                            boost::bind(&publisher::CameraPublisher::publish,
-                                        icp, ph::_1, ph::_2));
-      icc->registerCallback(
-          message_actions::RECORD,
-          boost::bind(&recorder::CameraRecorder::write, icr, ph::_1, ph::_2));
+                            boost::bind(&publisher::CameraPublisher::publish, icp, ph::_1, ph::_2));
+      icc->registerCallback(message_actions::RECORD,
+                            boost::bind(&recorder::CameraRecorder::write, icr, ph::_1, ph::_2));
       icc->registerCallback(message_actions::LOG,
-                            boost::bind(&recorder::CameraRecorder::bufferize,
-                                        icr, ph::_1, ph::_2));
+                            boost::bind(&recorder::CameraRecorder::bufferize, icr, ph::_1, ph::_2));
       registerConverter(icc, icp, icr);
     }
   }  // endif PEPPER
@@ -1023,15 +935,14 @@ void Driver::registerDefaultConverter()
     boost::shared_ptr<converter::JointStateConverter> jsc =
         boost::make_shared<converter::JointStateConverter>(
             "joint_states", joint_states_frequency, tf2_buffer_, sessionPtr_);
-    jsc->registerCallback(message_actions::PUBLISH,
-                          boost::bind(&publisher::JointStatePublisher::publish,
-                                      jsp, ph::_1, ph::_2));
     jsc->registerCallback(
-        message_actions::RECORD,
-        boost::bind(&recorder::JointStateRecorder::write, jsr, ph::_1, ph::_2));
-    jsc->registerCallback(message_actions::LOG,
-                          boost::bind(&recorder::JointStateRecorder::bufferize,
-                                      jsr, ph::_1, ph::_2));
+        message_actions::PUBLISH,
+        boost::bind(&publisher::JointStatePublisher::publish, jsp, ph::_1, ph::_2));
+    jsc->registerCallback(message_actions::RECORD,
+                          boost::bind(&recorder::JointStateRecorder::write, jsr, ph::_1, ph::_2));
+    jsc->registerCallback(
+        message_actions::LOG,
+        boost::bind(&recorder::JointStateRecorder::bufferize, jsr, ph::_1, ph::_2));
     registerConverter(jsc, jsp, jsr);
     //  registerRecorder(jsc, jsr);
   }
@@ -1041,32 +952,25 @@ void Driver::registerDefaultConverter()
     /** Laser */
     if (laser_enabled)
     {
-      boost::shared_ptr<publisher::BasicPublisher<sensor_msgs::msg::LaserScan>>
-          lp = boost::make_shared<
-              publisher::BasicPublisher<sensor_msgs::msg::LaserScan>>("laser");
-      boost::shared_ptr<recorder::BasicRecorder<sensor_msgs::msg::LaserScan>>
-          lr = boost::make_shared<
-              recorder::BasicRecorder<sensor_msgs::msg::LaserScan>>("laser");
+      boost::shared_ptr<publisher::BasicPublisher<sensor_msgs::msg::LaserScan>> lp =
+          boost::make_shared<publisher::BasicPublisher<sensor_msgs::msg::LaserScan>>("laser");
+      boost::shared_ptr<recorder::BasicRecorder<sensor_msgs::msg::LaserScan>> lr =
+          boost::make_shared<recorder::BasicRecorder<sensor_msgs::msg::LaserScan>>("laser");
       boost::shared_ptr<converter::LaserConverter> lc =
-          boost::make_shared<converter::LaserConverter>(
-              "laser", laser_frequency, sessionPtr_);
+          boost::make_shared<converter::LaserConverter>("laser", laser_frequency, sessionPtr_);
 
       lc->setLaserRanges(laser_range_min, laser_range_max);
       lc->registerCallback(
           message_actions::PUBLISH,
           boost::bind(
-              &publisher::BasicPublisher<sensor_msgs::msg::LaserScan>::publish,
-              lp, ph::_1));
+              &publisher::BasicPublisher<sensor_msgs::msg::LaserScan>::publish, lp, ph::_1));
       lc->registerCallback(
           message_actions::RECORD,
-          boost::bind(
-              &recorder::BasicRecorder<sensor_msgs::msg::LaserScan>::write, lr,
-              ph::_1));
+          boost::bind(&recorder::BasicRecorder<sensor_msgs::msg::LaserScan>::write, lr, ph::_1));
       lc->registerCallback(
           message_actions::LOG,
           boost::bind(
-              &recorder::BasicRecorder<sensor_msgs::msg::LaserScan>::bufferize,
-              lr, ph::_1));
+              &recorder::BasicRecorder<sensor_msgs::msg::LaserScan>::bufferize, lr, ph::_1));
       registerConverter(lc, lp, lr);
     }
   }
@@ -1090,25 +994,20 @@ void Driver::registerDefaultConverter()
     boost::shared_ptr<recorder::SonarRecorder> usr =
         boost::make_shared<recorder::SonarRecorder>(sonar_topics);
     boost::shared_ptr<converter::SonarConverter> usc =
-        boost::make_shared<converter::SonarConverter>("sonar", sonar_frequency,
-                                                      sessionPtr_);
-    usc->registerCallback(
-        message_actions::PUBLISH,
-        boost::bind(&publisher::SonarPublisher::publish, usp, ph::_1));
-    usc->registerCallback(
-        message_actions::RECORD,
-        boost::bind(&recorder::SonarRecorder::write, usr, ph::_1));
-    usc->registerCallback(
-        message_actions::LOG,
-        boost::bind(&recorder::SonarRecorder::bufferize, usr, ph::_1));
+        boost::make_shared<converter::SonarConverter>("sonar", sonar_frequency, sessionPtr_);
+    usc->registerCallback(message_actions::PUBLISH,
+                          boost::bind(&publisher::SonarPublisher::publish, usp, ph::_1));
+    usc->registerCallback(message_actions::RECORD,
+                          boost::bind(&recorder::SonarRecorder::write, usr, ph::_1));
+    usc->registerCallback(message_actions::LOG,
+                          boost::bind(&recorder::SonarRecorder::bufferize, usr, ph::_1));
     registerConverter(usc, usp, usr);
   }
 
   if (audio_enabled)
   {
     /** Audio */
-    auto event_register =
-        boost::make_shared<AudioEventRegister>("audio", 0, sessionPtr_);
+    auto event_register = boost::make_shared<AudioEventRegister>("audio", 0, sessionPtr_);
     insertEventConverter("audio", event_register);
     if (keep_looping)
     {
@@ -1118,8 +1017,7 @@ void Driver::registerDefaultConverter()
       }
       catch (const std::exception& e)
       {
-        std::cerr << "Failed to start audio extraction: " << e.what()
-                  << std::endl;
+        std::cerr << "Failed to start audio extraction: " << e.what() << std::endl;
         std::cout << "Audio is being disabled automatically." << std::endl
                   << "Try specifying the --qi_listen_url option to an "
                      "endpoint reachable by the robot fix that."
@@ -1142,9 +1040,8 @@ void Driver::registerDefaultConverter()
     {
       bumper_events.push_back("BackBumperPressed");
     }
-    boost::shared_ptr<BumperEventRegister> event_register =
-        boost::make_shared<BumperEventRegister>("bumper", bumper_events, 0,
-                                                sessionPtr_, naoqi_version);
+    boost::shared_ptr<BumperEventRegister> event_register = boost::make_shared<BumperEventRegister>(
+        "bumper", bumper_events, 0, sessionPtr_, naoqi_version);
     insertEventConverter("bumper", event_register);
     if (keep_looping)
     {
@@ -1203,28 +1100,20 @@ void Driver::registerDefaultConverter()
   if (odom_enabled)
   {
     boost::shared_ptr<publisher::BasicPublisher<nav_msgs::msg::Odometry>> lp =
-        boost::make_shared<publisher::BasicPublisher<nav_msgs::msg::Odometry>>(
-            "odom");
+        boost::make_shared<publisher::BasicPublisher<nav_msgs::msg::Odometry>>("odom");
     boost::shared_ptr<recorder::BasicRecorder<nav_msgs::msg::Odometry>> lr =
-        boost::make_shared<recorder::BasicRecorder<nav_msgs::msg::Odometry>>(
-            "odom");
+        boost::make_shared<recorder::BasicRecorder<nav_msgs::msg::Odometry>>("odom");
     boost::shared_ptr<converter::OdomConverter> lc =
-        boost::make_shared<converter::OdomConverter>("odom", odom_frequency,
-                                                     sessionPtr_);
+        boost::make_shared<converter::OdomConverter>("odom", odom_frequency, sessionPtr_);
     lc->registerCallback(
         message_actions::PUBLISH,
-        boost::bind(
-            &publisher::BasicPublisher<nav_msgs::msg::Odometry>::publish, lp,
-            ph::_1));
+        boost::bind(&publisher::BasicPublisher<nav_msgs::msg::Odometry>::publish, lp, ph::_1));
     lc->registerCallback(
         message_actions::RECORD,
-        boost::bind(&recorder::BasicRecorder<nav_msgs::msg::Odometry>::write,
-                    lr, ph::_1));
+        boost::bind(&recorder::BasicRecorder<nav_msgs::msg::Odometry>::write, lr, ph::_1));
     lc->registerCallback(
         message_actions::LOG,
-        boost::bind(
-            &recorder::BasicRecorder<nav_msgs::msg::Odometry>::bufferize, lr,
-            ph::_1));
+        boost::bind(&recorder::BasicRecorder<nav_msgs::msg::Odometry>::bufferize, lr, ph::_1));
     registerConverter(lc, lp, lr);
   }
 }
@@ -1247,8 +1136,7 @@ void Driver::registerSubscriber(subscriber::Subscriber sub)
   // if found, re-init them
   else
   {
-    std::cout << "re-initialized existing subscriber:\t" << it->name()
-              << std::endl;
+    std::cout << "re-initialized existing subscriber:\t" << it->name() << std::endl;
   }
 }
 
@@ -1260,8 +1148,8 @@ void Driver::registerDefaultSubscriber()
       "teleop", "/cmd_vel", "/joint_angles", "/joint_trajectory", sessionPtr_));
   registerSubscriber(boost::make_shared<naoqi::subscriber::MovetoSubscriber>(
       "moveto", "/move_base_simple/goal", sessionPtr_, tf2_buffer_));
-  registerSubscriber(boost::make_shared<naoqi::subscriber::SpeechSubscriber>(
-      "speech", "/speech", sessionPtr_));
+  registerSubscriber(
+      boost::make_shared<naoqi::subscriber::SpeechSubscriber>("speech", "/speech", sessionPtr_));
 }
 
 void Driver::registerService(service::Service srv)
@@ -1286,8 +1174,7 @@ std::vector<std::string> Driver::getAvailableConverters()
   {
     conv_list.push_back(conv.name());
   }
-  for (EventConstIter iterator = event_map_.begin();
-       iterator != event_map_.end(); iterator++)
+  for (EventConstIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     conv_list.push_back(iterator->first);
   }
@@ -1298,8 +1185,7 @@ std::vector<std::string> Driver::getAvailableConverters()
 void Driver::startPublishing()
 {
   publish_enabled_ = true;
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.isPublishing(true);
   }
@@ -1308,8 +1194,7 @@ void Driver::startPublishing()
 void Driver::stopPublishing()
 {
   publish_enabled_ = false;
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.isPublishing(false);
   }
@@ -1318,8 +1203,7 @@ void Driver::stopPublishing()
 std::vector<std::string> Driver::getSubscribedPublishers() const
 {
   std::vector<std::string> publisher;
-  for (PubConstIter iterator = pub_map_.begin(); iterator != pub_map_.end();
-       iterator++)
+  for (PubConstIter iterator = pub_map_.begin(); iterator != pub_map_.end(); iterator++)
   {
     // iterator->first = key
     // iterator->second = value
@@ -1342,18 +1226,15 @@ void Driver::startRecording()
     if (it != rec_map_.end())
     {
       it->second.subscribe(true);
-      std::cout << HIGHGREEN << "Topic " << BOLDCYAN << conv.name()
-                << RESETCOLOR << HIGHGREEN << " is subscribed for recording"
-                << RESETCOLOR << std::endl;
+      std::cout << HIGHGREEN << "Topic " << BOLDCYAN << conv.name() << RESETCOLOR << HIGHGREEN
+                << " is subscribed for recording" << RESETCOLOR << std::endl;
     }
   }
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.isRecording(true);
-    std::cout << HIGHGREEN << "Topic " << BOLDCYAN << iterator->first
-              << RESETCOLOR << HIGHGREEN << " is subscribed for recording"
-              << RESETCOLOR << std::endl;
+    std::cout << HIGHGREEN << "Topic " << BOLDCYAN << iterator->first << RESETCOLOR << HIGHGREEN
+              << " is subscribed for recording" << RESETCOLOR << std::endl;
   }
   record_enabled_ = true;
 }
@@ -1375,9 +1256,8 @@ void Driver::startRecordingConverters(const std::vector<std::string>& names)
         is_started = true;
       }
       it_rec->second.subscribe(true);
-      std::cout << HIGHGREEN << "Topic " << BOLDCYAN << name << RESETCOLOR
-                << HIGHGREEN << " is subscribed for recording" << RESETCOLOR
-                << std::endl;
+      std::cout << HIGHGREEN << "Topic " << BOLDCYAN << name << RESETCOLOR << HIGHGREEN
+                << " is subscribed for recording" << RESETCOLOR << std::endl;
     }
     else if (it_ev != event_map_.end())
     {
@@ -1387,20 +1267,19 @@ void Driver::startRecordingConverters(const std::vector<std::string>& names)
         is_started = true;
       }
       it_ev->second.isRecording(true);
-      std::cout << HIGHGREEN << "Topic " << BOLDCYAN << name << RESETCOLOR
-                << HIGHGREEN << " is subscribed for recording" << RESETCOLOR
-                << std::endl;
+      std::cout << HIGHGREEN << "Topic " << BOLDCYAN << name << RESETCOLOR << HIGHGREEN
+                << " is subscribed for recording" << RESETCOLOR << std::endl;
     }
     else
     {
-      std::cout << BOLDRED << "Could not find topic " << BOLDCYAN << name
-                << BOLDRED << " in recorders" << RESETCOLOR << std::endl
+      std::cout << BOLDRED << "Could not find topic " << BOLDCYAN << name << BOLDRED
+                << " in recorders" << RESETCOLOR << std::endl
                 << BOLDYELLOW
                 << "To get the list of all available converter's name, "
                    "please run:"
                 << RESETCOLOR << std::endl
-                << GREEN << "\t$ qicli call ROS-Driver.getAvailableConverters"
-                << RESETCOLOR << std::endl;
+                << GREEN << "\t$ qicli call ROS-Driver.getAvailableConverters" << RESETCOLOR
+                << std::endl;
     }
   }
   if (is_started)
@@ -1409,14 +1288,12 @@ void Driver::startRecordingConverters(const std::vector<std::string>& names)
   }
   else
   {
-    std::cout
-        << BOLDRED << "Could not find any topic in recorders" << RESETCOLOR
-        << std::endl
-        << BOLDYELLOW
-        << "To get the list of all available converter's name, please run:"
-        << RESETCOLOR << std::endl
-        << GREEN << "\t$ qicli call ROS-Driver.getAvailableConverters"
-        << RESETCOLOR << std::endl;
+    std::cout << BOLDRED << "Could not find any topic in recorders" << RESETCOLOR << std::endl
+              << BOLDYELLOW
+              << "To get the list of all available converter's name, please run:" << RESETCOLOR
+              << std::endl
+              << GREEN << "\t$ qicli call ROS-Driver.getAvailableConverters" << RESETCOLOR
+              << std::endl;
   }
 }
 
@@ -1432,8 +1309,7 @@ std::string Driver::stopRecording()
       it->second.subscribe(false);
     }
   }
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.isRecording(false);
   }
@@ -1464,8 +1340,7 @@ void Driver::stop()
   }
   conv_timers_.clear();
 
-  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end();
-       iterator++)
+  for (EventIter iterator = event_map_.begin(); iterator != event_map_.end(); iterator++)
   {
     iterator->second.stopProcess();
   }
@@ -1478,8 +1353,7 @@ void Driver::stop()
   rclcpp::shutdown();
 }
 
-void Driver::parseJsonFile(std::string filepath,
-                           boost::property_tree::ptree& pt)
+void Driver::parseJsonFile(std::string filepath, boost::property_tree::ptree& pt)
 {
   // Open json file and parse it
   std::ifstream json_file;
@@ -1503,8 +1377,7 @@ void Driver::addMemoryConverters(std::string filepath)
   }
   catch (const boost::property_tree::ptree_bad_data& e)
   {
-    std::cout << "\"frequency\" could not be interpreted as float: " << e.what()
-              << std::endl;
+    std::cout << "\"frequency\" could not be interpreted as float: " << e.what() << std::endl;
     std::cout << "Default to 10 Hz" << std::endl;
   }
   catch (const boost::property_tree::ptree_bad_path& e)
@@ -1537,8 +1410,8 @@ void Driver::addMemoryConverters(std::string filepath)
   }
   catch (const boost::property_tree::ptree_error& e)
   {
-    std::cout << "A problem occured during the reading of the mem keys list: "
-              << e.what() << std::endl
+    std::cout << "A problem occured during the reading of the mem keys list: " << e.what()
+              << std::endl
               << "Cannot add new converters" << std::endl;
     return;
   }
@@ -1550,36 +1423,28 @@ void Driver::addMemoryConverters(std::string filepath)
   }
 
   // Create converter, publisher and recorder
-  boost::shared_ptr<
-      publisher::BasicPublisher<naoqi_bridge_msgs::msg::MemoryList>>
-      mlp = boost::make_shared<
-          publisher::BasicPublisher<naoqi_bridge_msgs::msg::MemoryList>>(topic);
-  boost::shared_ptr<recorder::BasicRecorder<naoqi_bridge_msgs::msg::MemoryList>>
-      mlr = boost::make_shared<
-          recorder::BasicRecorder<naoqi_bridge_msgs::msg::MemoryList>>(topic);
+  boost::shared_ptr<publisher::BasicPublisher<naoqi_bridge_msgs::msg::MemoryList>> mlp =
+      boost::make_shared<publisher::BasicPublisher<naoqi_bridge_msgs::msg::MemoryList>>(topic);
+  boost::shared_ptr<recorder::BasicRecorder<naoqi_bridge_msgs::msg::MemoryList>> mlr =
+      boost::make_shared<recorder::BasicRecorder<naoqi_bridge_msgs::msg::MemoryList>>(topic);
   boost::shared_ptr<converter::MemoryListConverter> mlc =
-      boost::make_shared<converter::MemoryListConverter>(list, topic, frequency,
-                                                         sessionPtr_);
+      boost::make_shared<converter::MemoryListConverter>(list, topic, frequency, sessionPtr_);
   mlc->registerCallback(
       message_actions::PUBLISH,
-      boost::bind(&publisher::BasicPublisher<
-                      naoqi_bridge_msgs::msg::MemoryList>::publish,
-                  mlp, ph::_1));
+      boost::bind(
+          &publisher::BasicPublisher<naoqi_bridge_msgs::msg::MemoryList>::publish, mlp, ph::_1));
   mlc->registerCallback(
       message_actions::RECORD,
       boost::bind(
-          &recorder::BasicRecorder<naoqi_bridge_msgs::msg::MemoryList>::write,
-          mlr, ph::_1));
+          &recorder::BasicRecorder<naoqi_bridge_msgs::msg::MemoryList>::write, mlr, ph::_1));
   mlc->registerCallback(
       message_actions::LOG,
-      boost::bind(&recorder::BasicRecorder<
-                      naoqi_bridge_msgs::msg::MemoryList>::bufferize,
-                  mlr, ph::_1));
+      boost::bind(
+          &recorder::BasicRecorder<naoqi_bridge_msgs::msg::MemoryList>::bufferize, mlr, ph::_1));
   registerConverter(mlc, mlp, mlr);
 }
 
-bool Driver::registerEventConverter(const std::string& key,
-                                    const dataType::DataType& type)
+bool Driver::registerEventConverter(const std::string& key, const dataType::DataType& type)
 {
   dataType::DataType data_type;
   qi::AnyValue value;
@@ -1590,8 +1455,7 @@ bool Driver::registerEventConverter(const std::string& key,
   }
   catch (const std::exception& e)
   {
-    std::cout << BOLDRED
-              << "Could not get data in memory for the key: " << BOLDCYAN << key
+    std::cout << BOLDRED << "Could not get data in memory for the key: " << BOLDCYAN << key
               << RESETCOLOR << std::endl;
     return false;
   }
@@ -1604,17 +1468,14 @@ bool Driver::registerEventConverter(const std::string& key,
     }
     catch (const std::exception& e)
     {
-      std::cout
-          << BOLDRED
-          << "Could not get a valid data type to register memory converter "
-          << BOLDCYAN << key << RESETCOLOR << std::endl
-          << BOLDRED
-          << "You can enter it yourself, available types are:" << std::endl
-          << "\t > 0 - None" << std::endl
-          << "\t > 1 - Float" << std::endl
-          << "\t > 2 - Int" << std::endl
-          << "\t > 3 - String" << std::endl
-          << "\t > 4 - Bool" << RESETCOLOR << std::endl;
+      std::cout << BOLDRED << "Could not get a valid data type to register memory converter "
+                << BOLDCYAN << key << RESETCOLOR << std::endl
+                << BOLDRED << "You can enter it yourself, available types are:" << std::endl
+                << "\t > 0 - None" << std::endl
+                << "\t > 1 - Float" << std::endl
+                << "\t > 2 - Int" << std::endl
+                << "\t > 3 - String" << std::endl
+                << "\t > 4 - Bool" << RESETCOLOR << std::endl;
       return false;
     }
   }
@@ -1629,60 +1490,59 @@ bool Driver::registerEventConverter(const std::string& key,
       return false;
       break;
     case 1: {
-      boost::shared_ptr<EventRegister<
-          converter::MemoryFloatConverter,
-          publisher::BasicPublisher<naoqi_bridge_msgs::msg::FloatStamped>,
-          recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::FloatStamped>>>
-          event_register = boost::make_shared<EventRegister<
-              converter::MemoryFloatConverter,
-              publisher::BasicPublisher<naoqi_bridge_msgs::msg::FloatStamped>,
-              recorder::BasicEventRecorder<
-                  naoqi_bridge_msgs::msg::FloatStamped>>>(key, sessionPtr_);
+      boost::shared_ptr<
+          EventRegister<converter::MemoryFloatConverter,
+                        publisher::BasicPublisher<naoqi_bridge_msgs::msg::FloatStamped>,
+                        recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::FloatStamped>>>
+          event_register = boost::make_shared<
+              EventRegister<converter::MemoryFloatConverter,
+                            publisher::BasicPublisher<naoqi_bridge_msgs::msg::FloatStamped>,
+                            recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::FloatStamped>>>(
+              key, sessionPtr_);
       insertEventConverter(key, event_register);
       break;
     }
     case 2: {
-      boost::shared_ptr<EventRegister<
-          converter::MemoryIntConverter,
-          publisher::BasicPublisher<naoqi_bridge_msgs::msg::IntStamped>,
-          recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::IntStamped>>>
-          event_register = boost::make_shared<EventRegister<
-              converter::MemoryIntConverter,
-              publisher::BasicPublisher<naoqi_bridge_msgs::msg::IntStamped>,
-              recorder::BasicEventRecorder<
-                  naoqi_bridge_msgs::msg::IntStamped>>>(key, sessionPtr_);
+      boost::shared_ptr<
+          EventRegister<converter::MemoryIntConverter,
+                        publisher::BasicPublisher<naoqi_bridge_msgs::msg::IntStamped>,
+                        recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::IntStamped>>>
+          event_register = boost::make_shared<
+              EventRegister<converter::MemoryIntConverter,
+                            publisher::BasicPublisher<naoqi_bridge_msgs::msg::IntStamped>,
+                            recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::IntStamped>>>(
+              key, sessionPtr_);
       insertEventConverter(key, event_register);
       break;
     }
     case 3: {
-      boost::shared_ptr<EventRegister<
-          converter::MemoryStringConverter,
-          publisher::BasicPublisher<naoqi_bridge_msgs::msg::StringStamped>,
-          recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::StringStamped>>>
-          event_register = boost::make_shared<EventRegister<
-              converter::MemoryStringConverter,
-              publisher::BasicPublisher<naoqi_bridge_msgs::msg::StringStamped>,
-              recorder::BasicEventRecorder<
-                  naoqi_bridge_msgs::msg::StringStamped>>>(key, sessionPtr_);
+      boost::shared_ptr<
+          EventRegister<converter::MemoryStringConverter,
+                        publisher::BasicPublisher<naoqi_bridge_msgs::msg::StringStamped>,
+                        recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::StringStamped>>>
+          event_register = boost::make_shared<
+              EventRegister<converter::MemoryStringConverter,
+                            publisher::BasicPublisher<naoqi_bridge_msgs::msg::StringStamped>,
+                            recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::StringStamped>>>(
+              key, sessionPtr_);
       insertEventConverter(key, event_register);
       break;
     }
     case 4: {
-      boost::shared_ptr<EventRegister<
-          converter::MemoryBoolConverter,
-          publisher::BasicPublisher<naoqi_bridge_msgs::msg::BoolStamped>,
-          recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::BoolStamped>>>
-          event_register = boost::make_shared<EventRegister<
-              converter::MemoryBoolConverter,
-              publisher::BasicPublisher<naoqi_bridge_msgs::msg::BoolStamped>,
-              recorder::BasicEventRecorder<
-                  naoqi_bridge_msgs::msg::BoolStamped>>>(key, sessionPtr_);
+      boost::shared_ptr<
+          EventRegister<converter::MemoryBoolConverter,
+                        publisher::BasicPublisher<naoqi_bridge_msgs::msg::BoolStamped>,
+                        recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::BoolStamped>>>
+          event_register = boost::make_shared<
+              EventRegister<converter::MemoryBoolConverter,
+                            publisher::BasicPublisher<naoqi_bridge_msgs::msg::BoolStamped>,
+                            recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::BoolStamped>>>(
+              key, sessionPtr_);
       insertEventConverter(key, event_register);
       break;
     }
     default: {
-      std::cout << BOLDRED
-                << "Wrong data type. Available type are: " << std::endl
+      std::cout << BOLDRED << "Wrong data type. Available type are: " << std::endl
                 << "\t > 0 - None" << std::endl
                 << "\t > 1 - Float" << std::endl
                 << "\t > 2 - Int" << std::endl
@@ -1711,8 +1571,8 @@ std::vector<std::string> Driver::getFilesList()
   std::vector<boost::filesystem::path> files;
   helpers::filesystem::getFiles(folderPath, ".bag", files);
 
-  for (std::vector<boost::filesystem::path>::const_iterator it = files.begin();
-       it != files.end(); it++)
+  for (std::vector<boost::filesystem::path>::const_iterator it = files.begin(); it != files.end();
+       it++)
   {
     fileNames.push_back(it->string());
   }
@@ -1725,8 +1585,8 @@ void Driver::removeAllFiles()
   std::vector<boost::filesystem::path> files;
   helpers::filesystem::getFiles(folderPath, ".bag", files);
 
-  for (std::vector<boost::filesystem::path>::const_iterator it = files.begin();
-       it != files.end(); it++)
+  for (std::vector<boost::filesystem::path>::const_iterator it = files.begin(); it != files.end();
+       it++)
   {
     std::remove(it->c_str());
   }
@@ -1734,18 +1594,30 @@ void Driver::removeAllFiles()
 
 void Driver::removeFiles(std::vector<std::string> files)
 {
-  for (std::vector<std::string>::const_iterator it = files.begin();
-       it != files.end(); it++)
+  for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); it++)
   {
     std::remove(it->c_str());
   }
 }
 
-QI_REGISTER_OBJECT(Driver, minidump, minidumpConverters, setBufferDuration,
-                   getBufferDuration, startPublishing, stopPublishing,
-                   getAvailableConverters, getSubscribedPublishers,
-                   addMemoryConverters, registerMemoryConverter,
-                   registerEventConverter, getFilesList, removeAllFiles,
-                   removeFiles, startRecording, startRecordingConverters,
-                   stopRecording, startLogging, stopLogging);
+QI_REGISTER_OBJECT(Driver,
+                   minidump,
+                   minidumpConverters,
+                   setBufferDuration,
+                   getBufferDuration,
+                   startPublishing,
+                   stopPublishing,
+                   getAvailableConverters,
+                   getSubscribedPublishers,
+                   addMemoryConverters,
+                   registerMemoryConverter,
+                   registerEventConverter,
+                   getFilesList,
+                   removeAllFiles,
+                   removeFiles,
+                   startRecording,
+                   startRecordingConverters,
+                   stopRecording,
+                   startLogging,
+                   stopLogging);
 }  // namespace naoqi

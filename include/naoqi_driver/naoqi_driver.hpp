@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
-
+ */
 
 #ifndef NAOQI_DRIVER_HPP
 #define NAOQI_DRIVER_HPP
@@ -23,30 +22,30 @@
 #include <vector>
 
 /*
-* BOOST
-*/
+ * BOOST
+ */
 #include <boost/property_tree/ptree.hpp>
 #include <boost/thread/mutex.hpp>
 
 /*
-* ALDEB
-*/
+ * ALDEB
+ */
 #include <qi/session.hpp>
 
 /*
-* PUBLIC INTERFACE
-*/
+ * PUBLIC INTERFACE
+ */
 #include <naoqi_driver/converter/converter.hpp>
-#include <naoqi_driver/publisher/publisher.hpp>
-#include <naoqi_driver/subscriber/subscriber.hpp>
-#include <naoqi_driver/service/service.hpp>
-#include <naoqi_driver/recorder/recorder.hpp>
 #include <naoqi_driver/event/event.hpp>
+#include <naoqi_driver/publisher/publisher.hpp>
 #include <naoqi_driver/recorder/globalrecorder.hpp>
+#include <naoqi_driver/recorder/recorder.hpp>
+#include <naoqi_driver/service/service.hpp>
+#include <naoqi_driver/subscriber/subscriber.hpp>
 
 namespace tf2_ros
 {
-  class Buffer;
+class Buffer;
 }
 
 namespace naoqi
@@ -54,15 +53,15 @@ namespace naoqi
 
 namespace recorder
 {
-  class GlobalRecorder;
+class GlobalRecorder;
 }
 /**
-* @brief Interface for naoqi driver which is registered as a naoqi2 Module,
-* once the external roscore ip is set, this class will advertise and publish ros messages
-*/
+ * @brief Interface for naoqi driver which is registered as a naoqi2 Module,
+ * once the external roscore ip is set, this class will advertise and publish ros messages
+ */
 class Driver : public rclcpp::Node
 {
-public:
+  public:
   /**
    * @brief Constructor for the naoqi driver
    *
@@ -70,9 +69,9 @@ public:
   Driver();
 
   /**
-  * @brief Destructor for naoqi driver,
-  * destroys all ros nodehandle and shutsdown all publisher
-  */
+   * @brief Destructor for naoqi driver,
+   * destroys all ros nodehandle and shutsdown all publisher
+   */
   ~Driver();
 
   /**
@@ -100,14 +99,14 @@ public:
    * @brief registers generall converter units
    * they are connected via callbacks to various actions such as record, log, publish
    */
-  void registerConverter( converter::Converter& conv );
+  void registerConverter(converter::Converter& conv);
 
   /**
    * @brief prepare and register a publisher
    * @param conv_name the name of the converter related to the publisher
    * @param pub       the publisher to add
    */
-  void registerPublisher( const std::string& conv_name, publisher::Publisher& pub);
+  void registerPublisher(const std::string& conv_name, publisher::Publisher& pub);
 
   /**
    * @brief prepare and register a recorder
@@ -119,28 +118,29 @@ public:
   /**
    * @brief register a converter with an associated publisher and recorder
    */
-  void registerConverter(converter::Converter conv, publisher::Publisher pub, recorder::Recorder rec );
+  void
+  registerConverter(converter::Converter conv, publisher::Publisher pub, recorder::Recorder rec);
 
   /**
    * @brief register a converter with an associated publisher instance
    */
-  void registerPublisher(converter::Converter conv, publisher::Publisher pub );
+  void registerPublisher(converter::Converter conv, publisher::Publisher pub);
 
   /**
    * @brief register a converter with an associated recorder instance
    */
-  void registerRecorder(converter::Converter conv, recorder::Recorder rec );
+  void registerRecorder(converter::Converter conv, recorder::Recorder rec);
 
   /**
    * @brief qicli call function to register a converter for a given memory key
    */
-  bool registerMemoryConverter(const std::string& key, float frequency, const dataType::DataType& type );
+  bool
+  registerMemoryConverter(const std::string& key, float frequency, const dataType::DataType& type);
 
   /**
    * @brief qicli call function to register a converter for a given memory event
    */
   bool registerEventConverter(const std::string& key, const dataType::DataType& type);
-
 
   /**
    * @brief get all available converters
@@ -152,19 +152,16 @@ public:
    */
   std::vector<std::string> getSubscribedPublishers() const;
 
-  std::string _whoIsYourDaddy()
-  {
-    return "A sugar bear";
-  }
+  std::string _whoIsYourDaddy() { return "A sugar bear"; }
 
   /**
-  * @brief registers a subscriber
-  * @param subscriber to register
-  * @see Subscriber
-  * @note it will be called by value to expose that internally there will be a copy,
-  * eventually this should be replaced by move semantics C++11
-  */
-  void registerSubscriber( subscriber::Subscriber sub );
+   * @brief registers a subscriber
+   * @param subscriber to register
+   * @see Subscriber
+   * @note it will be called by value to expose that internally there will be a copy,
+   * eventually this should be replaced by move semantics C++11
+   */
+  void registerSubscriber(subscriber::Subscriber sub);
 
   /**
    * @brief registers a service
@@ -173,7 +170,7 @@ public:
    * @note it will be called by value to expose that internally there will be a copy,
    * eventually this should be replaced by move semantics C++11
    */
-  void registerService( service::Service srv );
+  void registerService(service::Service srv);
   // /**
   // * @brief qicli call function to get current master uri
   // * @return string indicating http master uri
@@ -194,28 +191,28 @@ public:
   // void setMasterURI( const std::string& uri );
 
   /**
-  * @brief qicli call function to start/enable publishing all registered publisher
-  */
+   * @brief qicli call function to start/enable publishing all registered publisher
+   */
   void startPublishing();
 
   /**
-  * @brief qicli call function to stop/disable publishing all registered publisher
-  */
+   * @brief qicli call function to stop/disable publishing all registered publisher
+   */
   void stopPublishing();
 
   /**
-  * @brief qicli call function to start recording all registered converter in a ROSbag
-  */
+   * @brief qicli call function to start recording all registered converter in a ROSbag
+   */
   void startRecording();
 
   /**
-  * @brief qicli call function to start recording given topics in a ROSbag
-  */
+   * @brief qicli call function to start recording given topics in a ROSbag
+   */
   void startRecordingConverters(const std::vector<std::string>& names);
 
   /**
-  * @brief qicli call function to stop recording all registered publisher in a ROSbag
-  */
+   * @brief qicli call function to stop recording all registered publisher in a ROSbag
+   */
   std::string stopRecording();
 
   void startLogging();
@@ -235,7 +232,7 @@ public:
 
   void removeFiles(std::vector<std::string> files);
 
-private:
+  private:
   qi::SessionPtr sessionPtr_;
   robot::Robot robot_;
 
@@ -257,32 +254,36 @@ private:
   void insertEventConverter(const std::string& key, event::Event event);
 
   template <typename T1, typename T2, typename T3>
-  void _registerMemoryConverter( const std::string& key, float frequency ) {
-    boost::shared_ptr<T1> mfp = boost::make_shared<T1>( key );
-    boost::shared_ptr<T2> mfr = boost::make_shared<T2>( key );
-    boost::shared_ptr<T3> mfc = boost::make_shared<T3>( key , frequency, sessionPtr_, key );
-    mfc->registerCallback( message_actions::PUBLISH, boost::bind(&T1::publish, mfp, boost::placeholders::_1) );
-    mfc->registerCallback( message_actions::RECORD, boost::bind(&T2::write, mfr, boost::placeholders::_1) );
-    mfc->registerCallback( message_actions::LOG, boost::bind(&T2::bufferize, mfr, boost::placeholders::_1) );
-    registerConverter( mfc, mfp, mfr );
+  void _registerMemoryConverter(const std::string& key, float frequency)
+  {
+    boost::shared_ptr<T1> mfp = boost::make_shared<T1>(key);
+    boost::shared_ptr<T2> mfr = boost::make_shared<T2>(key);
+    boost::shared_ptr<T3> mfc = boost::make_shared<T3>(key, frequency, sessionPtr_, key);
+    mfc->registerCallback(message_actions::PUBLISH,
+                          boost::bind(&T1::publish, mfp, boost::placeholders::_1));
+    mfc->registerCallback(message_actions::RECORD,
+                          boost::bind(&T2::write, mfr, boost::placeholders::_1));
+    mfc->registerCallback(message_actions::LOG,
+                          boost::bind(&T2::bufferize, mfr, boost::placeholders::_1));
+    registerConverter(mfc, mfp, mfr);
   }
 
   boost::mutex mutex_conv_queue_;
   boost::mutex mutex_record_;
 
-  std::vector< converter::Converter > converters_;
-  std::map< std::string, publisher::Publisher > pub_map_;
-  std::map< std::string, recorder::Recorder > rec_map_;
-  std::map< std::string, event::Event > event_map_;
-  typedef std::map< std::string, publisher::Publisher>::const_iterator PubConstIter;
-  typedef std::map< std::string, publisher::Publisher>::iterator PubIter;
-  typedef std::map< std::string, recorder::Recorder>::const_iterator RecConstIter;
-  typedef std::map< std::string, recorder::Recorder>::iterator RecIter;
-  typedef std::map< std::string, event::Event>::const_iterator EventConstIter;
-  typedef std::map< std::string, event::Event>::iterator EventIter;
+  std::vector<converter::Converter> converters_;
+  std::map<std::string, publisher::Publisher> pub_map_;
+  std::map<std::string, recorder::Recorder> rec_map_;
+  std::map<std::string, event::Event> event_map_;
+  typedef std::map<std::string, publisher::Publisher>::const_iterator PubConstIter;
+  typedef std::map<std::string, publisher::Publisher>::iterator PubIter;
+  typedef std::map<std::string, recorder::Recorder>::const_iterator RecConstIter;
+  typedef std::map<std::string, recorder::Recorder>::iterator RecIter;
+  typedef std::map<std::string, event::Event>::const_iterator EventConstIter;
+  typedef std::map<std::string, event::Event>::iterator EventIter;
 
-  std::vector< subscriber::Subscriber > subscribers_;
-  std::vector< service::Service > services_;
+  std::vector<subscriber::Subscriber> subscribers_;
+  std::vector<service::Service> services_;
 
   float buffer_duration_;
 
@@ -298,6 +299,6 @@ private:
   boost::shared_ptr<tf2_ros::Buffer> tf2_buffer_;
 };
 
-} // naoqi
+}  // namespace naoqi
 
 #endif

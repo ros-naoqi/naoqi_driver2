@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef BASE_SUBSCRIBER_HPP
 #define BASE_SUBSCRIBER_HPP
@@ -35,37 +35,26 @@ namespace subscriber
 {
 
 // CRTP
-template<class T>
+template <class T>
 class BaseSubscriber
 {
 
-public:
-  BaseSubscriber( const std::string& name, const std::string& topic, qi::SessionPtr session ):
-    name_( name ),
-    topic_( topic ),
-    is_initialized_( false ),
-    robot_( helpers::driver::getRobot(session) ),
-    session_(session)
-  {}
+  public:
+  BaseSubscriber(const std::string& name, const std::string& topic, qi::SessionPtr session)
+      : name_(name), topic_(topic), is_initialized_(false),
+        robot_(helpers::driver::getRobot(session)), session_(session)
+  {
+  }
 
   virtual ~BaseSubscriber() {}
 
-  inline std::string name() const
-  {
-    return name_;
-  }
+  inline std::string name() const { return name_; }
 
-  inline std::string topic() const
-  {
-    return topic_;
-  }
+  inline std::string topic() const { return topic_; }
 
-  inline bool isInitialized() const
-  {
-    return is_initialized_;
-  }
+  inline bool isInitialized() const { return is_initialized_; }
 
-protected:
+  protected:
   std::string name_, topic_;
 
   bool is_initialized_;
@@ -75,9 +64,9 @@ protected:
 
   /** Pointer to a session from which we can create proxies */
   qi::SessionPtr session_;
-}; // class
+};  // class
 
-} // subscriber
-} // naoqi
+}  // namespace subscriber
+}  // namespace naoqi
 
 #endif

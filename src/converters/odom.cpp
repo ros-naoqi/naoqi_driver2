@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "odom.hpp"
 #include "../tools/from_any_value.hpp"
-
 
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
@@ -29,44 +28,47 @@ namespace naoqi
 namespace converter
 {
 
-OdomConverter::OdomConverter( const std::string& name, const float& frequency, const qi::SessionPtr& session ):
-  BaseConverter( name, frequency, session ),
-  p_motion_( session->service("ALMotion").value() )
+OdomConverter::OdomConverter(const std::string& name,
+                             const float& frequency,
+                             const qi::SessionPtr& session)
+    : BaseConverter(name, frequency, session), p_motion_(session->service("ALMotion").value())
 
 {
 }
 
-void OdomConverter::registerCallback( message_actions::MessageAction action, Callback_t cb )
+void OdomConverter::registerCallback(message_actions::MessageAction action, Callback_t cb)
 {
   callbacks_[action] = cb;
 }
 
-void OdomConverter::callAll( const std::vector<message_actions::MessageAction>& actions )
+void OdomConverter::callAll(const std::vector<message_actions::MessageAction>& actions)
 {
 
   int FRAME_WORLD = 1;
   bool use_sensor = true;
-  // documentation of getPosition available here: http://doc.aldebaran.com/2-1/naoqi/motion/control-cartesian.html
-  std::vector<float> al_odometry_data = p_motion_.call<std::vector<float> >( "getPosition", "Torso", FRAME_WORLD, use_sensor );
+  // documentation of getPosition available here:
+  // http://doc.aldebaran.com/2-1/naoqi/motion/control-cartesian.html
+  std::vector<float> al_odometry_data =
+      p_motion_.call<std::vector<float>>("getPosition", "Torso", FRAME_WORLD, use_sensor);
 
   const rclcpp::Time& odom_stamp = helpers::Time::now();
-  std::vector<float> al_speed_data = p_motion_.call<std::vector<float> >( "getRobotVelocity" );
+  std::vector<float> al_speed_data = p_motion_.call<std::vector<float>>("getRobotVelocity");
 
-  const float& odomX  =  al_odometry_data[0];
-  const float& odomY  =  al_odometry_data[1];
-  const float& odomZ  =  al_odometry_data[2];
-  const float& odomWX =  al_odometry_data[3];
-  const float& odomWY =  al_odometry_data[4];
-  const float& odomWZ =  al_odometry_data[5];
+  const float& odomX = al_odometry_data[0];
+  const float& odomY = al_odometry_data[1];
+  const float& odomZ = al_odometry_data[2];
+  const float& odomWX = al_odometry_data[3];
+  const float& odomWY = al_odometry_data[4];
+  const float& odomWZ = al_odometry_data[5];
 
   const float& dX = al_speed_data[0];
   const float& dY = al_speed_data[1];
   const float& dWZ = al_speed_data[2];
 
-  //since all odometry is 6DOF we'll need a quaternion created from yaw
+  // since all odometry is 6DOF we'll need a quaternion created from yaw
   tf2::Quaternion tf_quat;
-  tf_quat.setRPY( odomWX, odomWY, odomWZ );
-  geometry_msgs::msg::Quaternion odom_quat = tf2::toMsg( tf_quat );
+  tf_quat.setRPY(odomWX, odomWY, odomWZ);
+  geometry_msgs::msg::Quaternion odom_quat = tf2::toMsg(tf_quat);
 
   static nav_msgs::msg::Odometry msg_odom;
   msg_odom.header.frame_id = "odom";
@@ -86,16 +88,13 @@ void OdomConverter::callAll( const std::vector<message_actions::MessageAction>& 
   msg_odom.twist.twist.angular.y = 0;
   msg_odom.twist.twist.angular.z = dWZ;
 
-  for( message_actions::MessageAction action: actions )
+  for (message_actions::MessageAction action : actions)
   {
     callbacks_[action](msg_odom);
-
   }
 }
 
-void OdomConverter::reset( )
-{
-}
+void OdomConverter::reset() {}
 
-} //converter
-} // naoqi
+}  // namespace converter
+}  // namespace naoqi

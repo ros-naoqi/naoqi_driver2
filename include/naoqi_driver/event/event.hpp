@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef EVENT_HPP
 #define EVENT_HPP
@@ -24,6 +24,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <rclcpp/rclcpp.hpp>
+
 #include <naoqi_driver/message_actions.h>
 #include <naoqi_driver/recorder/globalrecorder.hpp>
 #include <naoqi_driver/tools.hpp>
@@ -33,81 +34,55 @@ namespace naoqi
 namespace event
 {
 
-
 /**
-* @brief Converter concept interface
-* @note this defines an private concept struct,
-* which each instance has to implement
-* @note a type erasure pattern in implemented here to avoid strict inheritance,
-* thus each possible converter instance has to implement the virtual functions mentioned in the concept
-*/
+ * @brief Converter concept interface
+ * @note this defines an private concept struct,
+ * which each instance has to implement
+ * @note a type erasure pattern in implemented here to avoid strict inheritance,
+ * thus each possible converter instance has to implement the virtual functions mentioned in the
+ * concept
+ */
 class Event
 {
 
-public:
-
+  public:
   /**
-  * @brief Constructor for converter interface
-  */
-  template<typename T>
-  Event( T event ):
-    eventPtr_( boost::make_shared<EventModel<T> >(event) )
-  {}
-
-  void resetPublisher( rclcpp::Node* node )
+   * @brief Constructor for converter interface
+   */
+  template <typename T>
+  Event(T event) : eventPtr_(boost::make_shared<EventModel<T>>(event))
   {
-    eventPtr_->resetPublisher(node);
   }
 
-  void resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr )
+  void resetPublisher(rclcpp::Node* node) { eventPtr_->resetPublisher(node); }
+
+  void resetRecorder(boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr)
   {
     eventPtr_->resetRecorder(gr);
   }
 
-  void startProcess( )
-  {
-    eventPtr_->startProcess();
-  }
+  void startProcess() { eventPtr_->startProcess(); }
 
-  void stopProcess( )
-  {
-    eventPtr_->stopProcess();
-  }
+  void stopProcess() { eventPtr_->stopProcess(); }
 
-  void writeDump( const rclcpp::Time& time )
-  {
-    eventPtr_->writeDump(time);
-  }
+  void writeDump(const rclcpp::Time& time) { eventPtr_->writeDump(time); }
 
-  void setBufferDuration(float duration)
-  {
-    eventPtr_->setBufferDuration(duration);
-  }
+  void setBufferDuration(float duration) { eventPtr_->setBufferDuration(duration); }
 
-  void isRecording(bool state)
-  {
-    eventPtr_->isRecording(state);
-  }
+  void isRecording(bool state) { eventPtr_->isRecording(state); }
 
-  void isPublishing(bool state)
-  {
-    eventPtr_->isPublishing(state);
-  }
+  void isPublishing(bool state) { eventPtr_->isPublishing(state); }
 
-  void isDumping(bool state)
-  {
-    eventPtr_->isDumping(state);
-  }
+  void isDumping(bool state) { eventPtr_->isDumping(state); }
 
-private:
-
+  private:
   /**
-  * BASE concept struct
-  */
+   * BASE concept struct
+   */
   struct EventConcept
   {
-    virtual ~EventConcept(){}
-    virtual void resetPublisher( rclcpp::Node* node ) = 0;
+    virtual ~EventConcept() {}
+    virtual void resetPublisher(rclcpp::Node* node) = 0;
     virtual void resetRecorder(boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr) = 0;
     virtual void startProcess() = 0;
     virtual void stopProcess() = 0;
@@ -118,70 +93,43 @@ private:
     virtual void isDumping(bool state) = 0;
   };
 
-
   /**
-  * templated instances of base concept
-  */
-  template<typename T>
+   * templated instances of base concept
+   */
+  template <typename T>
   struct EventModel : public EventConcept
   {
-    EventModel( const T& other ):
-      converter_( other )
-    {}
+    EventModel(const T& other) : converter_(other) {}
 
-    void resetPublisher( rclcpp::Node* node )
-    {
-      converter_->resetPublisher(node);
-    }
+    void resetPublisher(rclcpp::Node* node) { converter_->resetPublisher(node); }
 
-    void resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr )
+    void resetRecorder(boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr)
     {
       converter_->resetRecorder(gr);
     }
 
-    void startProcess( )
-    {
-      converter_->startProcess();
-    }
+    void startProcess() { converter_->startProcess(); }
 
-    void stopProcess( )
-    {
-      converter_->stopProcess();
-    }
+    void stopProcess() { converter_->stopProcess(); }
 
-    void writeDump( const rclcpp::Time& time )
-    {
-      converter_->writeDump(time);
-    }
+    void writeDump(const rclcpp::Time& time) { converter_->writeDump(time); }
 
-    void setBufferDuration(float duration)
-    {
-      converter_->setBufferDuration(duration);
-    }
+    void setBufferDuration(float duration) { converter_->setBufferDuration(duration); }
 
-    void isRecording(bool state)
-    {
-      converter_->isRecording(state);
-    }
+    void isRecording(bool state) { converter_->isRecording(state); }
 
-    void isPublishing(bool state)
-    {
-      converter_->isPublishing(state);
-    }
+    void isPublishing(bool state) { converter_->isPublishing(state); }
 
-    void isDumping(bool state)
-    {
-      converter_->isDumping(state);
-    }
+    void isDumping(bool state) { converter_->isDumping(state); }
 
     T converter_;
   };
 
   boost::shared_ptr<EventConcept> eventPtr_;
 
-}; // class converter
+};  // class converter
 
-} //converter
-} //naoqi
+}  // namespace event
+}  // namespace naoqi
 
 #endif

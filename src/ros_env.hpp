@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
-
+ */
 
 #ifndef ROS_ENV_HPP
 #define ROS_ENV_HPP
 
 /*
-* ALDEBARAN includes
-*/
+ * ALDEBARAN includes
+ */
 #include <qi/os.hpp>
 
 #include <stdlib.h>
@@ -34,19 +33,22 @@ namespace ros_env
 {
 
 /** Queries NAOqi to get the IP
- * @param network_interface the name of the network interface to use. "eth0" by default. If you put your NAO in
- * tethering mode, you will need to put "tether"
+ * @param network_interface the name of the network interface to use. "eth0" by default. If you put
+ * your NAO in tethering mode, you will need to put "tether"
  */
 static std::string getROSIP(std::string network_interface)
 {
   if (network_interface.empty())
     network_interface = "eth0";
 
-  typedef std::map< std::string, std::vector<std::string> > Map_IP;
+  typedef std::map<std::string, std::vector<std::string>> Map_IP;
   Map_IP map_ip = static_cast<Map_IP>(qi::os::hostIPAddrs());
-  if ( map_ip.find(network_interface) == map_ip.end() ) {
-    std::cerr << "Could not find network interface named " << network_interface << ", possible interfaces are ... ";
-    for (Map_IP::iterator it=map_ip.begin(); it!=map_ip.end(); ++it) std::cerr << it->first <<  " ";
+  if (map_ip.find(network_interface) == map_ip.end())
+  {
+    std::cerr << "Could not find network interface named " << network_interface
+              << ", possible interfaces are ... ";
+    for (Map_IP::iterator it = map_ip.begin(); it != map_ip.end(); ++it)
+      std::cerr << it->first << " ";
     std::cerr << std::endl;
     exit(1);
   }
@@ -57,7 +59,7 @@ static std::string getROSIP(std::string network_interface)
 
 static std::string prefix = "";
 
-static void setPrefix( std::string s )
+static void setPrefix(std::string s)
 {
   prefix = s;
   std::cout << "set prefix successfully to " << prefix << std::endl;
@@ -68,7 +70,6 @@ static std::string getPrefix()
   return prefix;
 }
 
-
-} // ros_env
-} // naoqi
+}  // namespace ros_env
+}  // namespace naoqi
 #endif

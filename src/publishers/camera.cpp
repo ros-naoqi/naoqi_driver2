@@ -13,40 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "camera.hpp"
 
 /*
-* ALDEBARAN includes
-*/
-#include "../tools/alvisiondefinitions.h" // for kTop...
+ * ALDEBARAN includes
+ */
+#include "../tools/alvisiondefinitions.h"  // for kTop...
 
 namespace naoqi
 {
 namespace publisher
 {
 
-CameraPublisher::CameraPublisher( const std::string& topic, int camera_source ):
-  topic_( topic ),
-  is_initialized_(false),
-  camera_source_( camera_source )
+CameraPublisher::CameraPublisher(const std::string& topic, int camera_source)
+    : topic_(topic), is_initialized_(false), camera_source_(camera_source)
 {
 }
 
-CameraPublisher::~CameraPublisher()
+CameraPublisher::~CameraPublisher() {}
+
+void CameraPublisher::publish(const sensor_msgs::msg::Image::SharedPtr& img,
+                              const sensor_msgs::msg::CameraInfo& camera_info)
 {
+  pub_.publish(*img, camera_info);
 }
 
-void CameraPublisher::publish( const sensor_msgs::msg::Image::SharedPtr& img, const sensor_msgs::msg::CameraInfo& camera_info )
-{
-  pub_.publish( *img, camera_info );
-}
-
-void CameraPublisher::reset( rclcpp::Node* node )
+void CameraPublisher::reset(rclcpp::Node* node)
 {
   pub_ = image_transport::create_camera_publisher(node, topic_);
   /* TODO */
@@ -66,12 +63,15 @@ void CameraPublisher::reset( rclcpp::Node* node )
 
   //   // List the topics to remove
   //   std::vector<std::string> topic_list;
-  //   topic_list.push_back(std::string("/") + node_name + "/" + topic_ + std::string("/compressedDepth"));
-  //   topic_list.push_back(std::string("/") + node_name + "/" + topic_ + std::string("/compressedDepth/parameter_updates"));
-  //   topic_list.push_back(std::string("/") + node_name + "/" + topic_ + std::string("/compressedDepth/parameter_descriptions"));
+  //   topic_list.push_back(std::string("/") + node_name + "/" + topic_ +
+  //   std::string("/compressedDepth")); topic_list.push_back(std::string("/") + node_name + "/" +
+  //   topic_ + std::string("/compressedDepth/parameter_updates"));
+  //   topic_list.push_back(std::string("/") + node_name + "/" + topic_ +
+  //   std::string("/compressedDepth/parameter_descriptions"));
 
   //   // Remove undesirable topics
-  //   for(std::vector<std::string>::const_iterator topic = topic_list.begin(); topic != topic_list.end(); ++topic)
+  //   for(std::vector<std::string>::const_iterator topic = topic_list.begin(); topic !=
+  //   topic_list.end(); ++topic)
   //   {
   //     args[1] = *topic;
   //     ros::master::execute("unregisterPublisher", args, result, payload, false);
@@ -81,5 +81,5 @@ void CameraPublisher::reset( rclcpp::Node* node )
   is_initialized_ = true;
 }
 
-} // publisher
-} //naoqi
+}  // namespace publisher
+}  // namespace naoqi

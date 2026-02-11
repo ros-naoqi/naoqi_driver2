@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef SUBSCRIBER_HPP
 #define SUBSCRIBER_HPP
@@ -30,127 +30,101 @@ namespace naoqi
 namespace subscriber
 {
 
-
 /**
-* @brief Subscriber concept interface
-* @note this defines an private concept struct,
-* which each instance has to implement
-* @note a type erasure pattern in implemented here to avoid strict inheritance,
-* thus each possible subscriber instance has to implement the virtual functions mentioned in the concept
-*/
+ * @brief Subscriber concept interface
+ * @note this defines an private concept struct,
+ * which each instance has to implement
+ * @note a type erasure pattern in implemented here to avoid strict inheritance,
+ * thus each possible subscriber instance has to implement the virtual functions mentioned in the
+ * concept
+ */
 class Subscriber
 {
 
-public:
-
+  public:
   /**
-  * @brief Constructor for subscriber interface
-  */
-  template<typename T>
-  Subscriber( T sub ):
-    subPtr_( boost::make_shared<SubscriberModel<T> >(sub) )
-  {}
+   * @brief Constructor for subscriber interface
+   */
+  template <typename T>
+  Subscriber(T sub) : subPtr_(boost::make_shared<SubscriberModel<T>>(sub))
+  {
+  }
 
   /**
   * @brief checks if the subscriber is correctly initialized
   @ @return bool value indicating true for success
   */
-  bool isInitialized() const
-  {
-    return subPtr_->isInitialized();
-  }
+  bool isInitialized() const { return subPtr_->isInitialized(); }
 
   /**
-  * @brief initializes/resets the subscriber into ROS with a given Node,
-  * this will be called at first for initialization
-  * @param node rclcpp::Node pointer object used to create the subscriber
-  */
-  void reset( rclcpp::Node* node )
+   * @brief initializes/resets the subscriber into ROS with a given Node,
+   * this will be called at first for initialization
+   * @param node rclcpp::Node pointer object used to create the subscriber
+   */
+  void reset(rclcpp::Node* node)
   {
     std::cout << name() << " is resetting" << std::endl;
-    subPtr_->reset( node );
+    subPtr_->reset(node);
     std::cout << name() << " reset" << std::endl;
   }
 
   /**
-  * @brief getting the descriptive name for this subscriber instance
-  * @return string with the name
-  */
-  std::string name() const
-  {
-    return subPtr_->name();
-  }
+   * @brief getting the descriptive name for this subscriber instance
+   * @return string with the name
+   */
+  std::string name() const { return subPtr_->name(); }
 
   /**
-  * @brief getting the topic to subscriber on
-  * @return string indicating the topic
-  */
-  std::string topic() const
-  {
-    return subPtr_->topic();
-  }
+   * @brief getting the topic to subscriber on
+   * @return string indicating the topic
+   */
+  std::string topic() const { return subPtr_->topic(); }
 
-  friend bool operator==( const Subscriber& lhs, const Subscriber& rhs )
+  friend bool operator==(const Subscriber& lhs, const Subscriber& rhs)
   {
     // decision made for OR-comparison since we want to be more restrictive
-    if ( lhs.name() == rhs.name() || lhs.topic() == rhs.topic() )
+    if (lhs.name() == rhs.name() || lhs.topic() == rhs.topic())
       return true;
     return false;
   }
 
-private:
-
+  private:
   /**
-  * BASE concept struct
-  */
+   * BASE concept struct
+   */
   struct SubscriberConcept
   {
-    virtual ~SubscriberConcept(){}
+    virtual ~SubscriberConcept() {}
     virtual bool isInitialized() const = 0;
-    virtual void reset( rclcpp::Node* node ) = 0;
+    virtual void reset(rclcpp::Node* node) = 0;
     virtual std::string name() const = 0;
     virtual std::string topic() const = 0;
   };
 
-
   /**
-  * templated instances of base concept
-  */
-  template<typename T>
+   * templated instances of base concept
+   */
+  template <typename T>
   struct SubscriberModel : public SubscriberConcept
   {
-    SubscriberModel( const T& other ):
-      subscriber_( other )
-    {}
+    SubscriberModel(const T& other) : subscriber_(other) {}
 
-    std::string name() const
-    {
-      return subscriber_->name();
-    }
+    std::string name() const { return subscriber_->name(); }
 
-    std::string topic() const
-    {
-      return subscriber_->topic();
-    }
+    std::string topic() const { return subscriber_->topic(); }
 
-    bool isInitialized() const
-    {
-      return subscriber_->isInitialized();
-    }
+    bool isInitialized() const { return subscriber_->isInitialized(); }
 
-    void reset( rclcpp::Node* node )
-    {
-      subscriber_->reset( node );
-    }
+    void reset(rclcpp::Node* node) { subscriber_->reset(node); }
 
     T subscriber_;
   };
 
   boost::shared_ptr<SubscriberConcept> subPtr_;
 
-}; // class subscriber
+};  // class subscriber
 
-} //subscriber
-} //naoqi
+}  // namespace subscriber
+}  // namespace naoqi
 
 #endif

@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
-
+ */
 
 #ifndef RECORDER_HELPERS_HPP
 #define RECORDER_HELPERS_HPP
@@ -33,18 +32,19 @@ static const float bufferDefaultDuration = 10.f;
 /**
  * @brief Checks if the time value contained in the builtin_interfaces time
  * message is set to zero or not
- * 
+ *
  * @param msg a builtin_interfaces time message
  * @return true if the time value of the message is 0 (0 seconds and 0
  * nanoseconds)
- * @return false if the time value of the message is not 0 
+ * @return false if the time value of the message is not 0
  */
-static bool isZero(const builtin_interfaces::msg::Time& msg) {
+static bool isZero(const builtin_interfaces::msg::Time& msg)
+{
   return msg.sec == 0 && msg.nanosec == 0;
 }
 
-} // recorder
-} // helpers
-} // naoqi
+}  // namespace recorder
+}  // namespace helpers
+}  // namespace naoqi
 
 #endif

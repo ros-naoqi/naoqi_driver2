@@ -13,42 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef ROBOT_DESCRIPTION_HPP
 #define ROBOT_DESCRIPTION_HPP
 
 /*
-* STANDARD includes
-*/
-#include <string>
+ * STANDARD includes
+ */
 #include <fstream>
+#include <string>
 
 // ROS includes
-#include <std_msgs/msg/string.hpp>
 #include <rclcpp/publisher.hpp>
+#include <std_msgs/msg/string.hpp>
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include <naoqi_driver/tools.hpp>
-namespace rclcpp {
-  class Node;
+namespace rclcpp
+{
+class Node;
 }
 
-namespace naoqi {
+namespace naoqi
+{
 
-namespace tools {
+namespace tools
+{
 
-std::string getRobotDescription( const robot::Robot& robot);
+std::string getRobotDescription(const robot::Robot& robot);
 
 /**
  * Publishes the robot description on the conventional topic /robot_description.
  * Returns the publisher that must be kept alive to keep the robot description published.
  */
 rclcpp::Publisher<std_msgs::msg::String>::SharedPtr
-publishRobotDescription(rclcpp::Node *node, const robot::Robot &robot_type);
-}
-}
+publishRobotDescription(rclcpp::Node* node, const robot::Robot& robot_type);
+}  // namespace tools
+}  // namespace naoqi
 
-#endif // ROBOT_DESCRIPTION_HPP
+#endif  // ROBOT_DESCRIPTION_HPP

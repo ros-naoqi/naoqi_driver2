@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "int.hpp"
-
 
 namespace naoqi
 {
 namespace converter
 {
 
-MemoryIntConverter::MemoryIntConverter( const std::string& name, const float& frequency, const qi::SessionPtr& session, const std::string& memory_key )
-  : BaseConverter( name, frequency, session ),
-    memory_key_(memory_key),
-    p_memory_( session->service("ALMemory").value() )
-{}
+MemoryIntConverter::MemoryIntConverter(const std::string& name,
+                                       const float& frequency,
+                                       const qi::SessionPtr& session,
+                                       const std::string& memory_key)
+    : BaseConverter(name, frequency, session), memory_key_(memory_key),
+      p_memory_(session->service("ALMemory").value())
+{
+}
 
-void MemoryIntConverter::registerCallback( message_actions::MessageAction action, Callback_t cb )
+void MemoryIntConverter::registerCallback(message_actions::MessageAction action, Callback_t cb)
 {
   callbacks_[action] = cb;
 }
@@ -47,7 +49,7 @@ bool MemoryIntConverter::convert()
     msg_.data = value;
     success = true;
   }
-  catch( const std::exception& e)
+  catch (const std::exception& e)
   {
     std::cerr << "Exception caught in MemoryIntConverter " << e.what() << std::endl;
     success = false;
@@ -55,18 +57,18 @@ bool MemoryIntConverter::convert()
   return success;
 }
 
-void MemoryIntConverter::callAll( const std::vector<message_actions::MessageAction>& actions )
+void MemoryIntConverter::callAll(const std::vector<message_actions::MessageAction>& actions)
 {
-  if (convert()) {
-    for( message_actions::MessageAction action: actions )
+  if (convert())
+  {
+    for (message_actions::MessageAction action : actions)
     {
-      callbacks_[action]( msg_ );
+      callbacks_[action](msg_);
     }
   }
 }
 
-void MemoryIntConverter::reset( )
-{}
+void MemoryIntConverter::reset() {}
 
-} // publisher
-} //naoqi
+}  // namespace converter
+}  // namespace naoqi

@@ -57,8 +57,7 @@ namespace naoqi
  * mentioned in the concept
  */
 template <class T>
-class TouchEventRegister
-    : public boost::enable_shared_from_this<TouchEventRegister<T>>
+class TouchEventRegister : public boost::enable_shared_from_this<TouchEventRegister<T>>
 {
 
   public:
@@ -68,7 +67,8 @@ class TouchEventRegister
   TouchEventRegister();
   TouchEventRegister(const std::string& name,
                      const std::vector<std::string> keys,
-                     const float& frequency, const qi::SessionPtr& session,
+                     const float& frequency,
+                     const qi::SessionPtr& session,
                      robot::NaoqiVersion naoqi_version);
   ~TouchEventRegister();
 
@@ -87,12 +87,12 @@ class TouchEventRegister
 
   private:
   void touchCallback(const std::string& key, const qi::AnyValue& value);
-  void touchCallbackMessage(const std::string& key, bool& state,
-                            naoqi_bridge_msgs::msg::Bumper& msg);
-  void touchCallbackMessage(const std::string& key, bool& state,
-                            naoqi_bridge_msgs::msg::HandTouch& msg);
-  void touchCallbackMessage(const std::string& key, bool& state,
-                            naoqi_bridge_msgs::msg::HeadTouch& msg);
+  void
+  touchCallbackMessage(const std::string& key, bool& state, naoqi_bridge_msgs::msg::Bumper& msg);
+  void
+  touchCallbackMessage(const std::string& key, bool& state, naoqi_bridge_msgs::msg::HandTouch& msg);
+  void
+  touchCallbackMessage(const std::string& key, bool& state, naoqi_bridge_msgs::msg::HeadTouch& msg);
 
   void registerCallback();
   void unregisterCallback();
@@ -122,13 +122,13 @@ class TouchEventRegister
   std::vector<std::string> keys_;
 };  // class
 
-class BumperEventRegister
-    : public TouchEventRegister<naoqi_bridge_msgs::msg::Bumper>
+class BumperEventRegister : public TouchEventRegister<naoqi_bridge_msgs::msg::Bumper>
 {
   public:
   BumperEventRegister(const std::string& name,
                       const std::vector<std::string> keys,
-                      const float& frequency, const qi::SessionPtr& session,
+                      const float& frequency,
+                      const qi::SessionPtr& session,
                       robot::NaoqiVersion naoqi_version)
       : TouchEventRegister<naoqi_bridge_msgs::msg::Bumper>(
             name, keys, frequency, session, naoqi_version)
@@ -136,13 +136,13 @@ class BumperEventRegister
   }
 };
 
-class HeadTouchEventRegister
-    : public TouchEventRegister<naoqi_bridge_msgs::msg::HeadTouch>
+class HeadTouchEventRegister : public TouchEventRegister<naoqi_bridge_msgs::msg::HeadTouch>
 {
   public:
   HeadTouchEventRegister(const std::string& name,
                          const std::vector<std::string> keys,
-                         const float& frequency, const qi::SessionPtr& session,
+                         const float& frequency,
+                         const qi::SessionPtr& session,
                          robot::NaoqiVersion naoqi_version)
       : TouchEventRegister<naoqi_bridge_msgs::msg::HeadTouch>(
             name, keys, frequency, session, naoqi_version)
@@ -150,13 +150,13 @@ class HeadTouchEventRegister
   }
 };
 
-class HandTouchEventRegister
-    : public TouchEventRegister<naoqi_bridge_msgs::msg::HandTouch>
+class HandTouchEventRegister : public TouchEventRegister<naoqi_bridge_msgs::msg::HandTouch>
 {
   public:
   HandTouchEventRegister(const std::string& name,
                          const std::vector<std::string> keys,
-                         const float& frequency, const qi::SessionPtr& session,
+                         const float& frequency,
+                         const qi::SessionPtr& session,
                          robot::NaoqiVersion naoqi_version)
       : TouchEventRegister<naoqi_bridge_msgs::msg::HandTouch>(
             name, keys, frequency, session, naoqi_version)

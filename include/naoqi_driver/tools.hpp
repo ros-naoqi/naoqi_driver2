@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
-
+ */
 
 #ifndef ALROS_TOOLS_HPP
 #define ALROS_TOOLS_HPP
@@ -27,7 +26,7 @@
 #define BOLDYELLOW "\033[1m\033[33m"
 #define BOLDCYAN "\033[1m\033[36m"
 
-# include <qi/anyobject.hpp>
+#include <qi/anyobject.hpp>
 
 namespace naoqi
 {
@@ -50,15 +49,17 @@ struct NaoqiVersion
   int build;
   std::string text;
 };
-}
+}  // namespace robot
 
-enum Topics {
+enum Topics
+{
   Laser = 0,
   Camera,
   Sonar
 };
 
-namespace dataType {
+namespace dataType
+{
 enum DataType
 {
   None = 0,
@@ -69,9 +70,9 @@ enum DataType
 };
 }
 
-} // naoqi
+}  // namespace naoqi
 
-#if LIBQI_VERSION>24
+#if LIBQI_VERSION > 24
 QI_TYPE_ENUM(naoqi::Topics);
 QI_TYPE_ENUM(naoqi::dataType::DataType);
 #else

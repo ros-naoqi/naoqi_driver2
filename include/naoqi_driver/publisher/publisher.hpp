@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef PUBLISHER_HPP
 #define PUBLISHER_HPP
@@ -30,132 +30,107 @@ namespace naoqi
 namespace publisher
 {
 
-
 /**
-* @brief Publisher concept interface
-* @note this defines an private concept struct,
-* which each instance has to implement
-* @note a type erasure pattern in implemented here to avoid strict inheritance,
-* thus each possible publisher instance has to implement the virtual functions mentioned in the concept
-*/
+ * @brief Publisher concept interface
+ * @note this defines an private concept struct,
+ * which each instance has to implement
+ * @note a type erasure pattern in implemented here to avoid strict inheritance,
+ * thus each possible publisher instance has to implement the virtual functions mentioned in the
+ * concept
+ */
 class Publisher
 {
 
-public:
-
+  public:
   /**
-  * @brief Constructor for publisher interface
-  */
-  template<typename T>
-  Publisher( const T& pub ):
-    pubPtr_( boost::make_shared<PublisherModel<T> >(pub) )
-  {}
+   * @brief Constructor for publisher interface
+   */
+  template <typename T>
+  Publisher(const T& pub) : pubPtr_(boost::make_shared<PublisherModel<T>>(pub))
+  {
+  }
 
   /**
   * @brief checks if the publisher is correctly initialized on the ros-master
   @ @return bool value indicating true for success
   */
-  bool isInitialized() const
-  {
-    return pubPtr_->isInitialized();
-  }
+  bool isInitialized() const { return pubPtr_->isInitialized(); }
 
   /**
-  * @brief checks if the publisher has a subscription and is hence allowed to publish
-  * @return bool value indicating true for number of sub > 0
-  */
-  bool isSubscribed() const
-  {
-    return pubPtr_->isSubscribed();
-  }
+   * @brief checks if the publisher has a subscription and is hence allowed to publish
+   * @return bool value indicating true for number of sub > 0
+   */
+  bool isSubscribed() const { return pubPtr_->isSubscribed(); }
 
   /**
-  * @brief initializes/resets the publisher into ROS with a given Node object,
-  * this will be called at first for initialization
-  * @param node rclcpp::Node pointer from which the publisher is created
-  */
-  void reset( rclcpp::Node* node )
+   * @brief initializes/resets the publisher into ROS with a given Node object,
+   * this will be called at first for initialization
+   * @param node rclcpp::Node pointer from which the publisher is created
+   */
+  void reset(rclcpp::Node* node)
   {
     std::cout << topic() << " is resetting" << std::endl;
-    pubPtr_->reset( node );
+    pubPtr_->reset(node);
     std::cout << topic() << " reset" << std::endl;
   }
 
   /**
-  * @brief getting the topic to publish on
-  * @return string indicating the topic
-  */
-  std::string topic() const
-  {
-    return pubPtr_->topic();
-  }
+   * @brief getting the topic to publish on
+   * @return string indicating the topic
+   */
+  std::string topic() const { return pubPtr_->topic(); }
 
-  friend bool operator==( const Publisher& lhs, const Publisher& rhs )
+  friend bool operator==(const Publisher& lhs, const Publisher& rhs)
   {
     // decision made for OR-comparison since we want to be more restrictive
-    if ( lhs.topic() == rhs.topic() )
+    if (lhs.topic() == rhs.topic())
       return true;
     return false;
   }
 
-  friend bool operator==( const boost::shared_ptr<Publisher>& lhs, const boost::shared_ptr<Publisher>& rhs )
+  friend bool operator==(const boost::shared_ptr<Publisher>& lhs,
+                         const boost::shared_ptr<Publisher>& rhs)
   {
-    return operator==( *lhs, *rhs );
+    return operator==(*lhs, *rhs);
   }
 
-private:
-
+  private:
   /**
-  * BASE concept struct
-  */
+   * BASE concept struct
+   */
   struct PublisherConcept
   {
-    virtual ~PublisherConcept(){}
+    virtual ~PublisherConcept() {}
     virtual bool isInitialized() const = 0;
     virtual bool isSubscribed() const = 0;
-    virtual void reset( rclcpp::Node* node ) = 0;
+    virtual void reset(rclcpp::Node* node) = 0;
     virtual std::string topic() const = 0;
   };
 
-
   /**
-  * templated instances of base concept
-  */
-  template<typename T>
+   * templated instances of base concept
+   */
+  template <typename T>
   struct PublisherModel : public PublisherConcept
   {
-    PublisherModel( const T& other ):
-      publisher_( other )
-    {}
+    PublisherModel(const T& other) : publisher_(other) {}
 
-    std::string topic() const
-    {
-      return publisher_->topic();
-    }
+    std::string topic() const { return publisher_->topic(); }
 
-    bool isInitialized() const
-    {
-      return publisher_->isInitialized();
-    }
+    bool isInitialized() const { return publisher_->isInitialized(); }
 
-    bool isSubscribed() const
-    {
-      return publisher_->isSubscribed();
-    }
+    bool isSubscribed() const { return publisher_->isSubscribed(); }
 
-    void reset( rclcpp::Node* node )
-    {
-      publisher_->reset( node );
-    }
+    void reset(rclcpp::Node* node) { publisher_->reset(node); }
 
     T publisher_;
   };
 
   boost::shared_ptr<PublisherConcept> pubPtr_;
 
-}; // class publisher
+};  // class publisher
 
-} //publisher
-} //naoqi
+}  // namespace publisher
+}  // namespace naoqi
 
 #endif

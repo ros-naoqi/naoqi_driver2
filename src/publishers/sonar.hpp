@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef PUBLISHER_SONAR_HPP
 #define PUBLISHER_SONAR_HPP
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
+#include <naoqi_driver/ros_helpers.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/range.hpp>
-#include <naoqi_driver/ros_helpers.hpp>
-
 
 namespace naoqi
 {
@@ -33,40 +32,37 @@ namespace publisher
 
 class SonarPublisher
 {
-public:
-  SonarPublisher( const std::vector<std::string>& topics );
+  public:
+  SonarPublisher(const std::vector<std::string>& topics);
 
-  inline std::string topic() const
-  {
-    return "sonar";
-  }
+  inline std::string topic() const { return "sonar"; }
 
-  inline bool isInitialized() const
-  {
-    return is_initialized_;
-  }
+  inline bool isInitialized() const { return is_initialized_; }
 
-  void publish( const std::vector<sensor_msgs::msg::Range>& sonar_msgs );
+  void publish(const std::vector<sensor_msgs::msg::Range>& sonar_msgs);
 
-  void reset( rclcpp::Node* node );
+  void reset(rclcpp::Node* node);
 
   inline bool isSubscribed() const
   {
-    if (is_initialized_ == false) return false;
-    for(std::vector<rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr>::const_iterator it = pubs_.begin(); it != pubs_.end(); ++it)
+    if (is_initialized_ == false)
+      return false;
+    for (std::vector<rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr>::const_iterator it =
+             pubs_.begin();
+         it != pubs_.end();
+         ++it)
       if (helpers::Node::count_subscribers((*it)->get_topic_name()))
         return true;
     return false;
   }
 
-private:
+  private:
   std::vector<std::string> topics_;
   std::vector<rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr> pubs_;
   bool is_initialized_;
-
 };
 
-} //publisher
-} //naoqi
+}  // namespace publisher
+}  // namespace naoqi
 
 #endif

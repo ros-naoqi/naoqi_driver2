@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef JOINT_STATES_CONVERTER_HPP
 #define JOINT_STATES_CONVERTER_HPP
 
 /*
-* LOCAL includes
-*/
-#include "converter_base.hpp"
-#include "../tools/robot_description.hpp"
+ * LOCAL includes
+ */
 #include <naoqi_driver/message_actions.h>
 #include <naoqi_driver/ros_helpers.hpp>
+#include "../tools/robot_description.hpp"
+#include "converter_base.hpp"
 
 /*
-* ROS includes
-*/
-#include <urdf/model.h>
-#include <sensor_msgs/msg/joint_state.hpp>
+ * ROS includes
+ */
 #include <tf2_ros/buffer.h>
+#include <urdf/model.h>
 #include <robot_state_publisher/robot_state_publisher.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 
 namespace naoqi
 {
@@ -42,29 +42,35 @@ namespace converter
 class JointStateConverter : public BaseConverter<JointStateConverter>
 {
 
-  typedef boost::function<void(sensor_msgs::msg::JointState&, std::vector<geometry_msgs::msg::TransformStamped>&) > Callback_t;
+  typedef boost::function<void(sensor_msgs::msg::JointState&,
+                               std::vector<geometry_msgs::msg::TransformStamped>&)>
+      Callback_t;
 
   typedef boost::shared_ptr<tf2_ros::Buffer> BufferPtr;
 
   typedef std::map<std::string, urdf::JointMimicSharedPtr> MimicMap;
 
-public:
-  JointStateConverter( const std::string& name, const float& frequency, const BufferPtr& tf2_buffer, const qi::SessionPtr& session );
+  public:
+  JointStateConverter(const std::string& name,
+                      const float& frequency,
+                      const BufferPtr& tf2_buffer,
+                      const qi::SessionPtr& session);
 
   ~JointStateConverter();
 
-  virtual void reset( );
+  virtual void reset();
 
-  void registerCallback( const message_actions::MessageAction action, Callback_t cb );
+  void registerCallback(const message_actions::MessageAction action, Callback_t cb);
 
-  void callAll( const std::vector<message_actions::MessageAction>& actions );
+  void callAll(const std::vector<message_actions::MessageAction>& actions);
 
-private:
-
+  private:
   /** blatently copied from robot state publisher */
   void addChildren(const KDL::SegmentMap::const_iterator segment);
   std::map<std::string, robot_state_publisher::SegmentPair> segments_, segments_fixed_;
-  void setTransforms(const std::map<std::string, double>& joint_positions, const rclcpp::Time& time, const std::string& tf_prefix);
+  void setTransforms(const std::map<std::string, double>& joint_positions,
+                     const rclcpp::Time& time,
+                     const std::string& tf_prefix);
   void setFixedTransforms(const std::string& tf_prefix, const rclcpp::Time& time);
 
   /** Global Shared tf2 buffer **/
@@ -90,9 +96,9 @@ private:
   /** Transform Messages **/
   std::vector<geometry_msgs::msg::TransformStamped> tf_transforms_;
 
-}; // class
+};  // class
 
-} //publisher
-} // naoqi
+}  // namespace converter
+}  // namespace naoqi
 
 #endif

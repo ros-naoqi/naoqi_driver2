@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "log.hpp"
 
 namespace naoqi
@@ -25,10 +25,7 @@ namespace naoqi
 namespace publisher
 {
 
-LogPublisher::LogPublisher(const std::string &topic )
-  : BasicPublisher( topic )
-{
-}
+LogPublisher::LogPublisher(const std::string& topic) : BasicPublisher(topic) {}
 
-} // publisher
-} //naoqi
+}  // namespace publisher
+}  // namespace naoqi

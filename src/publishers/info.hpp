@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef PUBLISHER_INFO_HPP
 #define PUBLISHER_INFO_HPP
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "basic.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <naoqi_bridge_msgs/msg/string_stamped.hpp>
 
 namespace naoqi
@@ -35,18 +35,13 @@ namespace publisher
 
 class InfoPublisher : public BasicPublisher<naoqi_bridge_msgs::msg::StringStamped>
 {
-public:
-  InfoPublisher(const std::string& topic) : BasicPublisher(topic)
-  {
-  }
+  public:
+  InfoPublisher(const std::string& topic) : BasicPublisher(topic) {}
 
-  virtual inline bool isSubscribed() const
-  {
-    return true;
-  }
+  virtual inline bool isSubscribed() const { return true; }
 };
 
-} //publisher
-} //naoqi
+}  // namespace publisher
+}  // namespace naoqi
 
 #endif

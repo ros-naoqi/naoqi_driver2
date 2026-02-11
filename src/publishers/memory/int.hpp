@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef MEMORY_INT_PUBLISHER_HPP
 #define MEMORY_INT_PUBLISHER_HPP
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "../publisher_base.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <naoqi_bridge_msgs/msg/int_stamped.hpp>
 
 namespace naoqi
@@ -36,16 +36,16 @@ namespace publisher
 class MemoryIntPublisher : public BasePublisher<naoqi_bridge_msgs::msg::IntStamped>
 {
 
-public:
-  MemoryIntPublisher( const std::string& topic );
+  public:
+  MemoryIntPublisher(const std::string& topic);
 
-  void publish( const naoqi_bridge_msgs::msg::IntStamped& msg );
+  void publish(const naoqi_bridge_msgs::msg::IntStamped& msg);
 
-  void reset( rclcpp::Node* node );
+  void reset(rclcpp::Node* node);
 
-}; // class
+};  // class
 
-} //publisher
-} // naoqi
+}  // namespace publisher
+}  // namespace naoqi
 
 #endif

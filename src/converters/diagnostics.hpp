@@ -19,15 +19,15 @@
 #define DIAGNOSTICS_CONVERTER_HPP
 
 /*
-* LOCAL includes
-*/
-#include "converter_base.hpp"
+ * LOCAL includes
+ */
 #include <naoqi_driver/message_actions.h>
 #include <naoqi_driver/ros_helpers.hpp>
+#include "converter_base.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <diagnostic_msgs/msg/diagnostic_array.hpp>
 
 namespace naoqi
@@ -43,18 +43,18 @@ namespace converter
 class DiagnosticsConverter : public BaseConverter<DiagnosticsConverter>
 {
 
-  typedef boost::function<void(diagnostic_msgs::msg::DiagnosticArray&) > Callback_t;
+  typedef boost::function<void(diagnostic_msgs::msg::DiagnosticArray&)> Callback_t;
 
-public:
-  DiagnosticsConverter(const std::string& name, float frequency, const qi::SessionPtr &session );
+  public:
+  DiagnosticsConverter(const std::string& name, float frequency, const qi::SessionPtr& session);
 
   void reset();
 
-  void callAll( const std::vector<message_actions::MessageAction>& actions );
+  void callAll(const std::vector<message_actions::MessageAction>& actions);
 
-  void registerCallback( const message_actions::MessageAction action, Callback_t cb );
+  void registerCallback(const message_actions::MessageAction action, Callback_t cb);
 
-private:
+  private:
   /** The names of the joints in the order given by the motion proxy */
   std::vector<std::string> joint_names_;
   /** all the keys to check. It is a concatenation of joint_temperatures_keys_, battery_keys_ */
@@ -62,7 +62,7 @@ private:
   /** Keys for the battery status */
   std::vector<std::string> battery_status_keys_;
   /** Map storing the joints informations */
-  std::map<std::string, std::vector<double> > joint_limit_map_;
+  std::map<std::string, std::vector<double>> joint_limit_map_;
   /** Proxy to ALMemory */
   qi::AnyObject p_memory_;
   /** Proxy to ALMotion */
@@ -77,7 +77,7 @@ private:
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
 };
 
-} //converter
-} // naoqi
+}  // namespace converter
+}  // namespace naoqi
 
 #endif

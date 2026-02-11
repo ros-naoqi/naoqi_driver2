@@ -13,35 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef DRIVER_AUTHENTICATOR_HPP
 #define DRIVER_AUTHENTICATOR_HPP
 
 #include <qi/messaging/authprovider.hpp>
 
-namespace naoqi {
+namespace naoqi
+{
 
-class DriverAuthenticator : public qi::ClientAuthenticator {
-public:
+class DriverAuthenticator : public qi::ClientAuthenticator
+{
+  public:
   static const std::string user_key;
   static const std::string pass_key;
 
-  DriverAuthenticator(
-    const std::string& user, 
-    const std::string& pass) : _u(user), _p(pass) {}
+  DriverAuthenticator(const std::string& user, const std::string& pass) : _u(user), _p(pass) {}
 
-  qi::CapabilityMap initialAuthData() {
+  qi::CapabilityMap initialAuthData()
+  {
     qi::CapabilityMap result;
     result[DriverAuthenticator::user_key] = qi::AnyValue::from(_u);
     result[DriverAuthenticator::pass_key] = qi::AnyValue::from(_p);
     return result;
   }
 
-  qi::CapabilityMap _processAuth(const qi::CapabilityMap&) {
-    return qi::CapabilityMap();
-  }
-private:
+  qi::CapabilityMap _processAuth(const qi::CapabilityMap&) { return qi::CapabilityMap(); }
+
+  private:
   std::string _u;
   std::string _p;
 };
@@ -49,16 +49,18 @@ private:
 const std::string DriverAuthenticator::user_key = "user";
 const std::string DriverAuthenticator::pass_key = "token";
 
-class DriverAuthenticatorFactory : public qi::ClientAuthenticatorFactory {
-public:
+class DriverAuthenticatorFactory : public qi::ClientAuthenticatorFactory
+{
+  public:
   std::string user;
   std::string pass;
 
-  qi::ClientAuthenticatorPtr newAuthenticator() {
+  qi::ClientAuthenticatorPtr newAuthenticator()
+  {
     return boost::make_shared<DriverAuthenticator>(user, pass);
   }
 };
 
-}
+}  // namespace naoqi
 
-#endif // DRIVER_AUTHENTICATOR
+#endif  // DRIVER_AUTHENTICATOR

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 /*
  * LOCAL includes
@@ -26,9 +26,10 @@
 #include <qi/anymodule.hpp>
 
 /**
-* @brief starter code for registrating the naoqi_driver module via the autoload.ini.
-*/
-void registerRosDriver(qi::ModuleBuilder* mb) {
+ * @brief starter code for registrating the naoqi_driver module via the autoload.ini.
+ */
+void registerRosDriver(qi::ModuleBuilder* mb)
+{
   mb->advertiseFactory<naoqi::Driver, qi::SessionPtr, std::string>("ROS-Driver");
 }
 QI_REGISTER_MODULE("naoqi_driver_module", &registerRosDriver);

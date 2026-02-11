@@ -13,29 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "memory_list.hpp"
 
+namespace naoqi
+{
 
-namespace naoqi {
+namespace converter
+{
 
-namespace converter {
-
-MemoryListConverter::MemoryListConverter(const std::vector<std::string>& key_list, const std::string &name, const float &frequency, const qi::SessionPtr &session):
-    BaseConverter(name, frequency, session),
-    p_memory_(session->service("ALMemory").value()),
-    _key_list(key_list)
-{}
-
-void MemoryListConverter::reset(){
-
+MemoryListConverter::MemoryListConverter(const std::vector<std::string>& key_list,
+                                         const std::string& name,
+                                         const float& frequency,
+                                         const qi::SessionPtr& session)
+    : BaseConverter(name, frequency, session), p_memory_(session->service("ALMemory").value()),
+      _key_list(key_list)
+{
 }
 
-void MemoryListConverter::callAll(const std::vector<message_actions::MessageAction> &actions){
+void MemoryListConverter::reset() {}
+
+void MemoryListConverter::callAll(const std::vector<message_actions::MessageAction>& actions)
+{
   // Get inertial data
   qi::AnyValue memData_anyvalue = p_memory_.call<qi::AnyValue>("getListData", _key_list);
 
@@ -46,23 +49,23 @@ void MemoryListConverter::callAll(const std::vector<message_actions::MessageActi
 
   qi::AnyReferenceVector memData_anyref = memData_anyvalue.asListValuePtr();
 
-  for(int i=0; i<memData_anyref.size();i++)
+  for (int i = 0; i < memData_anyref.size(); i++)
   {
-    if(memData_anyref[i].content().kind() == qi::TypeKind_Int)
+    if (memData_anyref[i].content().kind() == qi::TypeKind_Int)
     {
       naoqi_bridge_msgs::msg::MemoryPairInt tmp_msg;
       tmp_msg.memory_key = _key_list[i];
       tmp_msg.data = memData_anyref[i].content().asInt32();
       _msg.ints.push_back(tmp_msg);
     }
-    else if(memData_anyref[i].content().kind() == qi::TypeKind_Float)
+    else if (memData_anyref[i].content().kind() == qi::TypeKind_Float)
     {
-        naoqi_bridge_msgs::msg::MemoryPairFloat tmp_msg;
-        tmp_msg.memory_key = _key_list[i];
-        tmp_msg.data = memData_anyref[i].content().asFloat();
-        _msg.floats.push_back(tmp_msg);
+      naoqi_bridge_msgs::msg::MemoryPairFloat tmp_msg;
+      tmp_msg.memory_key = _key_list[i];
+      tmp_msg.data = memData_anyref[i].content().asFloat();
+      _msg.floats.push_back(tmp_msg);
     }
-    else if(memData_anyref[i].content().kind() == qi::TypeKind_String)
+    else if (memData_anyref[i].content().kind() == qi::TypeKind_String)
     {
       naoqi_bridge_msgs::msg::MemoryPairString tmp_msg;
       tmp_msg.memory_key = _key_list[i];
@@ -71,17 +74,18 @@ void MemoryListConverter::callAll(const std::vector<message_actions::MessageActi
     }
   }
 
-  for( message_actions::MessageAction action: actions )
+  for (message_actions::MessageAction action : actions)
   {
-    callbacks_[action]( _msg);
+    callbacks_[action](_msg);
   }
 }
 
-void MemoryListConverter::registerCallback( const message_actions::MessageAction action, Callback_t cb )
+void MemoryListConverter::registerCallback(const message_actions::MessageAction action,
+                                           Callback_t cb)
 {
   callbacks_[action] = cb;
 }
 
-}
+}  // namespace converter
 
-}
+}  // namespace naoqi

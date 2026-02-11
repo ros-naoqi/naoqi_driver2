@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef SONAR_CONVERTER_HPP
 #define SONAR_CONVERTER_HPP
 
 /*
-* LOCAL includes
-*/
-#include "converter_base.hpp"
+ * LOCAL includes
+ */
 #include <naoqi_driver/message_actions.h>
 #include <naoqi_driver/ros_helpers.hpp>
+#include "converter_base.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <sensor_msgs/msg/range.hpp>
 
 namespace naoqi
@@ -40,20 +40,18 @@ class SonarConverter : public BaseConverter<SonarConverter>
 
   typedef boost::function<void(std::vector<sensor_msgs::msg::Range>&)> Callback_t;
 
-
-public:
-  SonarConverter( const std::string& name, const float& frequency, const qi::SessionPtr& session );
+  public:
+  SonarConverter(const std::string& name, const float& frequency, const qi::SessionPtr& session);
 
   ~SonarConverter();
 
-  void reset( );
+  void reset();
 
-  void registerCallback( message_actions::MessageAction action, Callback_t cb );
+  void registerCallback(message_actions::MessageAction action, Callback_t cb);
 
-  void callAll( const std::vector<message_actions::MessageAction>& actions );
+  void callAll(const std::vector<message_actions::MessageAction>& actions);
 
-
-private:
+  private:
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
 
   /** Sonar (Proxy) configurations */
@@ -71,7 +69,7 @@ private:
   std::vector<sensor_msgs::msg::Range> msgs_;
 };
 
-} //publisher
-} //naoqi
+}  // namespace converter
+}  // namespace naoqi
 
 #endif

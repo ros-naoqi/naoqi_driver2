@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef JOINT_STATES_PUBLISHER_HPP
 #define JOINT_STATES_PUBLISHER_HPP
 
 /*
-* ROS includes
-*/
-#include <rclcpp/rclcpp.hpp>
-#include <geometry_msgs/msg/transform.hpp>
-#include <sensor_msgs/msg/joint_state.hpp>
+ * ROS includes
+ */
 #include <tf2_ros/transform_broadcaster.h>
+#include <geometry_msgs/msg/transform.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace naoqi
 {
@@ -37,27 +37,21 @@ namespace publisher
 class JointStatePublisher
 {
 
-public:
-  JointStatePublisher( const std::string& topic = "/joint_states" );
+  public:
+  JointStatePublisher(const std::string& topic = "/joint_states");
 
-  inline std::string topic() const
-  {
-  return topic_;
-  }
+  inline std::string topic() const { return topic_; }
 
-  inline bool isInitialized() const
-  {
-  return is_initialized_;
-  }
+  inline bool isInitialized() const { return is_initialized_; }
 
-  virtual void publish( const sensor_msgs::msg::JointState& js_msg,
-                        const std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms );
+  virtual void publish(const sensor_msgs::msg::JointState& js_msg,
+                       const std::vector<geometry_msgs::msg::TransformStamped>& tf_transforms);
 
-  virtual void reset( rclcpp::Node* node );
+  virtual void reset(rclcpp::Node* node);
 
   virtual bool isSubscribed() const;
 
-private:
+  private:
   boost::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcasterPtr_;
 
   /** initialize separate publishers for js and odom */
@@ -67,9 +61,9 @@ private:
 
   bool is_initialized_;
 
-}; // class
+};  // class
 
-} //publisher
-} // naoqi
+}  // namespace publisher
+}  // namespace naoqi
 
 #endif

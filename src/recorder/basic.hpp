@@ -13,84 +13,74 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef BASIC_RECORDER_HPP
 #define BASIC_RECORDER_HPP
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include <naoqi_driver/recorder/globalrecorder.hpp>
 #include "../helpers/recorder_helpers.hpp"
 
 /*
-* STANDARD includes
-*/
-#include <string>
+ * STANDARD includes
+ */
 #include <boost/circular_buffer.hpp>
+#include <string>
 
 namespace naoqi
 {
 namespace recorder
 {
 
-template<class T>
+template <class T>
 class BasicRecorder
 {
 
-public:
-  BasicRecorder( const std::string& topic, float buffer_frequency = 0 ):
-    topic_( topic ),
-    buffer_duration_( helpers::recorder::bufferDefaultDuration ),
-    is_initialized_( false ),
-    is_subscribed_( false ),
-    buffer_frequency_(buffer_frequency),
-    counter_(1)
-  {}
+  public:
+  BasicRecorder(const std::string& topic, float buffer_frequency = 0)
+      : topic_(topic), buffer_duration_(helpers::recorder::bufferDefaultDuration),
+        is_initialized_(false), is_subscribed_(false), buffer_frequency_(buffer_frequency),
+        counter_(1)
+  {
+  }
 
   virtual ~BasicRecorder() {}
 
-  inline std::string topic() const
-  {
-    return topic_;
-  }
+  inline std::string topic() const { return topic_; }
 
-  inline bool isInitialized() const
-  {
-    return is_initialized_;
-  }
+  inline bool isInitialized() const { return is_initialized_; }
 
-  inline void subscribe( bool state)
-  {
-    is_subscribed_ = state;
-  }
+  inline void subscribe(bool state) { is_subscribed_ = state; }
 
-  inline bool isSubscribed() const
-  {
-    return is_subscribed_;
-  }
+  inline bool isSubscribed() const { return is_subscribed_; }
 
   virtual void write(const T& msg)
   {
-    if (!helpers::recorder::isZero(msg.header.stamp)) {
+    if (!helpers::recorder::isZero(msg.header.stamp))
+    {
       gr_->write(topic_, msg, msg.header.stamp);
     }
-    else {
+    else
+    {
       gr_->write(topic_, msg);
     }
   }
 
   virtual void writeDump(const rclcpp::Time& time)
   {
-    boost::mutex::scoped_lock lock_write_buffer( mutex_ );
+    boost::mutex::scoped_lock lock_write_buffer(mutex_);
     typename boost::circular_buffer<T>::iterator it;
     for (it = buffer_.begin(); it != buffer_.end(); it++)
     {
-      if (!helpers::recorder::isZero(it->header.stamp)) {
+      if (!helpers::recorder::isZero(it->header.stamp))
+      {
         gr_->write(topic_, *it, it->header.stamp);
       }
-      else {
+      else
+      {
         gr_->write(topic_, *it);
       }
     }
@@ -98,7 +88,7 @@ public:
 
   virtual void bufferize(const T& msg)
   {
-    boost::mutex::scoped_lock lock_bufferize( mutex_ );
+    boost::mutex::scoped_lock lock_bufferize(mutex_);
     if (counter_ < max_counter_)
     {
       counter_++;
@@ -116,13 +106,13 @@ public:
     conv_frequency_ = conv_frequency;
     if (buffer_frequency_ != 0)
     {
-      max_counter_ = static_cast<int>(conv_frequency/buffer_frequency_);
-      buffer_size_ = static_cast<size_t>(buffer_duration_*(conv_frequency/max_counter_));
+      max_counter_ = static_cast<int>(conv_frequency / buffer_frequency_);
+      buffer_size_ = static_cast<size_t>(buffer_duration_ * (conv_frequency / max_counter_));
     }
     else
     {
       max_counter_ = 1;
-      buffer_size_ = static_cast<size_t>(buffer_duration_*conv_frequency);
+      buffer_size_ = static_cast<size_t>(buffer_duration_ * conv_frequency);
     }
     buffer_.resize(buffer_size_);
     is_initialized_ = true;
@@ -130,13 +120,13 @@ public:
 
   virtual void setBufferDuration(float duration)
   {
-    boost::mutex::scoped_lock lock_bufferize( mutex_ );
-    buffer_size_ = static_cast<size_t>(duration*(conv_frequency_/max_counter_));
+    boost::mutex::scoped_lock lock_bufferize(mutex_);
+    buffer_size_ = static_cast<size_t>(duration * (conv_frequency_ / max_counter_));
     buffer_duration_ = duration;
     buffer_.set_capacity(buffer_size_);
   }
 
-protected:
+  protected:
   std::string topic_;
 
   boost::circular_buffer<T> buffer_;
@@ -154,9 +144,9 @@ protected:
   int counter_;
   int max_counter_;
 
-}; // class
+};  // class
 
-} // publisher
-} // naoqi
+}  // namespace recorder
+}  // namespace naoqi
 
 #endif

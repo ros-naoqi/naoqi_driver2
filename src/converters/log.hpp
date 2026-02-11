@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef CONVERTERS_LOG_HPP
 #define CONVERTERS_LOG_HPP
@@ -21,12 +21,12 @@
 #include <rcutils/logging.h>
 #include <rcl_interfaces/msg/log.hpp>
 
-#include <naoqi_driver/ros_helpers.hpp>
 #include <naoqi_driver/message_actions.h>
+#include <naoqi_driver/ros_helpers.hpp>
 #include "converter_base.hpp"
 
-#include <qicore/logmanager.hpp>
 #include <qicore/loglistener.hpp>
+#include <qicore/logmanager.hpp>
 
 namespace naoqi
 {
@@ -36,18 +36,18 @@ namespace converter
 class LogConverter : public BaseConverter<LogConverter>
 {
 
-  typedef boost::function<void(rcl_interfaces::msg::Log&) > Callback_t;
+  typedef boost::function<void(rcl_interfaces::msg::Log&)> Callback_t;
 
-public:
-  LogConverter( const std::string& name, float frequency, const qi::SessionPtr& sessions );
+  public:
+  LogConverter(const std::string& name, float frequency, const qi::SessionPtr& sessions);
 
-  void reset( );
+  void reset();
 
-  void registerCallback( const message_actions::MessageAction action, Callback_t cb );
+  void registerCallback(const message_actions::MessageAction action, Callback_t cb);
 
-  void callAll( const std::vector<message_actions::MessageAction>& actions );
+  void callAll(const std::vector<message_actions::MessageAction>& actions);
 
-private:
+  private:
   /** Function that sets the NAOqi log level to the ROS one */
   void set_qi_logger_level();
 
@@ -59,7 +59,7 @@ private:
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
 };
 
-} //publisher
-} //naoqi
+}  // namespace converter
+}  // namespace naoqi
 
 #endif

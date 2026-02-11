@@ -15,7 +15,6 @@
  *
  */
 
-
 #ifndef SPEECH_SUBSCRIBER_HPP
 #define SPEECH_SUBSCRIBER_HPP
 
@@ -35,26 +34,25 @@ namespace naoqi
 namespace subscriber
 {
 
-class SpeechSubscriber: public BaseSubscriber<SpeechSubscriber>
+class SpeechSubscriber : public BaseSubscriber<SpeechSubscriber>
 {
-public:
-  SpeechSubscriber( const std::string& name, const std::string& speech_topic, const qi::SessionPtr& session );
-  ~SpeechSubscriber(){}
+  public:
+  SpeechSubscriber(const std::string& name,
+                   const std::string& speech_topic,
+                   const qi::SessionPtr& session);
+  ~SpeechSubscriber() {}
 
-  void reset( rclcpp::Node* node );
-  void speech_callback( const std_msgs::msg::String::SharedPtr msg );
+  void reset(rclcpp::Node* node);
+  void speech_callback(const std_msgs::msg::String::SharedPtr msg);
 
-private:
-
+  private:
   std::string speech_topic_;
 
   qi::AnyObject p_tts_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_speech_;
 
+};  // class Speech
 
-
-}; // class Speech
-
-} // subscriber
-}// naoqi
+}  // namespace subscriber
+}  // namespace naoqi
 #endif

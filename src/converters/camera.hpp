@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef CONVERTER_CAMERA_HPP
 #define CONVERTER_CAMERA_HPP
 
 /*
-* LOCAL includes
-*/
-#include "converter_base.hpp"
+ * LOCAL includes
+ */
 #include <naoqi_driver/message_actions.h>
 #include <naoqi_driver/ros_helpers.hpp>
+#include "converter_base.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <image_transport/image_transport.hpp>
 
 namespace naoqi
@@ -38,26 +38,26 @@ namespace converter
 class CameraConverter : public BaseConverter<CameraConverter>
 {
 
-  typedef boost::function<void(sensor_msgs::msg::Image::SharedPtr, sensor_msgs::msg::CameraInfo)> Callback_t;
+  typedef boost::function<void(sensor_msgs::msg::Image::SharedPtr, sensor_msgs::msg::CameraInfo)>
+      Callback_t;
 
-public:
-  CameraConverter(
-    const std::string& name,
-    const float& frequency,
-    const qi::SessionPtr& session,
-    const int& camera_source,
-    const int& resolution,
-    const bool& has_stereo=false);
+  public:
+  CameraConverter(const std::string& name,
+                  const float& frequency,
+                  const qi::SessionPtr& session,
+                  const int& camera_source,
+                  const int& resolution,
+                  const bool& has_stereo = false);
 
   ~CameraConverter();
 
   void reset();
 
-  void registerCallback( const message_actions::MessageAction action, Callback_t cb );
+  void registerCallback(const message_actions::MessageAction action, Callback_t cb);
 
-  void callAll( const std::vector<message_actions::MessageAction>& actions );
+  void callAll(const std::vector<message_actions::MessageAction>& actions);
 
-private:
+  private:
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
 
   /** VideoDevice (Proxy) configurations */
@@ -77,8 +77,7 @@ private:
   sensor_msgs::msg::Image::SharedPtr msg_;
 };
 
-} //publisher
-} //naoqi
-
+}  // namespace converter
+}  // namespace naoqi
 
 #endif

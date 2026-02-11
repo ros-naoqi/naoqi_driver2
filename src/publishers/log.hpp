@@ -13,36 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef PUBLISHER_LOG_HPP
 #define PUBLISHER_LOG_HPP
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "basic.hpp"
 
 /*
-* ROS includes
-*/
-#include <rclcpp/rclcpp.hpp>
+ * ROS includes
+ */
 #include <rcl_interfaces/msg/log.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
 
 /*
-* BOOST includes
-*/
+ * BOOST includes
+ */
 #include <boost/algorithm/string.hpp>
 #include <boost/thread/mutex.hpp>
 
 /*
-* ALDEBARAN includes
-*/
+ * ALDEBARAN includes
+ */
 #include <qi/anyobject.hpp>
-#include <qicore/logmessage.hpp>
-#include <qicore/logmanager.hpp>
 #include <qicore/loglistener.hpp>
+#include <qicore/logmanager.hpp>
+#include <qicore/logmessage.hpp>
 
 namespace naoqi
 {
@@ -51,7 +51,7 @@ namespace publisher
 
 class LogPublisher : public BasicPublisher<rcl_interfaces::msg::Log>
 {
-public:
+  public:
   LogPublisher(const std::string& topic);
 
   // check whether a real copy of the log message should be more safe
@@ -63,12 +63,11 @@ public:
     return true;
   }
 
-private:
+  private:
   rclcpp::Publisher<rcl_interfaces::msg::Log>::SharedPtr pub_;
-
 };
 
-} //publisher
-} //naoqi
+}  // namespace publisher
+}  // namespace naoqi
 
 #endif

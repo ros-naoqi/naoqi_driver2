@@ -13,49 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "audio.hpp"
 
+namespace naoqi
+{
 
-namespace naoqi{
+namespace converter
+{
 
-namespace converter{
-
-AudioEventConverter::AudioEventConverter(const std::string& name, const float& frequency, const qi::SessionPtr& session)
+AudioEventConverter::AudioEventConverter(const std::string& name,
+                                         const float& frequency,
+                                         const qi::SessionPtr& session)
     : BaseConverter(name, frequency, session)
 {
 }
 
-AudioEventConverter::~AudioEventConverter() {
-}
+AudioEventConverter::~AudioEventConverter() {}
 
-void AudioEventConverter::reset()
-{
-}
+void AudioEventConverter::reset() {}
 
-void AudioEventConverter::registerCallback( const message_actions::MessageAction action, Callback_t cb )
+void AudioEventConverter::registerCallback(const message_actions::MessageAction action,
+                                           Callback_t cb)
 {
   callbacks_[action] = cb;
 }
 
-void AudioEventConverter::unregisterCallback( const message_actions::MessageAction action )
+void AudioEventConverter::unregisterCallback(const message_actions::MessageAction action)
 {
   callbacks_.erase(action);
 }
 
-void AudioEventConverter::callAll(const std::vector<message_actions::MessageAction>& actions, naoqi_bridge_msgs::msg::AudioBuffer& msg)
+void AudioEventConverter::callAll(const std::vector<message_actions::MessageAction>& actions,
+                                  naoqi_bridge_msgs::msg::AudioBuffer& msg)
 {
   msg_ = msg;
-  for( message_actions::MessageAction action: actions )
+  for (message_actions::MessageAction action : actions)
   {
     callbacks_[action](msg_);
   }
 }
 
-}
+}  // namespace converter
 
-}
+}  // namespace naoqi

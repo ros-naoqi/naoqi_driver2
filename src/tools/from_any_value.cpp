@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #include "from_any_value.hpp"
 
-namespace naoqi {
+namespace naoqi
+{
 
-namespace tools {
+namespace tools
+{
 
-NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
+NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value)
+{
   qi::AnyReferenceVector anyref;
   NaoqiImage result;
   std::ostringstream ss;
-  try{
+  try
+  {
     anyref = value.asListValuePtr();
   }
-  catch(std::runtime_error& e)
+  catch (std::runtime_error& e)
   {
     ss << "Could not transform AnyValue into list: " << e.what();
     throw std::runtime_error(ss.str());
@@ -37,7 +41,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** Width **/
   ref = anyref[0].content();
-  if(ref.kind() == qi::TypeKind_Int)
+  if (ref.kind() == qi::TypeKind_Int)
   {
     result.width = ref.asInt32();
   }
@@ -49,7 +53,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** Heigth **/
   ref = anyref[1].content();
-  if(ref.kind() == qi::TypeKind_Int)
+  if (ref.kind() == qi::TypeKind_Int)
   {
     result.height = ref.asInt32();
   }
@@ -61,7 +65,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** Layers **/
   ref = anyref[2].content();
-  if(ref.kind() == qi::TypeKind_Int)
+  if (ref.kind() == qi::TypeKind_Int)
   {
     result.number_of_layers = ref.asInt32();
   }
@@ -73,7 +77,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** colorspace **/
   ref = anyref[3].content();
-  if(ref.kind() == qi::TypeKind_Int)
+  if (ref.kind() == qi::TypeKind_Int)
   {
     result.colorspace = ref.asInt32();
   }
@@ -85,7 +89,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** timestamp_s **/
   ref = anyref[4].content();
-  if(ref.kind() == qi::TypeKind_Int)
+  if (ref.kind() == qi::TypeKind_Int)
   {
     result.timestamp_s = ref.asInt32();
   }
@@ -97,7 +101,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** timestamp_us **/
   ref = anyref[5].content();
-  if(ref.kind() == qi::TypeKind_Int)
+  if (ref.kind() == qi::TypeKind_Int)
   {
     result.timestamp_us = ref.asInt32();
   }
@@ -109,7 +113,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** buffer **/
   ref = anyref[6].content();
-  if(ref.kind() == qi::TypeKind_Raw)
+  if (ref.kind() == qi::TypeKind_Raw)
   {
     result.buffer = (void*)ref.asRaw().first;
   }
@@ -121,7 +125,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** cam_id **/
   ref = anyref[7].content();
-  if(ref.kind() == qi::TypeKind_Int)
+  if (ref.kind() == qi::TypeKind_Int)
   {
     result.cam_id = ref.asInt32();
   }
@@ -133,7 +137,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** fov_left **/
   ref = anyref[8].content();
-  if(ref.kind() == qi::TypeKind_Float)
+  if (ref.kind() == qi::TypeKind_Float)
   {
     result.fov_left = ref.asFloat();
   }
@@ -145,7 +149,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** fov_top **/
   ref = anyref[9].content();
-  if(ref.kind() == qi::TypeKind_Float)
+  if (ref.kind() == qi::TypeKind_Float)
   {
     result.fov_top = ref.asFloat();
   }
@@ -157,7 +161,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** fov_right **/
   ref = anyref[10].content();
-  if(ref.kind() == qi::TypeKind_Float)
+  if (ref.kind() == qi::TypeKind_Float)
   {
     result.fov_right = ref.asFloat();
   }
@@ -169,7 +173,7 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
 
   /** fov_bottom **/
   ref = anyref[11].content();
-  if(ref.kind() == qi::TypeKind_Float)
+  if (ref.kind() == qi::TypeKind_Float)
   {
     result.fov_bottom = ref.asFloat();
   }
@@ -181,17 +185,17 @@ NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value){
   return result;
 }
 
-
-std::vector<float> fromAnyValueToFloatVector(qi::AnyValue& value, std::vector<float>& result){
+std::vector<float> fromAnyValueToFloatVector(qi::AnyValue& value, std::vector<float>& result)
+{
   qi::AnyReferenceVector anyrefs = value.asListValuePtr();
 
-  for(int i=0; i<anyrefs.size();i++)
+  for (int i = 0; i < anyrefs.size(); i++)
   {
     try
     {
       result.push_back(anyrefs[i].content().toFloat());
     }
-    catch(std::runtime_error& e)
+    catch (std::runtime_error& e)
     {
       result.push_back(-1.0);
       std::cout << e.what() << "=> set to -1" << std::endl;
@@ -200,16 +204,18 @@ std::vector<float> fromAnyValueToFloatVector(qi::AnyValue& value, std::vector<fl
   return result;
 }
 
-std::vector<std::string> fromAnyValueToStringVector(qi::AnyValue& value, std::vector<std::string>& result){
+std::vector<std::string> fromAnyValueToStringVector(qi::AnyValue& value,
+                                                    std::vector<std::string>& result)
+{
   qi::AnyReferenceVector anyrefs = value.asListValuePtr();
 
-  for(int i=0; i<anyrefs.size();i++)
+  for (int i = 0; i < anyrefs.size(); i++)
   {
     try
     {
       result.push_back(anyrefs[i].content().toString());
     }
-    catch(std::runtime_error& e)
+    catch (std::runtime_error& e)
     {
       result.push_back("Not available");
       std::cout << e.what() << " => set to 'Not available'" << std::endl;
@@ -218,44 +224,49 @@ std::vector<std::string> fromAnyValueToStringVector(qi::AnyValue& value, std::ve
   return result;
 }
 
-
-void fromAnyValueToFloatVectorVector(
-        qi::AnyValue &value,
-        std::vector< std::vector<float> > &result) {
+void fromAnyValueToFloatVectorVector(qi::AnyValue& value, std::vector<std::vector<float>>& result)
+{
 
   qi::AnyReferenceVector anyrefs;
 
-  try {
+  try
+  {
     anyrefs = value.asListValuePtr();
-
-  } catch (const std::exception& e) {
+  }
+  catch (const std::exception& e)
+  {
     throw std::exception(e);
   }
 
   result.resize(anyrefs.size());
 
-  for(int i=0; i<anyrefs.size(); i++) {
+  for (int i = 0; i < anyrefs.size(); i++)
+  {
     qi::AnyReferenceVector anyref;
 
-    try {
+    try
+    {
       anyref = anyrefs[i].asListValuePtr();
-
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e)
+    {
       throw std::exception(e);
     }
 
     result[i].resize(anyref.size());
 
-    for(int j=0; j<anyref.size(); j++) {
-      try {
+    for (int j = 0; j < anyref.size(); j++)
+    {
+      try
+      {
         result[i][j] = anyref[j].content().toFloat();
-
-      } catch(std::runtime_error& e) {
+      }
+      catch (std::runtime_error& e)
+      {
         throw std::exception(e);
       }
     }
-
   }
 }
-}
-}
+}  // namespace tools
+}  // namespace naoqi

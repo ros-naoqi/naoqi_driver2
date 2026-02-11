@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
-
+ */
 
 #ifndef GET_LANGUAGE_SERVICE_HPP
 #define GET_LANGUAGE_SERVICE_HPP
@@ -33,27 +32,23 @@ namespace service
 
 class GetLanguageService
 {
-public:
-  GetLanguageService( const std::string& name, const std::string& topic, const qi::SessionPtr& session );
+  public:
+  GetLanguageService(const std::string& name,
+                     const std::string& topic,
+                     const qi::SessionPtr& session);
 
   ~GetLanguageService(){};
 
-  std::string name() const
-  {
-    return name_;
-  }
+  std::string name() const { return name_; }
 
-  std::string topic() const
-  {
-    return topic_;
-  }
+  std::string topic() const { return topic_; }
 
-  void reset( rclcpp::Node* node );
+  void reset(rclcpp::Node* node);
 
-  void callback( const std::shared_ptr<naoqi_bridge_msgs::srv::GetString::Request> req, std::shared_ptr<naoqi_bridge_msgs::srv::GetString::Response> resp );
+  void callback(const std::shared_ptr<naoqi_bridge_msgs::srv::GetString::Request> req,
+                std::shared_ptr<naoqi_bridge_msgs::srv::GetString::Response> resp);
 
-
-private:
+  private:
   const std::string name_;
   const std::string topic_;
 
@@ -61,6 +56,6 @@ private:
   rclcpp::Service<naoqi_bridge_msgs::srv::GetString>::SharedPtr service_;
 };
 
-} // service
-} // naoqi
+}  // namespace service
+}  // namespace naoqi
 #endif

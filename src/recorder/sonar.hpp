@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef SONAR_RECORDER_HPP
 #define SONAR_RECORDER_HPP
 
 /*
-* BOOST includes
-*/
+ * BOOST includes
+ */
 #include <boost/circular_buffer.hpp>
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include <naoqi_driver/recorder/globalrecorder.hpp>
 #include "../helpers/recorder_helpers.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <sensor_msgs/msg/range.hpp>
 
 namespace naoqi
@@ -42,43 +42,31 @@ namespace recorder
 class SonarRecorder
 {
 
-public:
-  SonarRecorder( const std::vector<std::string>& topics, float buffer_frequency = 0 );
+  public:
+  SonarRecorder(const std::vector<std::string>& topics, float buffer_frequency = 0);
 
-  void write(const std::vector<sensor_msgs::msg::Range>& sonar_msgs );
+  void write(const std::vector<sensor_msgs::msg::Range>& sonar_msgs);
 
-  void reset( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr, float conv_frequency );
+  void reset(boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr, float conv_frequency);
 
-  void bufferize(const std::vector<sensor_msgs::msg::Range>& sonar_msgs );
+  void bufferize(const std::vector<sensor_msgs::msg::Range>& sonar_msgs);
 
   void writeDump(const rclcpp::Time& time);
 
   void setBufferDuration(float duration);
 
-  inline std::string topic() const
-  {
-    return "sonar";
-  }
+  inline std::string topic() const { return "sonar"; }
 
-  inline bool isInitialized() const
-  {
-    return is_initialized_;
-  }
+  inline bool isInitialized() const { return is_initialized_; }
 
-  inline void subscribe( bool state)
-  {
-    is_subscribed_ = state;
-  }
+  inline void subscribe(bool state) { is_subscribed_ = state; }
 
-  inline bool isSubscribed() const
-  {
-    return is_subscribed_;
-  }
+  inline bool isSubscribed() const { return is_subscribed_; }
 
-protected:
+  protected:
   std::string topic_;
 
-  boost::circular_buffer< std::vector<sensor_msgs::msg::Range> > buffer_;
+  boost::circular_buffer<std::vector<sensor_msgs::msg::Range>> buffer_;
   size_t buffer_size_;
   float buffer_duration_;
 
@@ -95,9 +83,9 @@ protected:
   int counter_;
   int max_counter_;
 
-}; // class
+};  // class
 
-} //publisher
-} // naoqi
+}  // namespace recorder
+}  // namespace naoqi
 
 #endif

@@ -13,21 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef NAOQI_IMAGE_HPP
 #define NAOQI_IMAGE_HPP
 
-namespace naoqi{
+namespace naoqi
+{
 
-namespace tools {
+namespace tools
+{
 
 /**
  * @brief The struct describing an image retrieved by ALVideoDevice.
  *        This specification can be found here:
  *        http://doc.aldebaran.com/2-1/naoqi/vision/alvideodevice-tuto.html
  */
-struct NaoqiImage{
+struct NaoqiImage
+{
   int width;
   int height;
   int number_of_layers;
@@ -42,8 +45,8 @@ struct NaoqiImage{
   float fov_bottom;
 };
 
-}
+}  // namespace tools
 
-}
+}  // namespace naoqi
 
-#endif // NAOQI_IMAGE_HPP
+#endif  // NAOQI_IMAGE_HPP

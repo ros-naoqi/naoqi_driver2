@@ -1,13 +1,14 @@
-#include <rclcpp_action/rclcpp_action.hpp>
-#include <qi/session.hpp>
 #include <naoqi_bridge_msgs/action/listen.hpp>
+#include <qi/session.hpp>
+#include <rclcpp_action/rclcpp_action.hpp>
 
 namespace naoqi
 {
-namespace action {
+namespace action
+{
 
 rclcpp_action::Server<naoqi_bridge_msgs::action::Listen>::SharedPtr
 createListenServer(rclcpp::Node* node, qi::SessionPtr sesssion);
 
-} // ends namespace action
-} // ends namespace naoqi
+}  // namespace action
+}  // namespace naoqi

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #include "get_language.hpp"
 #include "../helpers/driver_helpers.hpp"
@@ -23,25 +23,27 @@ namespace naoqi
 namespace service
 {
 
-GetLanguageService::GetLanguageService( const std::string& name, const std::string& topic, const qi::SessionPtr& session )
-  : name_(name),
-  topic_(topic),
-  session_(session)
-{}
-
-void GetLanguageService::reset( rclcpp::Node* node )
+GetLanguageService::GetLanguageService(const std::string& name,
+                                       const std::string& topic,
+                                       const qi::SessionPtr& session)
+    : name_(name), topic_(topic), session_(session)
 {
-  service_ = node->create_service<naoqi_bridge_msgs::srv::GetString>(
-    topic_,
-    std::bind(&GetLanguageService::callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-void GetLanguageService::callback( const std::shared_ptr<naoqi_bridge_msgs::srv::GetString::Request> req, std::shared_ptr<naoqi_bridge_msgs::srv::GetString::Response> resp )
+void GetLanguageService::reset(rclcpp::Node* node)
+{
+  service_ = node->create_service<naoqi_bridge_msgs::srv::GetString>(
+      topic_,
+      std::bind(&GetLanguageService::callback, this, std::placeholders::_1, std::placeholders::_2));
+}
+
+void GetLanguageService::callback(
+    const std::shared_ptr<naoqi_bridge_msgs::srv::GetString::Request> req,
+    std::shared_ptr<naoqi_bridge_msgs::srv::GetString::Response> resp)
 {
   std::cout << "Receiving service call of getting language" << std::endl;
   resp->data = helpers::driver::getLanguage(session_);
 }
 
-
-}
-}
+}  // namespace service
+}  // namespace naoqi

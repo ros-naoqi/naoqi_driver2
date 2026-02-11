@@ -13,41 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef MEMORY_LIST_CONVERTER_HPP
 #define MEMORY_LIST_CONVERTER_HPP
 
 /*
-* LOCAL includes
-*/
-#include "converter_base.hpp"
+ * LOCAL includes
+ */
 #include <naoqi_driver/message_actions.h>
 #include <naoqi_driver/ros_helpers.hpp>
+#include "converter_base.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <naoqi_bridge_msgs/msg/memory_list.hpp>
 
-namespace naoqi {
+namespace naoqi
+{
 
-namespace converter {
+namespace converter
+{
 
 class MemoryListConverter : public BaseConverter<MemoryListConverter>
 {
-  typedef boost::function<void(naoqi_bridge_msgs::msg::MemoryList&) > Callback_t;
+  typedef boost::function<void(naoqi_bridge_msgs::msg::MemoryList&)> Callback_t;
 
-public:
-  MemoryListConverter(const std::vector<std::string>& key_list, const std::string& name, const float& frequency, const qi::SessionPtr& session);
+  public:
+  MemoryListConverter(const std::vector<std::string>& key_list,
+                      const std::string& name,
+                      const float& frequency,
+                      const qi::SessionPtr& session);
 
   virtual void reset();
 
-  void registerCallback( const message_actions::MessageAction action, Callback_t cb );
+  void registerCallback(const message_actions::MessageAction action, Callback_t cb);
 
-  virtual void callAll(const std::vector<message_actions::MessageAction>& actions );
+  virtual void callAll(const std::vector<message_actions::MessageAction>& actions);
 
-private:
+  private:
   std::vector<std::string> _key_list;
   naoqi_bridge_msgs::msg::MemoryList _msg;
   qi::AnyObject p_memory_;
@@ -57,8 +62,8 @@ private:
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
 };
 
-}
+}  // namespace converter
 
-}
+}  // namespace naoqi
 
-#endif // MEMORY_LIST_CONVERTER_HPP
+#endif  // MEMORY_LIST_CONVERTER_HPP

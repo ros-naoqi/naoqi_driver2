@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef FROM_ANY_VALUE_HPP
 #define FROM_ANY_VALUE_HPP
@@ -21,30 +21,31 @@
 #include <iostream>
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "naoqi_image.hpp"
 
 /*
-* ALDEBARAN includes
-*/
+ * ALDEBARAN includes
+ */
 #include <qi/anyvalue.hpp>
 
-namespace naoqi {
+namespace naoqi
+{
 
-namespace tools {
+namespace tools
+{
 
 NaoqiImage fromAnyValueToNaoqiImage(qi::AnyValue& value);
 
-std::vector<std::string> fromAnyValueToStringVector(qi::AnyValue& value, std::vector<std::string>& result);
+std::vector<std::string> fromAnyValueToStringVector(qi::AnyValue& value,
+                                                    std::vector<std::string>& result);
 
 std::vector<float> fromAnyValueToFloatVector(qi::AnyValue& value, std::vector<float>& result);
 
-void fromAnyValueToFloatVectorVector(
-        qi::AnyValue &value,
-        std::vector< std::vector<float> > &result);
+void fromAnyValueToFloatVectorVector(qi::AnyValue& value, std::vector<std::vector<float>>& result);
 
-}
-}
+}  // namespace tools
+}  // namespace naoqi
 
-#endif // FROM_ANY_VALUE_HPP
+#endif  // FROM_ANY_VALUE_HPP

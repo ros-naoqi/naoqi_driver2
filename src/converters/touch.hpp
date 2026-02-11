@@ -13,58 +13,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef TOUCH_EVENT_CONVERTER_HPP
 #define TOUCH_EVENT_CONVERTER_HPP
 
 /*
-* LOCAL includes
-*/
-#include "converter_base.hpp"
+ * LOCAL includes
+ */
 #include <naoqi_driver/message_actions.h>
+#include "converter_base.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <naoqi_bridge_msgs/msg/bumper.hpp>
 #include <naoqi_bridge_msgs/msg/hand_touch.hpp>
 #include <naoqi_bridge_msgs/msg/head_touch.hpp>
 
 /*
-* ALDEBARAN includes
-*/
+ * ALDEBARAN includes
+ */
 #include <qi/anymodule.hpp>
 
-namespace naoqi{
-
-namespace converter{
-
-template <class T>
-class TouchEventConverter : public BaseConverter<TouchEventConverter<T> >
+namespace naoqi
 {
 
-  typedef boost::function<void(T&) > Callback_t;
+namespace converter
+{
 
-public:
-  TouchEventConverter(const std::string& name, const float& frequency, const qi::SessionPtr& session);
+template <class T>
+class TouchEventConverter : public BaseConverter<TouchEventConverter<T>>
+{
+
+  typedef boost::function<void(T&)> Callback_t;
+
+  public:
+  TouchEventConverter(const std::string& name,
+                      const float& frequency,
+                      const qi::SessionPtr& session);
 
   ~TouchEventConverter();
 
   virtual void reset();
 
-  void registerCallback( const message_actions::MessageAction action, Callback_t cb );
+  void registerCallback(const message_actions::MessageAction action, Callback_t cb);
 
   void callAll(const std::vector<message_actions::MessageAction>& actions, T& msg);
 
-private:
+  private:
   /** Registered Callbacks **/
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
   T msg_;
 };
 
-}
+}  // namespace converter
 
-}
+}  // namespace naoqi
 
-#endif // TOUCH_CONVERTER_HPP
+#endif  // TOUCH_CONVERTER_HPP

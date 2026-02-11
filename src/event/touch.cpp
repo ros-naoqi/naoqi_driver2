@@ -44,18 +44,16 @@ TouchEventRegister<T>::TouchEventRegister(const std::string& name,
                                           const qi::SessionPtr& session,
                                           robot::NaoqiVersion naoqi_version)
     : session_(std::move(session)), naoqi_version_(std::move(naoqi_version)),
-      p_memory_(session_->service("ALMemory").value()), isStarted_(false),
-      isPublishing_(false), isRecording_(false), isDumping_(false)
+      p_memory_(session_->service("ALMemory").value()), isStarted_(false), isPublishing_(false),
+      isRecording_(false), isDumping_(false)
 {
   publisher_ = boost::make_shared<publisher::BasicPublisher<T>>(name);
   // recorder_ = boost::make_shared<recorder::BasicEventRecorder<T> >( name );
-  converter_ = boost::make_shared<converter::TouchEventConverter<T>>(
-      name, frequency, session);
+  converter_ = boost::make_shared<converter::TouchEventConverter<T>>(name, frequency, session);
 
   converter_->registerCallback(
       message_actions::PUBLISH,
-      boost::bind(&publisher::BasicPublisher<T>::publish, publisher_,
-                  boost::placeholders::_1));
+      boost::bind(&publisher::BasicPublisher<T>::publish, publisher_, boost::placeholders::_1));
   // converter_->registerCallback( message_actions::RECORD,
   // boost::bind(&recorder::BasicEventRecorder<T>::write, recorder_, _1) );
   // converter_->registerCallback( message_actions::LOG,
@@ -64,8 +62,7 @@ TouchEventRegister<T>::TouchEventRegister(const std::string& name,
 
   keys_.resize(keys.size());
   size_t i = 0;
-  for (std::vector<std::string>::const_iterator it = keys.begin();
-       it != keys.end(); ++it, ++i)
+  for (std::vector<std::string>::const_iterator it = keys.begin(); it != keys.end(); ++it, ++i)
     keys_[i] = *it;
 
   name_ = name;
@@ -84,8 +81,7 @@ void TouchEventRegister<T>::resetPublisher(rclcpp::Node* node)
 }
 
 template <class T>
-void TouchEventRegister<T>::resetRecorder(
-    boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr)
+void TouchEventRegister<T>::resetRecorder(boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr)
 {
   // recorder_->reset(gr, converter_->frequency());
 }
@@ -95,19 +91,18 @@ void TouchEventRegister<T>::startProcess()
 {
   boost::mutex::scoped_lock start_lock(mutex_);
   if (!isStarted_)
+  {
+    if (subscriptions_.empty())
     {
-      if (subscriptions_.empty())
-        {
-          for (const auto& key : keys_)
-            {
-              auto subscriber = subscribe(
-                  naoqi_version_, session_, key,
-                  [=](const qi::AnyValue& v) { touchCallback(key, v); });
-              subscriptions_.push_back(std::move(subscriber));
-            }
-        }
-      isStarted_ = true;
+      for (const auto& key : keys_)
+      {
+        auto subscriber = subscribe(
+            naoqi_version_, session_, key, [=](const qi::AnyValue& v) { touchCallback(key, v); });
+        subscriptions_.push_back(std::move(subscriber));
+      }
     }
+    isStarted_ = true;
+  }
 }
 
 template <class T>
@@ -115,35 +110,35 @@ void TouchEventRegister<T>::stopProcess()
 {
   boost::mutex::scoped_lock stop_lock(mutex_);
   if (isStarted_)
+  {
+    if (!subscriptions_.empty())
     {
-      if (!subscriptions_.empty())
+      for (const auto& subscription : subscriptions_)
+      {
+        try
         {
-          for (const auto& subscription : subscriptions_)
-            {
-              try
-                {
-                  subscription->unsubscribe().value();
-                }
-              catch (const std::exception& e)
-                {
-                  std::cerr << "Error attempting to clean-up "
-                               "ALMemory subscription: "
-                            << e.what() << std::endl;
-                }
-            }
-          subscriptions_.clear();
+          subscription->unsubscribe().value();
         }
-      isStarted_ = false;
+        catch (const std::exception& e)
+        {
+          std::cerr << "Error attempting to clean-up "
+                       "ALMemory subscription: "
+                    << e.what() << std::endl;
+        }
+      }
+      subscriptions_.clear();
     }
+    isStarted_ = false;
+  }
 }
 
 template <class T>
 void TouchEventRegister<T>::writeDump(const rclcpp::Time& time)
 {
   if (isStarted_)
-    {
-      // recorder_->writeDump(time);
-    }
+  {
+    // recorder_->writeDump(time);
+  }
 }
 
 template <class T>
@@ -184,8 +179,7 @@ void TouchEventRegister<T>::unregisterCallback()
 }
 
 template <class T>
-void TouchEventRegister<T>::touchCallback(const std::string& key,
-                                          const qi::AnyValue& value)
+void TouchEventRegister<T>::touchCallback(const std::string& key, const qi::AnyValue& value)
 {
   T msg = T();
   bool state = value.toFloat() > 0.5f;
@@ -195,79 +189,77 @@ void TouchEventRegister<T>::touchCallback(const std::string& key,
   std::vector<message_actions::MessageAction> actions;
   boost::mutex::scoped_lock callback_lock(mutex_);
   if (isStarted_)
+  {
+    // CHECK FOR PUBLISH
+    if (isPublishing_ && publisher_->isSubscribed())
     {
-      // CHECK FOR PUBLISH
-      if (isPublishing_ && publisher_->isSubscribed())
-        {
-          actions.push_back(message_actions::PUBLISH);
-        }
-      // CHECK FOR RECORD
-      if (isRecording_)
-        {
-          // actions.push_back(message_actions::RECORD);
-        }
-      if (!isDumping_)
-        {
-          // actions.push_back(message_actions::LOG);
-        }
-      if (actions.size() > 0)
-        {
-          converter_->callAll(actions, msg);
-        }
+      actions.push_back(message_actions::PUBLISH);
     }
+    // CHECK FOR RECORD
+    if (isRecording_)
+    {
+      // actions.push_back(message_actions::RECORD);
+    }
+    if (!isDumping_)
+    {
+      // actions.push_back(message_actions::LOG);
+    }
+    if (actions.size() > 0)
+    {
+      converter_->callAll(actions, msg);
+    }
+  }
 }
 
 template <class T>
-void TouchEventRegister<T>::touchCallbackMessage(
-    const std::string& key, bool& state, naoqi_bridge_msgs::msg::Bumper& msg)
+void TouchEventRegister<T>::touchCallbackMessage(const std::string& key,
+                                                 bool& state,
+                                                 naoqi_bridge_msgs::msg::Bumper& msg)
 {
   int i = 0;
-  for (std::vector<std::string>::const_iterator it = keys_.begin();
-       it != keys_.end(); ++it, ++i)
+  for (std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it, ++i)
+  {
+    if (key == it->c_str())
     {
-      if (key == it->c_str())
-        {
-          msg.bumper = i;
-          msg.state = state ? (naoqi_bridge_msgs::msg::Bumper::STATE_PRESSED)
-                            : (naoqi_bridge_msgs::msg::Bumper::STATE_RELEASED);
-        }
+      msg.bumper = i;
+      msg.state = state ? (naoqi_bridge_msgs::msg::Bumper::STATE_PRESSED)
+                        : (naoqi_bridge_msgs::msg::Bumper::STATE_RELEASED);
     }
+  }
 }
 
 template <class T>
-void TouchEventRegister<T>::touchCallbackMessage(
-    const std::string& key, bool& state, naoqi_bridge_msgs::msg::HandTouch& msg)
+void TouchEventRegister<T>::touchCallbackMessage(const std::string& key,
+                                                 bool& state,
+                                                 naoqi_bridge_msgs::msg::HandTouch& msg)
 {
   int i = 0;
-  for (std::vector<std::string>::const_iterator it = keys_.begin();
-       it != keys_.end(); ++it, ++i)
+  for (std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it, ++i)
+  {
+    if (key == it->c_str())
     {
-      if (key == it->c_str())
-        {
-          msg.hand = i;
-          msg.state = state
-                          ? (naoqi_bridge_msgs::msg::HandTouch::STATE_PRESSED)
-                          : (naoqi_bridge_msgs::msg::HandTouch::STATE_RELEASED);
-        }
+      msg.hand = i;
+      msg.state = state ? (naoqi_bridge_msgs::msg::HandTouch::STATE_PRESSED)
+                        : (naoqi_bridge_msgs::msg::HandTouch::STATE_RELEASED);
     }
+  }
 }
 
 template <class T>
-void TouchEventRegister<T>::touchCallbackMessage(
-    const std::string& key, bool& state, naoqi_bridge_msgs::msg::HeadTouch& msg)
+void TouchEventRegister<T>::touchCallbackMessage(const std::string& key,
+                                                 bool& state,
+                                                 naoqi_bridge_msgs::msg::HeadTouch& msg)
 {
   int i = 0;
-  for (std::vector<std::string>::const_iterator it = keys_.begin();
-       it != keys_.end(); ++it, ++i)
+  for (std::vector<std::string>::const_iterator it = keys_.begin(); it != keys_.end(); ++it, ++i)
+  {
+    if (key == it->c_str())
     {
-      if (key == it->c_str())
-        {
-          msg.button = i;
-          msg.state = state
-                          ? (naoqi_bridge_msgs::msg::HeadTouch::STATE_PRESSED)
-                          : (naoqi_bridge_msgs::msg::HeadTouch::STATE_RELEASED);
-        }
+      msg.button = i;
+      msg.state = state ? (naoqi_bridge_msgs::msg::HeadTouch::STATE_PRESSED)
+                        : (naoqi_bridge_msgs::msg::HeadTouch::STATE_RELEASED);
     }
+  }
 }
 
 // http://stackoverflow.com/questions/8752837/undefined-reference-to-template-class-constructor

@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef DIAGNOSTICS_RECORDER_HPP
 #define DIAGNOSTICS_RECORDER_HPP
 
 /*
-* BOOST includes
-*/
+ * BOOST includes
+ */
 #include <boost/circular_buffer.hpp>
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include <naoqi_driver/recorder/globalrecorder.hpp>
 #include "../helpers/recorder_helpers.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <diagnostic_msgs/msg/diagnostic_array.hpp>
 
 namespace naoqi
@@ -42,40 +42,28 @@ namespace recorder
 class DiagnosticsRecorder
 {
 
-public:
-  DiagnosticsRecorder( const std::string& topic, float buffer_frequency = 0 );
+  public:
+  DiagnosticsRecorder(const std::string& topic, float buffer_frequency = 0);
 
-  void write(diagnostic_msgs::msg::DiagnosticArray& msg );
+  void write(diagnostic_msgs::msg::DiagnosticArray& msg);
 
-  void reset( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr, float conv_frequency );
+  void reset(boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr, float conv_frequency);
 
-  void bufferize(diagnostic_msgs::msg::DiagnosticArray& msg );
+  void bufferize(diagnostic_msgs::msg::DiagnosticArray& msg);
 
   void writeDump(const rclcpp::Time& time);
 
   void setBufferDuration(float duration);
 
-  inline std::string topic() const
-  {
-    return topic_;
-  }
+  inline std::string topic() const { return topic_; }
 
-  inline bool isInitialized() const
-  {
-    return is_initialized_;
-  }
+  inline bool isInitialized() const { return is_initialized_; }
 
-  inline void subscribe( bool state)
-  {
-    is_subscribed_ = state;
-  }
+  inline void subscribe(bool state) { is_subscribed_ = state; }
 
-  inline bool isSubscribed() const
-  {
-    return is_subscribed_;
-  }
+  inline bool isSubscribed() const { return is_subscribed_; }
 
-protected:
+  protected:
   std::string topic_;
 
   boost::circular_buffer<diagnostic_msgs::msg::DiagnosticArray> buffer_;
@@ -94,9 +82,9 @@ protected:
   int counter_;
   int max_counter_;
 
-}; // class
+};  // class
 
-} //publisher
-} // naoqi
+}  // namespace recorder
+}  // namespace naoqi
 
 #endif

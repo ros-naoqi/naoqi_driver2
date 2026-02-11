@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
-
+ */
 
 #ifndef NAOQI_HELPERS_HPP
 #define NAOQI_HELPERS_HPP
@@ -29,23 +28,27 @@ namespace naoqi
 static dataType::DataType getDataType(qi::AnyValue value)
 {
   dataType::DataType type;
-  if (value.kind() == qi::TypeKind_Int) {
+  if (value.kind() == qi::TypeKind_Int)
+  {
     type = dataType::Int;
   }
-  else if (value.kind() == qi::TypeKind_Float) {
+  else if (value.kind() == qi::TypeKind_Float)
+  {
     type = dataType::Float;
   }
-  else if (value.kind() == qi::TypeKind_String) {
+  else if (value.kind() == qi::TypeKind_String)
+  {
     type = dataType::String;
   }
-  else {
+  else
+  {
     throw std::runtime_error("Cannot get a valid type.");
   }
   return type;
 }
 
-} // naoqi
-} // helpers
-} // naoqi
+}  // namespace naoqi
+}  // namespace helpers
+}  // namespace naoqi
 
 #endif

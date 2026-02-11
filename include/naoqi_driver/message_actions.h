@@ -15,7 +15,6 @@ enum MessageAction
 
 }
 
-}
-
+}  // namespace naoqi
 
 #endif

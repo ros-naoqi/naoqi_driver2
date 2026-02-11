@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef PUBLISHER_CAMERA_HPP
 #define PUBLISHER_CAMERA_HPP
 
 /*
-* ROS includes
-*/
-#include <rclcpp/rclcpp.hpp>
+ * ROS includes
+ */
 #include <image_transport/image_transport.hpp>
-#include <sensor_msgs/msg/image.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
+#include <sensor_msgs/msg/image.hpp>
 
 #include <naoqi_driver/ros_helpers.hpp>
 
@@ -35,47 +35,44 @@ namespace publisher
 
 class CameraPublisher
 {
-public:
-  CameraPublisher( const std::string& topic, int camera_source );
+  public:
+  CameraPublisher(const std::string& topic, int camera_source);
 
   ~CameraPublisher();
 
-  inline std::string topic() const
-  {
-    return topic_;
-  }
+  inline std::string topic() const { return topic_; }
 
-  inline bool isInitialized() const
-  {
-    return is_initialized_;
-  }
+  inline bool isInitialized() const { return is_initialized_; }
 
-  void publish( const sensor_msgs::msg::Image::SharedPtr& img, const sensor_msgs::msg::CameraInfo& camera_info );
+  void publish(const sensor_msgs::msg::Image::SharedPtr& img,
+               const sensor_msgs::msg::CameraInfo& camera_info);
 
-  void reset( rclcpp::Node* node );
+  void reset(rclcpp::Node* node);
 
   inline bool isSubscribed() const
   {
-    if (is_initialized_ == false){
+    if (is_initialized_ == false)
+    {
       return false;
-    } else{
+    }
+    else
+    {
       return helpers::Node::count_subscribers(topic_) > 0;
     }
   }
 
-private:
+  private:
   std::string topic_;
 
   bool is_initialized_;
 
-  //image_transport::ImageTransport it_;
+  // image_transport::ImageTransport it_;
   image_transport::CameraPublisher pub_;
 
   int camera_source_;
 };
 
-} //publisher
-} //naoqi
-
+}  // namespace publisher
+}  // namespace naoqi
 
 #endif

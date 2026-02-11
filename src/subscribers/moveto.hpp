@@ -15,7 +15,6 @@
  *
  */
 
-
 #ifndef MOVETO_SUBSCRIBER_HPP
 #define MOVETO_SUBSCRIBER_HPP
 
@@ -26,31 +25,34 @@
 /*
  * ROS includes
  */
-#include "rclcpp/rclcpp.hpp"
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <tf2_ros/buffer.h>
 #include <tf2/time.h>
+#include <tf2_ros/buffer.h>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include "rclcpp/rclcpp.hpp"
 
 namespace naoqi
 {
 namespace subscriber
 {
 
-class MovetoSubscriber: public BaseSubscriber<MovetoSubscriber>
+class MovetoSubscriber : public BaseSubscriber<MovetoSubscriber>
 {
-public:
-  MovetoSubscriber( const std::string& name, const std::string& topic, const qi::SessionPtr& session, const boost::shared_ptr<tf2_ros::Buffer>& tf2_buffer );
-  ~MovetoSubscriber(){}
+  public:
+  MovetoSubscriber(const std::string& name,
+                   const std::string& topic,
+                   const qi::SessionPtr& session,
+                   const boost::shared_ptr<tf2_ros::Buffer>& tf2_buffer);
+  ~MovetoSubscriber() {}
 
-  void reset( rclcpp::Node* node );
-  void callback( const geometry_msgs::msg::PoseStamped::SharedPtr pose_msg );
+  void reset(rclcpp::Node* node);
+  void callback(const geometry_msgs::msg::PoseStamped::SharedPtr pose_msg);
 
-private:
+  private:
   qi::AnyObject p_motion_;
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_moveto_;
   boost::shared_ptr<tf2_ros::Buffer> tf2_buffer_;
-}; // class Teleop
+};  // class Teleop
 
-} // subscriber
-}// naoqi
+}  // namespace subscriber
+}  // namespace naoqi
 #endif

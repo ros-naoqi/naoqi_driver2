@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef MEMORY_STRING_CONVERTER_HPP
 #define MEMORY_STRING_CONVERTER_HPP
 
 /*
-* LOCAL includes
-*/
-#include "../converter_base.hpp"
+ * LOCAL includes
+ */
 #include <naoqi_driver/message_actions.h>
 #include <naoqi_driver/ros_helpers.hpp>
+#include "../converter_base.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <naoqi_bridge_msgs/msg/string_stamped.hpp>
 
 namespace naoqi
@@ -39,20 +39,22 @@ class MemoryStringConverter : public BaseConverter<MemoryStringConverter>
 {
   typedef boost::function<void(naoqi_bridge_msgs::msg::StringStamped&)> Callback_t;
 
-public:
-
-  MemoryStringConverter( const std::string& name, const float& frequency, const qi::SessionPtr& session, const std::string& memory_key );
+  public:
+  MemoryStringConverter(const std::string& name,
+                        const float& frequency,
+                        const qi::SessionPtr& session,
+                        const std::string& memory_key);
 
   void reset();
 
-  void registerCallback( const message_actions::MessageAction action, Callback_t cb );
+  void registerCallback(const message_actions::MessageAction action, Callback_t cb);
 
-  void callAll( const std::vector<message_actions::MessageAction>& actions );
+  void callAll(const std::vector<message_actions::MessageAction>& actions);
 
-private:
+  private:
   bool convert();
 
-private:
+  private:
   /** Memory key to retrieve data */
   std::string memory_key_;
   /** Memory (Proxy) configurations */
@@ -61,9 +63,9 @@ private:
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
   naoqi_bridge_msgs::msg::StringStamped msg_;
 
-}; // class
+};  // class
 
-} //publisher
-} // naoqi
+}  // namespace converter
+}  // namespace naoqi
 
 #endif

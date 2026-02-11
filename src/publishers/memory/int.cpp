@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include "int.hpp"
 
 namespace naoqi
@@ -25,20 +25,18 @@ namespace naoqi
 namespace publisher
 {
 
-MemoryIntPublisher::MemoryIntPublisher( const std::string& topic ):
-  BasePublisher( topic )
-{}
+MemoryIntPublisher::MemoryIntPublisher(const std::string& topic) : BasePublisher(topic) {}
 
-void MemoryIntPublisher::publish(const naoqi_bridge_msgs::msg::IntStamped& msg )
+void MemoryIntPublisher::publish(const naoqi_bridge_msgs::msg::IntStamped& msg)
 {
-  pub_->publish( msg );
+  pub_->publish(msg);
 }
 
-void MemoryIntPublisher::reset( rclcpp::Node* node )
+void MemoryIntPublisher::reset(rclcpp::Node* node)
 {
-  pub_ = node->create_publisher< naoqi_bridge_msgs::msg::IntStamped >( topic_, 10 );
+  pub_ = node->create_publisher<naoqi_bridge_msgs::msg::IntStamped>(topic_, 10);
   is_initialized_ = true;
 }
 
-} //publisher
-} // naoqi
+}  // namespace publisher
+}  // namespace naoqi

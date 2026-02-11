@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
-
+ */
 
 #ifndef ROBOT_CONFIG_SERVICE_HPP
 #define ROBOT_CONFIG_SERVICE_HPP
@@ -33,27 +32,23 @@ namespace service
 
 class RobotConfigService
 {
-public:
-  RobotConfigService( const std::string& name, const std::string& topic, const qi::SessionPtr& session );
+  public:
+  RobotConfigService(const std::string& name,
+                     const std::string& topic,
+                     const qi::SessionPtr& session);
 
   ~RobotConfigService(){};
 
-  std::string name() const
-  {
-    return name_;
-  }
+  std::string name() const { return name_; }
 
-  std::string topic() const
-  {
-    return topic_;
-  }
+  std::string topic() const { return topic_; }
 
-  void reset( rclcpp::Node* node );
+  void reset(rclcpp::Node* node);
 
-  void callback( const std::shared_ptr<naoqi_bridge_msgs::srv::GetRobotInfo::Request> req, std::shared_ptr<naoqi_bridge_msgs::srv::GetRobotInfo::Response> resp );
+  void callback(const std::shared_ptr<naoqi_bridge_msgs::srv::GetRobotInfo::Request> req,
+                std::shared_ptr<naoqi_bridge_msgs::srv::GetRobotInfo::Response> resp);
 
-
-private:
+  private:
   const std::string name_;
   const std::string topic_;
 
@@ -61,6 +56,6 @@ private:
   rclcpp::Service<naoqi_bridge_msgs::srv::GetRobotInfo>::SharedPtr service_;
 };
 
-} // service
-} // naoqi
+}  // namespace service
+}  // namespace naoqi
 #endif

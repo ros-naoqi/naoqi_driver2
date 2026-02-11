@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef BASE_CONVERTER_HPP
 #define BASE_CONVERTER_HPP
 
 /*
-* LOCAL includes
-*/
+ * LOCAL includes
+ */
 #include <naoqi_driver/tools.hpp>
 #include "../helpers/driver_helpers.hpp"
 
 /*
-* ALDEBARAN includes
-*/
-#include <qi/session.hpp>
+ * ALDEBARAN includes
+ */
 #include <qi/anyobject.hpp>
+#include <qi/session.hpp>
 
 namespace naoqi
 {
@@ -36,33 +36,25 @@ namespace converter
 {
 
 // CRTP
-template<class T>
+template <class T>
 class BaseConverter
 {
 
-public:
-  BaseConverter( const std::string& name, float frequency, qi::SessionPtr session ):
-    name_( name ),
-    frequency_( frequency ),
-    robot_( helpers::driver::getRobot(session) ),
-    naoqi_version_( helpers::driver::getNaoqiVersion(session) ),
-    session_(session),
-    record_enabled_(false)
-  {}
+  public:
+  BaseConverter(const std::string& name, float frequency, qi::SessionPtr session)
+      : name_(name), frequency_(frequency), robot_(helpers::driver::getRobot(session)),
+        naoqi_version_(helpers::driver::getNaoqiVersion(session)), session_(session),
+        record_enabled_(false)
+  {
+  }
 
   virtual ~BaseConverter() {}
 
-  inline std::string name() const
-  {
-    return name_;
-  }
+  inline std::string name() const { return name_; }
 
-  inline float frequency() const
-  {
-    return frequency_;
-  }
+  inline float frequency() const { return frequency_; }
 
-protected:
+  protected:
   std::string name_;
 
   /** Frequency at which the converter should turn. This is informative */
@@ -77,9 +69,9 @@ protected:
 
   /** Enable recording */
   bool record_enabled_;
-}; // class
+};  // class
 
-} // converter
-} // naoqi
+}  // namespace converter
+}  // namespace naoqi
 
 #endif

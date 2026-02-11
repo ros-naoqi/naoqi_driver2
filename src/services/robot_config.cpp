@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #include "robot_config.hpp"
 #include "../helpers/driver_helpers.hpp"
@@ -23,24 +23,26 @@ namespace naoqi
 namespace service
 {
 
-RobotConfigService::RobotConfigService( const std::string& name, const std::string& topic, const qi::SessionPtr& session )
-  : name_(name),
-  topic_(topic),
-  session_(session)
-{}
-
-void RobotConfigService::reset( rclcpp::Node* node )
+RobotConfigService::RobotConfigService(const std::string& name,
+                                       const std::string& topic,
+                                       const qi::SessionPtr& session)
+    : name_(name), topic_(topic), session_(session)
 {
-  service_ = node->create_service<naoqi_bridge_msgs::srv::GetRobotInfo>(
-    topic_,
-    std::bind(&RobotConfigService::callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-void RobotConfigService::callback( const std::shared_ptr<naoqi_bridge_msgs::srv::GetRobotInfo::Request> req, std::shared_ptr<naoqi_bridge_msgs::srv::GetRobotInfo::Response> resp )
+void RobotConfigService::reset(rclcpp::Node* node)
+{
+  service_ = node->create_service<naoqi_bridge_msgs::srv::GetRobotInfo>(
+      topic_,
+      std::bind(&RobotConfigService::callback, this, std::placeholders::_1, std::placeholders::_2));
+}
+
+void RobotConfigService::callback(
+    const std::shared_ptr<naoqi_bridge_msgs::srv::GetRobotInfo::Request> req,
+    std::shared_ptr<naoqi_bridge_msgs::srv::GetRobotInfo::Response> resp)
 {
   resp->info = helpers::driver::getRobotInfo(session_);
 }
 
-
-}
-}
+}  // namespace service
+}  // namespace naoqi

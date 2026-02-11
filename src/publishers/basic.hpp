@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef BASIC_PUBLISHER_HPP
 #define BASIC_PUBLISHER_HPP
@@ -21,68 +21,59 @@
 #include <string>
 
 /*
-* ROS includes
-*/
-#include <rclcpp/rclcpp.hpp>
+ * ROS includes
+ */
 #include <naoqi_driver/ros_helpers.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 namespace naoqi
 {
 namespace publisher
 {
 
-template<class T>
+template <class T>
 class BasicPublisher
 {
 
-public:
-  BasicPublisher( const std::string& topic ):
-    topic_( topic ),
-    is_initialized_( false )
-  {}
+  public:
+  BasicPublisher(const std::string& topic) : topic_(topic), is_initialized_(false) {}
 
   virtual ~BasicPublisher() {}
 
-  inline std::string topic() const
-  {
-    return topic_;
-  }
+  inline std::string topic() const { return topic_; }
 
-  inline bool isInitialized() const
-  {
-    return is_initialized_;
-  }
+  inline bool isInitialized() const { return is_initialized_; }
 
   virtual inline bool isSubscribed() const
   {
-    if (is_initialized_ == false) {
+    if (is_initialized_ == false)
+    {
       return false;
-    } else {
+    }
+    else
+    {
       return helpers::Node::count_subscribers(topic_) > 0;
     }
   }
 
-  virtual void publish( const T& msg )
-  {
-    pub_->publish( msg );
-  }
+  virtual void publish(const T& msg) { pub_->publish(msg); }
 
-  virtual void reset( rclcpp::Node* node )
+  virtual void reset(rclcpp::Node* node)
   {
-    pub_ = node->create_publisher<T>( this->topic_, 10 );
+    pub_ = node->create_publisher<T>(this->topic_, 10);
     is_initialized_ = true;
   }
 
-protected:
+  protected:
   std::string topic_;
 
   bool is_initialized_;
 
   /** Publisher */
   typename rclcpp::Publisher<T>::SharedPtr pub_;
-}; // class
+};  // class
 
-} // publisher
-} // naoqi
+}  // namespace publisher
+}  // namespace naoqi
 
 #endif

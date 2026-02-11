@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef SERVICE_HPP
 #define SERVICE_HPP
@@ -30,109 +30,86 @@ namespace naoqi
 namespace service
 {
 
-
 /**
-* @brief Service concept interface
-* @note this defines an private concept struct,
-* which each instance has to implement
-* @note a type erasure pattern in implemented here to avoid strict inheritance,
-* thus each possible service instance has to implement the virtual functions mentioned in the concept
-*/
+ * @brief Service concept interface
+ * @note this defines an private concept struct,
+ * which each instance has to implement
+ * @note a type erasure pattern in implemented here to avoid strict inheritance,
+ * thus each possible service instance has to implement the virtual functions mentioned in the
+ * concept
+ */
 class Service
 {
 
-public:
+  public:
+  /**
+   * @brief Constructor for service interface
+   */
+  template <typename T>
+  Service(T srv) : srvPtr_(boost::make_shared<ServiceModel<T>>(srv))
+  {
+  }
 
   /**
-  * @brief Constructor for service interface
-  */
-  template<typename T>
-  Service( T srv ):
-    srvPtr_( boost::make_shared<ServiceModel<T> >(srv) )
-  {}
-
-  /**
-  * @brief initializes/resets the service into ROS with a given node,
-  * this will be called at first for initialization
-  * @param node rclcpp::Node pointer used to create the service
-  */
-  void reset( rclcpp::Node* node )
+   * @brief initializes/resets the service into ROS with a given node,
+   * this will be called at first for initialization
+   * @param node rclcpp::Node pointer used to create the service
+   */
+  void reset(rclcpp::Node* node)
   {
     std::cout << name() << " is resetting" << std::endl;
-    srvPtr_->reset( node );
+    srvPtr_->reset(node);
     std::cout << name() << " reset" << std::endl;
   }
 
   /**
-  * @brief getting the descriptive name for this service instance
-  * @return string with the name
-  */
-  std::string name() const
-  {
-    return srvPtr_->name();
-  }
+   * @brief getting the descriptive name for this service instance
+   * @return string with the name
+   */
+  std::string name() const { return srvPtr_->name(); }
 
   /**
-  * @brief getting the topic to service on
-  * @return string indicating the topic
-  */
-  std::string topic() const
-  {
-    return srvPtr_->topic();
-  }
+   * @brief getting the topic to service on
+   * @return string indicating the topic
+   */
+  std::string topic() const { return srvPtr_->topic(); }
 
-private:
-
+  private:
   /**
-  * BASE concept struct
-  */
+   * BASE concept struct
+   */
   struct ServiceConcept
   {
-    virtual ~ServiceConcept(){}
-    virtual void reset( rclcpp::Node* node ) = 0;
+    virtual ~ServiceConcept() {}
+    virtual void reset(rclcpp::Node* node) = 0;
     virtual std::string name() const = 0;
     virtual std::string topic() const = 0;
   };
 
-
   /**
-  * templated instances of base concept
-  */
-  template<typename T>
+   * templated instances of base concept
+   */
+  template <typename T>
   struct ServiceModel : public ServiceConcept
   {
-    ServiceModel( const T& other ):
-      service_( other )
-    {}
+    ServiceModel(const T& other) : service_(other) {}
 
-    std::string name() const
-    {
-      return service_->name();
-    }
+    std::string name() const { return service_->name(); }
 
-    std::string topic() const
-    {
-      return service_->topic();
-    }
+    std::string topic() const { return service_->topic(); }
 
-    bool isInitialized() const
-    {
-      return service_->isInitialized();
-    }
+    bool isInitialized() const { return service_->isInitialized(); }
 
-    void reset( rclcpp::Node* node )
-    {
-      service_->reset( node );
-    }
+    void reset(rclcpp::Node* node) { service_->reset(node); }
 
     T service_;
   };
 
   boost::shared_ptr<ServiceConcept> srvPtr_;
 
-}; // class service
+};  // class service
 
-} //service
-} //naoqi
+}  // namespace service
+}  // namespace naoqi
 
 #endif

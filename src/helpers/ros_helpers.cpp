@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #include <naoqi_driver/ros_helpers.hpp>
 
-namespace naoqi {
-namespace helpers {
+namespace naoqi
+{
+namespace helpers
+{
 
 boost::shared_ptr<rclcpp::Node> Node::node_ptr_;
 
 }
-}
+}  // namespace naoqi

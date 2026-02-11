@@ -13,38 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef AUDIO_EVENT_CONVERTER_HPP
 #define AUDIO_EVENT_CONVERTER_HPP
 
 /*
-* LOCAL includes
-*/
-#include "converter_base.hpp"
+ * LOCAL includes
+ */
 #include <naoqi_driver/message_actions.h>
+#include "converter_base.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <naoqi_bridge_msgs/msg/audio_buffer.hpp>
 
 /*
-* ALDEBARAN includes
-*/
+ * ALDEBARAN includes
+ */
 #include <qi/anymodule.hpp>
 
-namespace naoqi{
+namespace naoqi
+{
 
-namespace converter{
+namespace converter
+{
 
 class AudioEventConverter : public BaseConverter<AudioEventConverter>
 {
 
-  typedef boost::function<void(naoqi_bridge_msgs::msg::AudioBuffer&) > Callback_t;
+  typedef boost::function<void(naoqi_bridge_msgs::msg::AudioBuffer&)> Callback_t;
 
-public:
-  AudioEventConverter(const std::string& name, const float& frequency, const qi::SessionPtr& session);
+  public:
+  AudioEventConverter(const std::string& name,
+                      const float& frequency,
+                      const qi::SessionPtr& session);
 
   ~AudioEventConverter();
 
@@ -53,16 +57,17 @@ public:
   void registerCallback(const message_actions::MessageAction action, Callback_t cb);
   void unregisterCallback(const message_actions::MessageAction action);
 
-  void callAll(const std::vector<message_actions::MessageAction>& actions, naoqi_bridge_msgs::msg::AudioBuffer& msg);
+  void callAll(const std::vector<message_actions::MessageAction>& actions,
+               naoqi_bridge_msgs::msg::AudioBuffer& msg);
 
-private:
+  private:
   /** Registered Callbacks **/
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
   naoqi_bridge_msgs::msg::AudioBuffer msg_;
 };
 
-}
+}  // namespace converter
 
-}
+}  // namespace naoqi
 
-#endif // AUDIO_CONVERTER_HPP
+#endif  // AUDIO_CONVERTER_HPP

@@ -39,7 +39,8 @@ namespace subscriber
 class TeleopSubscriber : public BaseSubscriber<TeleopSubscriber>
 {
   public:
-  TeleopSubscriber(const std::string& name, const std::string& cmd_vel_topic,
+  TeleopSubscriber(const std::string& name,
+                   const std::string& cmd_vel_topic,
                    const std::string& joint_angles_topic,
                    const std::string& joint_trajectory_topic,
                    const qi::SessionPtr& session);
@@ -52,10 +53,8 @@ class TeleopSubscriber : public BaseSubscriber<TeleopSubscriber>
 
   qi::AnyObject p_motion_;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_cmd_vel_;
-  rclcpp::Subscription<naoqi_bridge_msgs::msg::JointAnglesWithSpeed>::SharedPtr
-      sub_joint_angles_;
-  rclcpp::Subscription<trajectory_msgs::msg::JointTrajectory>::SharedPtr
-      sub_joint_trajectory_;
+  rclcpp::Subscription<naoqi_bridge_msgs::msg::JointAnglesWithSpeed>::SharedPtr sub_joint_angles_;
+  rclcpp::Subscription<trajectory_msgs::msg::JointTrajectory>::SharedPtr sub_joint_trajectory_;
 
 };  // class Teleop
 

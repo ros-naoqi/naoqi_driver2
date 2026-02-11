@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef AUDIO_EVENT_REGISTER_HPP
 #define AUDIO_EVENT_REGISTER_HPP
 
 #include <string>
 
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/enable_shared_from_this.hpp>
 
 #include <qi/session.hpp>
 
-#include <rclcpp/rclcpp.hpp>
 #include <naoqi_bridge_msgs/msg/audio_buffer.h>
 #include <naoqi_driver/ros_helpers.hpp>
+#include <rclcpp/rclcpp.hpp>
 
-#include <naoqi_driver/tools.hpp>
 #include <naoqi_driver/recorder/globalrecorder.hpp>
+#include <naoqi_driver/tools.hpp>
 
 // Converter
 #include "../src/converters/audio.hpp"
@@ -45,25 +45,27 @@ namespace naoqi
 {
 
 /**
-* @brief GlobalRecorder concept interface
-* @note this defines an private concept struct,
-* which each instance has to implement
-* @note a type erasure pattern in implemented here to avoid strict inheritance,
-* thus each possible publisher instance has to implement the virtual functions mentioned in the concept
-*/
-class AudioEventRegister: public boost::enable_shared_from_this<AudioEventRegister>
+ * @brief GlobalRecorder concept interface
+ * @note this defines an private concept struct,
+ * which each instance has to implement
+ * @note a type erasure pattern in implemented here to avoid strict inheritance,
+ * thus each possible publisher instance has to implement the virtual functions mentioned in the
+ * concept
+ */
+class AudioEventRegister : public boost::enable_shared_from_this<AudioEventRegister>
 {
 
-public:
-
+  public:
   /**
-  * @brief Constructor for recorder interface
-  */
-  AudioEventRegister( const std::string& name, const float& frequency, const qi::SessionPtr& session );
+   * @brief Constructor for recorder interface
+   */
+  AudioEventRegister(const std::string& name,
+                     const float& frequency,
+                     const qi::SessionPtr& session);
   ~AudioEventRegister();
 
-  void resetPublisher( rclcpp::Node* node );
-  void resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr );
+  void resetPublisher(rclcpp::Node* node);
+  void resetRecorder(boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr);
 
   void startProcess();
   void stopProcess();
@@ -75,14 +77,17 @@ public:
   void isPublishing(bool state);
   void isDumping(bool state);
 
-  void processRemote(int nbOfChannels, int samplesByChannel, qi::AnyValue altimestamp, qi::AnyValue buffer);
+  void processRemote(int nbOfChannels,
+                     int samplesByChannel,
+                     qi::AnyValue altimestamp,
+                     qi::AnyValue buffer);
 
-private:
+  private:
   void registerCallback();
   void unregisterCallback();
   void onEvent();
 
-private:
+  private:
   qi::SessionPtr session_;
   publisher::BasicPublisher<naoqi_bridge_msgs::msg::AudioBuffer> publisher_;
   recorder::BasicEventRecorder<naoqi_bridge_msgs::msg::AudioBuffer> recorder_;
@@ -100,10 +105,10 @@ private:
   bool isRecording_;
   bool isDumping_;
 
-}; // class
+};  // class
 
 QI_REGISTER_OBJECT(AudioEventRegister, processRemote)
 
-} //naoqi
+}  // namespace naoqi
 
 #endif

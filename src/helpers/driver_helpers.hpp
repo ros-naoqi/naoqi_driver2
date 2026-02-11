@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
-
+ */
 
 #ifndef DRIVER_HELPERS_HPP
 #define DRIVER_HELPERS_HPP
@@ -34,27 +33,27 @@ namespace helpers
 namespace driver
 {
 
-const robot::Robot& getRobot( const qi::SessionPtr& session );
+const robot::Robot& getRobot(const qi::SessionPtr& session);
 
 const robot::NaoqiVersion& getNaoqiVersion(const qi::SessionPtr& session);
 
-const naoqi_bridge_msgs::msg::RobotInfo& getRobotInfo( const qi::SessionPtr& session );
+const naoqi_bridge_msgs::msg::RobotInfo& getRobotInfo(const qi::SessionPtr& session);
 
-bool setLanguage( const qi::SessionPtr& session, const std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Request> request );
+bool setLanguage(const qi::SessionPtr& session,
+                 const std::shared_ptr<naoqi_bridge_msgs::srv::SetString::Request> request);
 
-std::string getLanguage( const qi::SessionPtr& session );
+std::string getLanguage(const qi::SessionPtr& session);
 
-bool isDepthStereo(const qi::SessionPtr &session);
+bool isDepthStereo(const qi::SessionPtr& session);
 
-bool isNaoqiVersionLesser(
-  const robot::NaoqiVersion& naoqi_version,
-  const int& major,
-  const int& minor=0,
-  const int& patch=0,
-  const int& build=0);
+bool isNaoqiVersionLesser(const robot::NaoqiVersion& naoqi_version,
+                          const int& major,
+                          const int& minor = 0,
+                          const int& patch = 0,
+                          const int& build = 0);
 
-} // driver
-} // helpers
-} // naoqi
+}  // namespace driver
+}  // namespace helpers
+}  // namespace naoqi
 
 #endif

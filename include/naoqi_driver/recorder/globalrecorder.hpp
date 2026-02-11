@@ -13,30 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef GLOBALRECORDER_HPP
 #define GLOBALRECORDER_HPP
 
 /*
-* LOCAL includes
-*/
-#include <naoqi_driver/tools.hpp>
+ * LOCAL includes
+ */
 #include <naoqi_driver/ros_helpers.hpp>
+#include <naoqi_driver/tools.hpp>
 
 /*
-* STANDARD includes
-*/
+ * STANDARD includes
+ */
 #include <string>
 
 /*
-* BOOST includes
-*/
-# include <boost/thread/mutex.hpp>
+ * BOOST includes
+ */
+#include <boost/thread/mutex.hpp>
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <rclcpp/rclcpp.hpp>
 // #include <rmw/serialized_message.h>
 // #include <rcutils/allocator.h>
@@ -52,41 +52,43 @@ namespace recorder
 {
 
 /**
-* @brief GlobalRecorder concept interface
-* @note this defines an private concept struct,
-* which each instance has to implement
-* @note a type erasure pattern in implemented here to avoid strict inheritance,
-* thus each possible publisher instance has to implement the virtual functions mentioned in the concept
-*/
+ * @brief GlobalRecorder concept interface
+ * @note this defines an private concept struct,
+ * which each instance has to implement
+ * @note a type erasure pattern in implemented here to avoid strict inheritance,
+ * thus each possible publisher instance has to implement the virtual functions mentioned in the
+ * concept
+ */
 class GlobalRecorder
 {
 
-public:
-
+  public:
   /**
-  * @brief Constructor for recorder interface
-  */
+   * @brief Constructor for recorder interface
+   */
   GlobalRecorder(const std::string& prefix_topic);
 
   /**
-  * @brief Initialize the recording of the ROSbag
-  */
+   * @brief Initialize the recording of the ROSbag
+   */
   void startRecord(const std::string& prefix_bag = "");
 
   /**
-  * @brief Terminate the recording of the ROSbag
-  */
+   * @brief Terminate the recording of the ROSbag
+   */
   std::string stopRecord(const std::string& robot_ip = "<ROBOT_IP>");
 
   /**
-  * @brief Insert data into the ROSbag
-  */
+   * @brief Insert data into the ROSbag
+   */
   template <class T>
-  void write(const std::string& topic, const T& msg, const rclcpp::Time& time = helpers::Time::now() ) {
+  void
+  write(const std::string& topic, const T& msg, const rclcpp::Time& time = helpers::Time::now())
+  {
     std::string ros_topic;
-    if (topic[0]!='/')
+    if (topic[0] != '/')
     {
-      ros_topic = _prefix_topic+topic;
+      ros_topic = _prefix_topic + topic;
     }
     else
     {
@@ -110,21 +112,23 @@ public:
     // bag_message.topic = topic;
 
     // setup the bag
-    boost::mutex::scoped_lock writeLock( _processMutex );
-    if (_isStarted) {
+    boost::mutex::scoped_lock writeLock(_processMutex);
+    if (_isStarted)
+    {
       // _bag.write(ros_topic, time_msg, msg);
       // this->_writer.write(bag_message);
     }
   }
 
-  void write(const std::string& topic, const std::vector<geometry_msgs::msg::TransformStamped>& msgtf);
+  void write(const std::string& topic,
+             const std::vector<geometry_msgs::msg::TransformStamped>& msgtf);
 
   /**
-  * @brief Check if the ROSbag is opened
-  */
+   * @brief Check if the ROSbag is opened
+   */
   bool isStarted();
 
-private:
+  private:
   std::string _prefix_topic;
   boost::mutex _processMutex;
   // rosbag::Bag _bag;
@@ -135,8 +139,8 @@ private:
   // TOPICS
   std::vector<Topics> _topics;
 
-}; // class globalrecorder
-} // recorder
-} //naoqi
+};  // class globalrecorder
+}  // namespace recorder
+}  // namespace naoqi
 
 #endif

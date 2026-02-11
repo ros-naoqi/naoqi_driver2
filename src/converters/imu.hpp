@@ -13,32 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef IMU_CONVERTER_HPP
 #define IMU_CONVERTER_HPP
 
 /*
-* LOCAL includes
-*/
-#include "converter_base.hpp"
+ * LOCAL includes
+ */
 #include <naoqi_driver/message_actions.h>
 #include <naoqi_driver/ros_helpers.hpp>
+#include "converter_base.hpp"
 
 /*
-* ROS includes
-*/
+ * ROS includes
+ */
 #include <sensor_msgs/msg/imu.hpp>
 
 namespace naoqi
 {
-namespace converter {
+namespace converter
+{
 
-namespace IMU{
+namespace IMU
+{
 
-enum Location{
-    TORSO,
-    BASE
+enum Location
+{
+  TORSO,
+  BASE
 };
 
 }
@@ -46,20 +49,23 @@ enum Location{
 class ImuConverter : public BaseConverter<ImuConverter>
 {
 
-  typedef boost::function<void(sensor_msgs::msg::Imu&) > Callback_t;
+  typedef boost::function<void(sensor_msgs::msg::Imu&)> Callback_t;
 
-public:
-  ImuConverter(const std::string& name, const IMU::Location& location, const float& frequency, const qi::SessionPtr& session);
+  public:
+  ImuConverter(const std::string& name,
+               const IMU::Location& location,
+               const float& frequency,
+               const qi::SessionPtr& session);
 
   ~ImuConverter();
 
   virtual void reset();
 
-  void registerCallback( const message_actions::MessageAction action, Callback_t cb );
+  void registerCallback(const message_actions::MessageAction action, Callback_t cb);
 
   virtual void callAll(const std::vector<message_actions::MessageAction>& actions);
 
-private:
+  private:
   sensor_msgs::msg::Imu msg_imu_;
   qi::AnyObject p_memory_;
   std::vector<std::string> data_names_list_;
@@ -68,8 +74,8 @@ private:
   std::map<message_actions::MessageAction, Callback_t> callbacks_;
 };
 
-}
+}  // namespace converter
 
-}
+}  // namespace naoqi
 
-#endif // IMU_CONVERTER_HPP
+#endif  // IMU_CONVERTER_HPP

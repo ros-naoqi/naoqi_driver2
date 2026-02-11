@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef EVENT_REGISTER_HPP
 #define EVENT_REGISTER_HPP
@@ -28,34 +28,34 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <naoqi_driver/tools.hpp>
 #include <naoqi_driver/recorder/globalrecorder.hpp>
+#include <naoqi_driver/tools.hpp>
 
 namespace naoqi
 {
 
 /**
-* @brief GlobalRecorder concept interface
-* @note this defines an private concept struct,
-* which each instance has to implement
-* @note a type erasure pattern in implemented here to avoid strict inheritance,
-* thus each possible publisher instance has to implement the virtual functions mentioned in the concept
-*/
+ * @brief GlobalRecorder concept interface
+ * @note this defines an private concept struct,
+ * which each instance has to implement
+ * @note a type erasure pattern in implemented here to avoid strict inheritance,
+ * thus each possible publisher instance has to implement the virtual functions mentioned in the
+ * concept
+ */
 template <typename Converter, typename Publisher, typename Recorder>
 class EventRegister
 {
 
-public:
-
+  public:
   /**
-  * @brief Constructor for recorder interface
-  */
+   * @brief Constructor for recorder interface
+   */
   EventRegister();
-  EventRegister( const std::string& key, const qi::SessionPtr& session );
+  EventRegister(const std::string& key, const qi::SessionPtr& session);
   ~EventRegister();
 
-  void resetPublisher( rclcpp::Node* node );
-  void resetRecorder( boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr );
+  void resetPublisher(rclcpp::Node* node);
+  void resetRecorder(boost::shared_ptr<naoqi::recorder::GlobalRecorder> gr);
 
   void startProcess();
   void stopProcess();
@@ -67,12 +67,12 @@ public:
   void isPublishing(bool state);
   void isDumping(bool state);
 
-private:
+  private:
   void registerCallback();
   void unregisterCallback();
   void onEvent();
 
-private:
+  private:
   boost::shared_ptr<Converter> converter_;
   boost::shared_ptr<Publisher> publisher_;
   boost::shared_ptr<Recorder> recorder_;
@@ -89,8 +89,8 @@ private:
   bool isRecording_;
   bool isDumping_;
 
-}; // class globalrecorder
-} //naoqi
+};  // class globalrecorder
+}  // namespace naoqi
 #include "basic.hxx"
 
 #endif

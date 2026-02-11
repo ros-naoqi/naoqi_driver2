@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef CONVERTER_HPP
 #define CONVERTER_HPP
@@ -24,6 +24,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <rclcpp/rclcpp.hpp>
+
 #include <naoqi_driver/message_actions.h>
 #include <naoqi_driver/ros_helpers.hpp>
 
@@ -32,53 +33,43 @@ namespace naoqi
 namespace converter
 {
 
-
 /**
-* @brief Converter concept interface
-* @note this defines an private concept struct,
-* which each instance has to implement
-* @note a type erasure pattern in implemented here to avoid strict inheritance,
-* thus each possible converter instance has to implement the virtual functions mentioned in the concept
-*/
+ * @brief Converter concept interface
+ * @note this defines an private concept struct,
+ * which each instance has to implement
+ * @note a type erasure pattern in implemented here to avoid strict inheritance,
+ * thus each possible converter instance has to implement the virtual functions mentioned in the
+ * concept
+ */
 class Converter
 {
 
-public:
-
+  public:
   /**
-  * @brief Constructor for converter interface
-  */
-  template<typename T>
-  Converter( T conv ):
-    convPtr_( boost::make_shared<ConverterModel<T> >(conv) )
-  {}
-
-  /**
-  * @brief getting the descriptive name for this converter instance
-  * @return string with the name
-  */
-  std::string name() const
+   * @brief Constructor for converter interface
+   */
+  template <typename T>
+  Converter(T conv) : convPtr_(boost::make_shared<ConverterModel<T>>(conv))
   {
-    return convPtr_->name();
   }
 
   /**
-  * @brief getting the assigned frequency of this converter instance
-  * @return float value indicating the frequency
-  */
-  float frequency() const
-  {
-    return convPtr_->frequency();
-  }
+   * @brief getting the descriptive name for this converter instance
+   * @return string with the name
+   */
+  std::string name() const { return convPtr_->name(); }
 
-  void reset()
-  {
-    convPtr_->reset();
-  }
+  /**
+   * @brief getting the assigned frequency of this converter instance
+   * @return float value indicating the frequency
+   */
+  float frequency() const { return convPtr_->frequency(); }
 
-  void callAll( const std::vector<message_actions::MessageAction>& actions )
+  void reset() { convPtr_->reset(); }
+
+  void callAll(const std::vector<message_actions::MessageAction>& actions)
   {
-    if ( actions.size() > 0 )
+    if (actions.size() > 0)
     {
       convPtr_->callAll(actions);
     }
@@ -93,60 +84,47 @@ public:
   //   return lapse_time;
   // }
 
-  friend bool operator==( const Converter& lhs, const Converter& rhs )
+  friend bool operator==(const Converter& lhs, const Converter& rhs)
   {
     // decision made for OR-comparison since we want to be more restrictive
-    if ( lhs.name() == rhs.name() )
+    if (lhs.name() == rhs.name())
       return true;
     return false;
   }
 
-private:
-
+  private:
   rclcpp::Time before;
   // rclcpp::Duration lapse_time;
 
   /**
-  * BASE concept struct
-  */
+   * BASE concept struct
+   */
   struct ConverterConcept
   {
-    virtual ~ConverterConcept(){}
+    virtual ~ConverterConcept() {}
     virtual std::string name() const = 0;
     virtual float frequency() const = 0;
     virtual void reset() = 0;
-    virtual void callAll( const std::vector<message_actions::MessageAction>& actions ) = 0;
+    virtual void callAll(const std::vector<message_actions::MessageAction>& actions) = 0;
   };
 
-
   /**
-  * templated instances of base concept
-  */
-  template<typename T>
+   * templated instances of base concept
+   */
+  template <typename T>
   struct ConverterModel : public ConverterConcept
   {
-    ConverterModel( const T& other ):
-      converter_( other )
-    {}
+    ConverterModel(const T& other) : converter_(other) {}
 
-    std::string name() const
-    {
-      return converter_->name();
-    }
+    std::string name() const { return converter_->name(); }
 
-    float frequency() const
-    {
-      return converter_->frequency();
-    }
-    
-    void reset()
-    {
-      converter_->reset();
-    }
+    float frequency() const { return converter_->frequency(); }
 
-    void callAll( const std::vector<message_actions::MessageAction>& actions )
+    void reset() { converter_->reset(); }
+
+    void callAll(const std::vector<message_actions::MessageAction>& actions)
     {
-      converter_->callAll( actions );
+      converter_->callAll(actions);
     }
 
     T converter_;
@@ -154,9 +132,9 @@ private:
 
   boost::shared_ptr<ConverterConcept> convPtr_;
 
-}; // class converter
+};  // class converter
 
-} //converter
-} //naoqi
+}  // namespace converter
+}  // namespace naoqi
 
 #endif
