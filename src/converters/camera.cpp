@@ -26,7 +26,13 @@
 /*
 * ROS includes
 */
-#include <cv_bridge/cv_bridge.h> // not .hpp for humble compat
+// jazzy only exposes cv_bridge.hpp, and humble only has cv_bridge.h
+#if __has_include("cv_bridge/cv_bridge.hpp")
+#include "cv_bridge/cv_bridge.hpp"
+#else
+#include "cv_bridge/cv_bridge.h"
+#endif
+
 
 /*
 * CV includes

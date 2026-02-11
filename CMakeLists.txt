@@ -5,6 +5,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -126,12 +127,14 @@ ament_target_dependencies(naoqi_driver
   diagnostic_updater
   geometry_msgs
   image_transport
+  ament_index_cpp
   kdl_parser
   naoqi_bridge_msgs
   naoqi_libqi
   naoqi_libqicore
   robot_state_publisher
   sensor_msgs
+  std_msgs
   tf2_geometry_msgs
   tf2_msgs
   tf2_ros
