@@ -344,7 +344,8 @@ if check_process "naoqi_driver_node"; then
 
     # Test 10: Check NAOqi version is correct for Romeo
     echo ""
-    echo "Test 10: Verifying NAOqi version for Romeo..."
+    ((test_count+=1))
+    echo "Test ${test_count}: Verifying NAOqi version for Romeo..."
     if grep -q "2\.1\.4\.13" /tmp/naoqi_test_romeo.log; then
         print_result 0 "Romeo reports correct NAOqi version (2.1.4.13)"
     else
