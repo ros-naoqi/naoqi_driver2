@@ -48,6 +48,11 @@ Describe things and we'll assess quality ourselves. You're not selling us someth
 - **Parameters**: Use ROS 2 parameter system for configuration
 - **Launch files**: Support both Python (.launch.py) and XML (.launch) formats where they exist
 - **Node lifecycle**: Respect ROS 2 node initialization, running, and shutdown patterns
+- **Workspaces**: The ROS 2 workspace (e.g., `/ws`) is arranged as follows:
+  - Sources are cloned under the folder `src` (e.g., `/ws/src/naoqi_driver`)
+  - `colcon build` is run from the root of the workspace (`/ws`)
+  - Build artifacts go into `build`, `install`, and `log` folders at the workspace root.
+  - To run artifacts, source the script `install/setup.bash` from the workspace root (e.g. `/ws/install/setup.bash`)
 
 ### Investigation Strategy
 
@@ -57,38 +62,41 @@ Describe things and we'll assess quality ourselves. You're not selling us someth
 4. **Test incrementally**: Build and verify changes in logical chunks
 5. **Use absolute paths**: Always use absolute paths in terminal commands (e.g., `/ws/src/...` not `src/...`) to avoid directory confusion
 
-### Quick Commands (Time-Savers)
+### Commands (Time-Savers)
+
+All commands are meant to be run from the root of the ROS 2 workspace (e.g. `/ws`).
+All commands assume you have sourced the ROS 2 environment (e.g. `source /opt/ros/${ROS_DISTRO}/setup.bash`).
 
 ```bash
 # Fast iterative build (build only naoqi_driver)
-cd /ws && colcon build --packages-select naoqi_driver
+colcon build --packages-select naoqi_driver
 
 # Build with minimal output (see only errors/summary)
-cd /ws && colcon build --packages-select naoqi_driver 2>&1 | tail -50
+colcon build --packages-select naoqi_driver 2>&1 | tail -50
 
 # Full workspace build
-cd /ws && colcon build
+colcon build
 
 # Clean build (when things go wrong)
-cd /ws && rm -rf build install log && colcon build
+rm -rf build install log && colcon build
 
 # Test emulation mode (automated test suite)
-cd /ws && source /opt/ros/iron/setup.bash && source install/setup.bash && ./src/naoqi_driver/test_emulation.sh
+source install/setup.bash && ./src/naoqi_driver/test_emulation.sh
 
 # Quick manual test - NAO emulation (5 second timeout)
-cd /ws && source /opt/ros/iron/setup.bash && source install/setup.bash && timeout 5 ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=nao
+source install/setup.bash && timeout 5 ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=nao
 
 # Quick manual test - Pepper emulation
-cd /ws && source /opt/ros/iron/setup.bash && source install/setup.bash && timeout 5 ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=pepper
+source install/setup.bash && timeout 5 ros2 launch naoqi_driver naoqi_driver.launch.py emulation_mode:=true robot_type:=pepper
 
 # Check available ROS topics
-source /opt/ros/iron/setup.bash && source install/setup.bash && ros2 topic list
+ros2 topic list
 
 # Read joint states once (verify it's publishing)
-source /opt/ros/iron/setup.bash && source install/setup.bash && ros2 topic echo /joint_states --once
+ros2 topic echo /joint_states --once
 
 # Publish to joint_angles (test motion commands)
-source /opt/ros/iron/setup.bash && source install/setup.bash && ros2 topic pub --once /joint_angles naoqi_bridge_msgs/JointAnglesWithSpeed "{header: {stamp: now, frame_id: ''}, joint_names: ['HeadYaw', 'HeadPitch'], joint_angles: [0.5, 0.1], speed: 0.1, relative: 0}"
+ros2 topic pub --once /joint_angles naoqi_bridge_msgs/JointAnglesWithSpeed "{header: {stamp: now, frame_id: ''}, joint_names: ['HeadYaw', 'HeadPitch'], joint_angles: [0.5, 0.1], speed: 0.1, relative: 0}"
 
 # Search for code patterns
 grep -r "pattern" src/naoqi_driver --include="*.cpp" --include="*.hpp"
