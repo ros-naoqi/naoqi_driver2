@@ -43,8 +43,8 @@ qi::SessionPtr createFakeNaoqiSession(const std::string& robot_type)
 
   // Create fake services as shared pointers
   // QI_REGISTER_OBJECT allows these to be registered as services
-  auto motion = boost::make_shared<FakeALMotion>(robot_type);
   auto memory = boost::make_shared<FakeALMemory>(robot_type);
+  auto motion = boost::make_shared<FakeALMotion>(robot_type, qi::AnyObject(memory));
   auto tts = boost::make_shared<FakeALTextToSpeech>();
   auto video = boost::make_shared<FakeALVideoDevice>();
   auto audio = boost::make_shared<FakeALAudioDevice>();

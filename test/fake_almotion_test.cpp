@@ -5,11 +5,15 @@
 #include <unordered_map>
 #include <vector>
 
-#include "fake_naoqi/fake_almotion.hpp"
+#include <boost/make_shared.hpp>
+
+#include <fake_naoqi/fake_almemory.hpp>
+#include <fake_naoqi/fake_almotion.hpp>
 
 TEST(naoqi_driver, fake_almotion)
 {
-  naoqi::fake::FakeALMotion motion("nao");
+  auto memory = boost::make_shared<naoqi::fake::FakeALMemory>("nao");
+  naoqi::fake::FakeALMotion motion("nao", qi::AnyObject(memory));
 
   // Equivalent to the /joint_angles publish used by test_emulation.sh
   const std::vector<std::string> joint_names = {"HeadYaw", "HeadPitch"};
@@ -39,7 +43,8 @@ TEST(naoqi_driver, fake_almotion)
 
 TEST(naoqi_driver, fake_almotion_duplicate_entries_last_wins)
 {
-  naoqi::fake::FakeALMotion motion("nao");
+  auto memory = boost::make_shared<naoqi::fake::FakeALMemory>("nao");
+  naoqi::fake::FakeALMotion motion("nao", qi::AnyObject(memory));
 
   // Data equivalent to the provided JointAnglesWithSpeed payload.
   // Note: duplicate entries exist; the last occurrence should take precedence.

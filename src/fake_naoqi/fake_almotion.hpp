@@ -21,11 +21,12 @@
 #include <atomic>
 #include <map>
 #include <mutex>
-#include <qi/anyobject.hpp>
-#include <qi/type/dynamicobjectbuilder.hpp>
 #include <string>
 #include <thread>
 #include <vector>
+
+#include <qi/anyobject.hpp>
+#include <qi/type/dynamicobjectbuilder.hpp>
 
 namespace naoqi
 {
@@ -41,7 +42,7 @@ namespace fake
 class FakeALMotion
 {
   public:
-  explicit FakeALMotion(const std::string& robot_type);
+  explicit FakeALMotion(const std::string& robot_type, qi::AnyObject memory);
   ~FakeALMotion();
 
   // Robot configuration
@@ -78,6 +79,12 @@ class FakeALMotion
   void initializeJoints();
   void updateTrajectories(double dt);
   void trajectoryUpdateLoop();
+  /// Build an insertListData entry: a list-type AnyValue of [key, value]
+  static qi::AnyValue makeEntry(const std::string& key, float value);
+  /// Write joint positions/velocities/torques to ALMemory in one batch call
+  void syncJointsToMemory(const std::vector<std::string>& names,
+                          const std::vector<double>& positions,
+                          const std::vector<double>& velocities);
 
   struct JointState
   {
@@ -96,6 +103,8 @@ class FakeALMotion
   };
 
   std::string robot_type_;
+  qi::AnyObject memory_;
+
   std::map<std::string, JointState> joints_;
   std::map<std::string, std::vector<TrajectoryPoint>> active_trajectories_;
   std::mutex joints_mutex_;

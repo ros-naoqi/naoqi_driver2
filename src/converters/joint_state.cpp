@@ -76,6 +76,7 @@ void JointStateConverter::reset()
     }
   }
   // pre-fill joint states message
+  msg_joint_states_.name = p_motion_.call<std::vector<std::string>>("getBodyNames", "Body");
 
   // precompute ALMemory keys: [positions..., velocities..., torques...]
   const size_t n = msg_joint_states_.name.size();

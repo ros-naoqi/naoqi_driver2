@@ -18,8 +18,9 @@
 #ifndef FAKE_NAOQI_HPP
 #define FAKE_NAOQI_HPP
 
-#include <qi/session.hpp>
 #include <string>
+
+#include <qi/session.hpp>
 
 namespace naoqi
 {

@@ -147,6 +147,21 @@ void FakeALMemory::insertData(const std::string& key, const qi::AnyValue& value)
   memory_[key] = value;
 }
 
+void FakeALMemory::insertListData(const std::vector<qi::AnyValue>& entries)
+{
+  std::lock_guard<std::mutex> lock(memory_mutex_);
+  for (const auto& entry : entries)
+  {
+    // Each entry is a list [key_string, value]
+    auto list = entry.to<std::vector<qi::AnyValue>>();
+    if (list.size() >= 2)
+    {
+      std::string key = list[0].to<std::string>();
+      memory_[key] = list[1];
+    }
+  }
+}
+
 void FakeALMemory::setData(const std::string& key, const qi::AnyValue& value)
 {
   qi::AnyObject subscriber_to_trigger;
@@ -214,4 +229,4 @@ qi::AnyObject FakeALMemory::subscriber(const std::string& key)
 }  // namespace naoqi
 
 // Register the FakeALMemory class with libqi
-QI_REGISTER_OBJECT(naoqi::fake::FakeALMemory, getData, getListData, setData, subscriber)
+QI_REGISTER_OBJECT(naoqi::fake::FakeALMemory, getData, getListData, insertData, insertListData, setData, subscriber)

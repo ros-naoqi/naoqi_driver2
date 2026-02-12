@@ -46,6 +46,7 @@ class FakeALMemory
   qi::AnyValue getData(const std::string& key);
   qi::AnyValue getListData(const std::vector<std::string>& keys);
   void insertData(const std::string& key, const qi::AnyValue& value);
+  void insertListData(const std::vector<qi::AnyValue>& entries);
   void setData(const std::string& key, const qi::AnyValue& value);
 
   // Event subscription - returns a fake subscriber object

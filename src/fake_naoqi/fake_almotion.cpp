@@ -16,6 +16,7 @@
  */
 
 #include "fake_almotion.hpp"
+
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -53,8 +54,9 @@ const std::vector<std::string> ROMEO_JOINT_NAMES = {
 
 }  // namespace
 
-FakeALMotion::FakeALMotion(const std::string& robot_type)
-    : robot_type_(robot_type), base_position_(6, 0.0f), base_velocity_(3, 0.0f), running_(true)
+FakeALMotion::FakeALMotion(const std::string& robot_type, qi::AnyObject memory)
+    : robot_type_(robot_type), memory_(memory), base_position_(6, 0.0f), base_velocity_(3, 0.0f),
+      running_(true)
 {
   initializeJoints();
   trajectory_thread_ = std::thread(&FakeALMotion::trajectoryUpdateLoop, this);
@@ -67,6 +69,33 @@ FakeALMotion::~FakeALMotion()
   {
     trajectory_thread_.join();
   }
+}
+
+qi::AnyValue FakeALMotion::makeEntry(const std::string& key, float value)
+{
+  std::vector<qi::AnyValue> pair;
+  pair.push_back(qi::AnyValue::from(key));
+  pair.push_back(qi::AnyValue::from(value));
+  return qi::AnyValue::from(pair);
+}
+
+void FakeALMotion::syncJointsToMemory(const std::vector<std::string>& names,
+                                      const std::vector<double>& positions,
+                                      const std::vector<double>& velocities)
+{
+  if (!memory_)
+    return;
+  std::vector<qi::AnyValue> entries;
+  entries.reserve(3 * names.size());
+  for (size_t i = 0; i < names.size(); ++i)
+  {
+    entries.push_back(makeEntry("Device/SubDeviceList/" + names[i] + "/Position/Sensor/Value",
+                                static_cast<float>(positions[i])));
+    entries.push_back(
+        makeEntry("Motion/Velocity/Sensor/" + names[i], static_cast<float>(velocities[i])));
+    entries.push_back(makeEntry("Motion/Torque/Sensor/" + names[i], 0.0f));
+  }
+  memory_.call<void>("insertListData", entries);
 }
 
 void FakeALMotion::initializeJoints()
@@ -292,6 +321,21 @@ void FakeALMotion::setAngles(const std::vector<std::string>& joint_names,
       it->second.velocity = 0.0;
     }
   }
+  // Batch-sync all changed joints to ALMemory
+  {
+    std::vector<double> positions(joint_names.size(), 0.0);
+    std::vector<double> velocities(joint_names.size(), 0.0);
+    for (size_t i = 0; i < joint_names.size(); ++i)
+    {
+      auto it = joints_.find(joint_names[i]);
+      if (it != joints_.end())
+      {
+        positions[i] = it->second.position;
+        velocities[i] = it->second.velocity;
+      }
+    }
+    syncJointsToMemory(joint_names, positions, velocities);
+  }
 }
 
 void FakeALMotion::changeAngles(const std::vector<std::string>& joint_names,
@@ -317,6 +361,22 @@ void FakeALMotion::changeAngles(const std::vector<std::string>& joint_names,
       it->second.position = target;
       it->second.velocity = 0.0;
     }
+  }
+  // Batch-sync all changed joints to ALMemory
+  {
+    std::vector<double> positions, velocities;
+    positions.reserve(joint_names.size());
+    velocities.reserve(joint_names.size());
+    for (const auto& name : joint_names)
+    {
+      auto it = joints_.find(name);
+      if (it != joints_.end())
+      {
+        positions.push_back(it->second.position);
+        velocities.push_back(it->second.velocity);
+      }
+    }
+    syncJointsToMemory(joint_names, positions, velocities);
   }
 }
 
@@ -464,6 +524,28 @@ void FakeALMotion::updateTrajectories(double dt)
         joint_it->second.position = trajectory.back().target_position;
         joint_it->second.velocity = 0.0;
       }
+    }
+  }
+
+  // Batch-sync all trajectory joints to ALMemory
+  if (!active_trajectories_.empty())
+  {
+    std::vector<std::string> names;
+    std::vector<double> positions;
+    std::vector<double> velocities;
+    for (const auto& traj_pair : active_trajectories_)
+    {
+      auto joint_it = joints_.find(traj_pair.first);
+      if (joint_it != joints_.end())
+      {
+        names.push_back(traj_pair.first);
+        positions.push_back(joint_it->second.position);
+        velocities.push_back(joint_it->second.velocity);
+      }
+    }
+    if (!names.empty())
+    {
+      syncJointsToMemory(names, positions, velocities);
     }
   }
 
