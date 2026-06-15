@@ -25,6 +25,8 @@
  */
 #include <tf2_ros/buffer.h>
 
+#include <rclcpp/create_timer.hpp>
+
 /*
  * PUBLIC INTERFACE
  */
@@ -235,7 +237,10 @@ void Driver::scheduleConverter(size_t conv_index)
                "Scheduling converter %s with period %ld ns",
                conv.name().c_str(),
                period.count());
-  auto timer = this->create_timer(period, [this, conv_index, one_shot]() {
+  // Free function rather than Node::create_timer (which does not exist on
+  // Humble) so the same ROS-clock timer works across Humble/Iron/Jazzy.
+  auto timer = rclcpp::create_timer(
+      this, this->get_clock(), rclcpp::Duration(period), [this, conv_index, one_shot]() {
     auto start_time = this->now();
     RCLCPP_DEBUG(this->get_logger(),
                  "Converter %s is being called (%ld ns)",
