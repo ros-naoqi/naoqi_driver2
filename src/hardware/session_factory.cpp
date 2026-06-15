@@ -48,9 +48,12 @@ void ensureQiRuntime()
 {
   static std::once_flag flag;
   std::call_once(flag, [] {
+    // qi::Application takes argc/argv by non-const reference, so both must be
+    // lvalues that outlive it (hence static).
     static int argc = 1;
-    static const char* arg0 = "naoqi_hardware";
-    static char* argv[] = {const_cast<char*>(arg0), nullptr};
+    static char arg0[] = "naoqi_hardware";
+    static char* argv_storage[] = {arg0, nullptr};
+    static char** argv = argv_storage;
     static qi::Application app(argc, argv);
   });
 }
