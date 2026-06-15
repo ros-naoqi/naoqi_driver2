@@ -1,0 +1,11 @@
+<library path="naoqi_driver_hardware">
+  <class name="naoqi_driver/AlMotionSystem"
+         type="naoqi::hardware::AlMotionSystem"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control system driving NAO/Pepper joints through NAOqi's high-level
+      ALMotion service over libqi. Universal fallback (NAOqi 2.1 to 2.9),
+      position command only. Required path on Pepper 2.9.
+    </description>
+  </class>
+</library>

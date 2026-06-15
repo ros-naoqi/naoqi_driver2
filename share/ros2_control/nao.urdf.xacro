@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+  Self-contained ros2_control description for NAO, usable without nao_description
+  or meshes. It carries a single base_link plus the <ros2_control> block, which
+  is all controller_manager needs to load a NAOqi hardware backend.
+
+  For visualization (TF/RViz), load a full kinematic NAO URDF separately into
+  robot_state_publisher; the joint names here match the standard NAO joints.
+-->
+<robot name="nao" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="plugin" default="naoqi_driver/AlMotionSystem"/>
+  <xacro:arg name="emulation_mode" default="false"/>
+  <xacro:arg name="nao_ip" default="127.0.0.1"/>
+  <xacro:arg name="nao_port" default="9559"/>
+  <xacro:arg name="user" default="nao"/>
+  <xacro:arg name="password" default="no_password"/>
+  <xacro:arg name="max_velocity" default="0.1"/>
+
+  <xacro:include filename="$(find naoqi_driver)/share/ros2_control/naoqi_system.ros2_control.xacro"/>
+
+  <link name="base_link"/>
+
+  <!-- Standard NAO V6 joints (matches the driver's joint_state converter). -->
+  <xacro:property name="nao_joints" value="${[
+    'HeadYaw', 'HeadPitch',
+    'LShoulderPitch', 'LShoulderRoll', 'LElbowYaw', 'LElbowRoll', 'LWristYaw', 'LHand',
+    'RShoulderPitch', 'RShoulderRoll', 'RElbowYaw', 'RElbowRoll', 'RWristYaw', 'RHand',
+    'LHipYawPitch', 'LHipRoll', 'LHipPitch', 'LKneePitch', 'LAnklePitch', 'LAnkleRoll',
+    'RHipYawPitch', 'RHipRoll', 'RHipPitch', 'RKneePitch', 'RAnklePitch', 'RAnkleRoll']}"/>
+
+  <xacro:naoqi_system
+      name="NaoSystem"
+      plugin="$(arg plugin)"
+      joints="${nao_joints}"
+      robot_type="nao"
+      emulation_mode="$(arg emulation_mode)"
+      nao_ip="$(arg nao_ip)"
+      nao_port="$(arg nao_port)"
+      user="$(arg user)"
+      password="$(arg password)"
+      max_velocity="$(arg max_velocity)"/>
+
+</robot>
