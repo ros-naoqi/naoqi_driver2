@@ -1,0 +1,16 @@
+repositories:
+  # qi-related build dependencies, built from source on distros where they are
+  # not (yet) released as binaries. Meshes are runtime data, not build deps,
+  # so they are intentionally omitted to keep CI fast.
+  naoqi_libqi:
+    type: git
+    url: https://github.com/ros-naoqi/libqi.git
+    version: ros2
+  naoqi_libqicore:
+    type: git
+    url: https://github.com/ros-naoqi/libqicore.git
+    version: ros2
+  naoqi_bridge_msgs:
+    type: git
+    url: https://github.com/ros-naoqi/naoqi_bridge_msgs2.git
+    version: main
