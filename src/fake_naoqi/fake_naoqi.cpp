@@ -18,6 +18,7 @@
 #include "fake_naoqi.hpp"
 #include "fake_almemory.hpp"
 #include "fake_almotion.hpp"
+#include "fake_dcm.hpp"
 #include "fake_services.hpp"
 
 #include <iostream>
@@ -45,6 +46,7 @@ qi::SessionPtr createFakeNaoqiSession(const std::string& robot_type)
   // QI_REGISTER_OBJECT allows these to be registered as services
   auto memory = boost::make_shared<FakeALMemory>(robot_type);
   auto motion = boost::make_shared<FakeALMotion>(robot_type, qi::AnyObject(memory));
+  auto dcm = boost::make_shared<FakeDCM>(qi::AnyObject(memory));
   auto tts = boost::make_shared<FakeALTextToSpeech>();
   auto video = boost::make_shared<FakeALVideoDevice>();
   auto audio = boost::make_shared<FakeALAudioDevice>();
@@ -61,6 +63,7 @@ qi::SessionPtr createFakeNaoqiSession(const std::string& robot_type)
   {
     session->registerService("ALMotion", motion);
     session->registerService("ALMemory", memory);
+    session->registerService("DCM", dcm);
     session->registerService("ALTextToSpeech", tts);
     session->registerService("ALVideoDevice", video);
     session->registerService("ALAudioDevice", audio);

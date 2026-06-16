@@ -92,6 +92,7 @@ set(
   src/fake_naoqi/fake_naoqi.cpp
   src/fake_naoqi/fake_almotion.cpp
   src/fake_naoqi/fake_almemory.cpp
+  src/fake_naoqi/fake_dcm.cpp
   src/fake_naoqi/fake_services.cpp
 )
 
@@ -176,7 +177,9 @@ install(TARGETS naoqi_driver_node DESTINATION lib/${PROJECT_NAME})
 set(
   HARDWARE_SRC
   src/hardware/session_factory.cpp
+  src/hardware/joint_state_keys.cpp
   src/hardware/almotion_system.cpp
+  src/hardware/dcm_system.cpp
 )
 add_library(naoqi_driver_hardware SHARED ${HARDWARE_SRC})
 target_include_directories(naoqi_driver_hardware PRIVATE
@@ -230,6 +233,20 @@ if(BUILD_TESTING)
     naoqi_libqi
   )
   target_link_libraries(${PROJECT_NAME}_hardware_test naoqi_driver_hardware)
+
+  ament_add_gtest(${PROJECT_NAME}_dcm_test "test/dcm_system_test.cpp")
+  target_include_directories(${PROJECT_NAME}_dcm_test PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:include>
+  )
+  ament_target_dependencies(${PROJECT_NAME}_dcm_test
+    hardware_interface
+    rclcpp
+    rclcpp_lifecycle
+    naoqi_libqi
+  )
+  target_link_libraries(${PROJECT_NAME}_dcm_test naoqi_driver_hardware)
 endif()
 
 ament_package()

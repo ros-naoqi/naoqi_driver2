@@ -8,4 +8,13 @@
       position command only. Required path on Pepper 2.9.
     </description>
   </class>
+  <class name="naoqi_driver/DcmSystem"
+         type="naoqi::hardware::DcmSystem"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control system driving NAO/Pepper joints through NAOqi's DCM over
+      libqi (NAO 2.1 / Pepper 2.5). Position + stiffness; velocity if the
+      per-joint speed key is provided via the velocity_actuator_key parameter.
+    </description>
+  </class>
 </library>

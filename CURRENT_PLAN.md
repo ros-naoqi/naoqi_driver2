@@ -37,24 +37,29 @@ the baseline. Velocity is pursued through DCM speed keys — see ASSUMPTIONS.md,
 ### Done
 - Branch based on the `fake_naoqi` study (fake ALMemory/ALMotion/services,
   emulation mode, ALMemory-key state path).
-- `AlMotionSystem` (position) implemented end-to-end:
-  - `src/hardware/almotion_system.*`, `src/hardware/session_factory.*`
-  - pluginlib export `naoqi_driver_hardware.xml`, CMake/package.xml wiring
-  - description `share/ros2_control/nao.urdf.xacro` + reusable
-    `naoqi_system.ros2_control.xacro` macro
-  - controllers `config/nao_controllers.yaml`, bringup
-    `launch/ros2_control.launch.py`
-  - emulation gtest `test/almotion_system_test.cpp`
-  - human real-robot test `test/real_robot_move.sh`
+- Shared `src/hardware/`:
+  - `session_factory.*` — libqi session (real/fake) from ros2_control params
+  - `joint_state_keys.*` — ALMemory state keys + batched read, used by both
+    libqi backends
+- `AlMotionSystem` (position) — `almotion_system.*`, `ALMotion.setAngles`.
+- `DcmSystem` (position + stiffness; velocity ready behind a key param) —
+  `dcm_system.*`, DCM `createAlias`/`getTime`/`setAlias`. Each joint declares
+  one command interface (position XOR velocity); velocity needs the
+  `velocity_actuator_key` param. `FakeDCM` added to the fake NAOqi.
+- Wiring: pluginlib export (`naoqi_driver_hardware.xml`, both classes), reusable
+  `naoqi_system.ros2_control.xacro` macro + `nao.urdf.xacro` (plugin selectable),
+  `config/nao_controllers.yaml`, `launch/ros2_control.launch.py`.
+- Tests: emulation gtests `test/almotion_system_test.cpp`,
+  `test/dcm_system_test.cpp`; human real-robot `test/real_robot_move.sh`
+  (works with any plugin via its 3rd arg).
 
 ### Next
-1. Resolve the DCM joint-velocity key on a real NAO 2.1 / Pepper 2.5
-   (ASSUMPTIONS.md). Until then, no velocity command.
-2. `DcmSystem`: `DCM.createAlias` for position + Hardness aliases; per-cycle
-   `getTime`/`setAlias`. Add a `FakeDCM` to the fake NAOqi so it is CI-testable.
-   Add velocity once the key is known.
-3. `LolaSystem`: MessagePack client over `/tmp/robocup` (fields/order in
+1. `LolaSystem`: MessagePack client over `/tmp/robocup` (fields/order in
    ASSUMPTIONS.md). Add a fake LoLA Unix-socket server for CI. Verify Pepper 2.9.
+2. Resolve the DCM per-joint velocity key on a real NAO 2.1 / Pepper 2.5, then
+   set `velocity_actuator_key` and validate velocity command (ASSUMPTIONS.md).
+3. Verify on a real robot that a mixed-type libqi list is accepted by the real
+   DCM as an ALValue (the emulator parses it; hardware is untested).
 4. Pepper description (`pepper.urdf.xacro`) with its joint set (+ wheels via a
    separate velocity interface / cmd_vel).
 5. Decide co-existence between a running naoqi_driver node and a ros2_control

@@ -37,7 +37,8 @@
               emulation_mode:=false robot_type:=nao
               nao_ip:=127.0.0.1 nao_port:=9559
               user:=nao password:=no_password
-              max_velocity:=0.1">
+              max_velocity:=0.1 stiffness:=1.0
+              velocity_actuator_key:=''">
     <ros2_control name="${name}" type="system">
       <hardware>
         <plugin>${plugin}</plugin>
@@ -47,7 +48,12 @@
         <param name="nao_port">${nao_port}</param>
         <param name="user">${user}</param>
         <param name="password">${password}</param>
+        <!-- ALMotion only: fraction of max joint speed for setAngles. -->
         <param name="max_velocity">${max_velocity}</param>
+        <!-- DCM only: joint stiffness, and (for velocity command) the per-joint
+             speed actuator key template, with {} replaced by the joint name. -->
+        <param name="stiffness">${stiffness}</param>
+        <param name="velocity_actuator_key">${velocity_actuator_key}</param>
       </hardware>
       <xacro:naoqi_joints joints="${joints}"/>
     </ros2_control>

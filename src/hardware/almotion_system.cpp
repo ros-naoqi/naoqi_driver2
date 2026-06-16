@@ -26,6 +26,7 @@
 #include <qi/anyvalue.hpp>
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
+#include "naoqi_driver/hardware/joint_state_keys.hpp"
 #include "naoqi_driver/hardware/session_factory.hpp"
 #include "pluginlib/class_list_macros.hpp"
 #include "rclcpp/logging.hpp"
@@ -48,17 +49,6 @@ std::string getParam(const std::unordered_map<std::string, std::string>& params,
 {
   const auto it = params.find(key);
   return it != params.end() ? it->second : fallback;
-}
-
-double toDouble(const qi::AnyValue& value)
-{
-  // Some joints (e.g. hands) have no velocity or torque key; ALMemory returns
-  // a void there. Treat it as zero, like the joint_state converter.
-  if (value.kind() == qi::TypeKind_Void)
-  {
-    return 0.0;
-  }
-  return value.toDouble();
 }
 }  // namespace
 
@@ -100,15 +90,7 @@ AlMotionSystem::on_init(const hardware_interface::HardwareInfo& info)
   efforts_.assign(n, 0.0);
   position_commands_.assign(n, nan);
 
-  // Layout [positions..., velocities..., torques...], matching read().
-  memory_keys_.clear();
-  memory_keys_.reserve(3 * n);
-  for (const auto& name : joint_names_)
-    memory_keys_.push_back("Device/SubDeviceList/" + name + "/Position/Sensor/Value");
-  for (const auto& name : joint_names_)
-    memory_keys_.push_back("Motion/Velocity/Sensor/" + name);
-  for (const auto& name : joint_names_)
-    memory_keys_.push_back("Motion/Torque/Sensor/" + name);
+  memory_keys_ = jointStateKeys(joint_names_);
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -215,30 +197,8 @@ AlMotionSystem::on_deactivate(const rclcpp_lifecycle::State& /*previous_state*/)
 hardware_interface::return_type AlMotionSystem::read(const rclcpp::Time& /*time*/,
                                                      const rclcpp::Duration& /*period*/)
 {
-  const size_t n = joint_names_.size();
-  std::vector<qi::AnyValue> data;
-  try
-  {
-    data = memory_.call<std::vector<qi::AnyValue>>("getListData", memory_keys_);
-  }
-  catch (const std::exception& e)
-  {
-    RCLCPP_ERROR(logger(), "ALMemory read failed: %s", e.what());
+  if (!readJointStates(memory_, memory_keys_, positions_, velocities_, efforts_))
     return hardware_interface::return_type::ERROR;
-  }
-
-  if (data.size() != 3 * n)
-  {
-    RCLCPP_ERROR(logger(), "ALMemory returned %zu values, expected %zu.", data.size(), 3 * n);
-    return hardware_interface::return_type::ERROR;
-  }
-
-  for (size_t i = 0; i < n; ++i)
-  {
-    positions_[i] = toDouble(data[i]);
-    velocities_[i] = toDouble(data[n + i]);
-    efforts_[i] = toDouble(data[2 * n + i]);
-  }
   return hardware_interface::return_type::OK;
 }
 

@@ -51,6 +51,16 @@ Test harness for confirming these: `test/real_robot_move.sh <ip> [password]`.
   `updateType` is `"ClearAll"` (replace) or `"Merge"`.
 - Source: https://github.com/jrl-umi3218/mc_naoqi_dcm (NAORobotModule.cpp,
   PepperRobotModule.cpp, mc_naoqi_dcm.cpp)
+- **[ASSUMPTION]** `DcmSystem` builds the `createAlias`/`setAlias` arguments as a
+  libqi list of mixed-type `AnyValue`s (the qi equivalent of the old SDK's
+  `ALValue`). mc_naoqi_dcm used the NAOqi C++ SDK (`AL::ALValue`) directly, not
+  libqi. The fake DCM parses our list fine, but that the real DCM accepts a
+  qi-messaging mixed list as an ALValue is untested. Verify on hardware; if it is
+  rejected, wrap values explicitly or call DCM through a different path.
+- **[ASSUMPTION]** `DcmSystem` uses `updateType = "ClearAll"` with a single
+  command timed at `getTime(0)` each cycle. Streaming setpoints this way (replace
+  each cycle) is assumed smooth enough; a real robot may need `"Merge"` with a
+  small future delay. Tune on hardware.
 
 ### Velocity via DCM — THE OPEN QUESTION
 
