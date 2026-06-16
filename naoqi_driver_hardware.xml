@@ -1,0 +1,30 @@
+<library path="naoqi_driver_hardware">
+  <class name="naoqi_driver/AlMotionSystem"
+         type="naoqi::hardware::AlMotionSystem"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control system driving NAO/Pepper joints through NAOqi's high-level
+      ALMotion service over libqi. Universal fallback (NAOqi 2.1 to 2.9),
+      position command only. Required path on Pepper 2.9.
+    </description>
+  </class>
+  <class name="naoqi_driver/DcmSystem"
+         type="naoqi::hardware::DcmSystem"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control system driving NAO/Pepper joints through NAOqi's DCM over
+      libqi (NAO 2.1 / Pepper 2.5). Position + stiffness; velocity if the
+      per-joint speed key is provided via the velocity_actuator_key parameter.
+    </description>
+  </class>
+  <class name="naoqi_driver/LolaSystem"
+         type="naoqi::hardware::LolaSystem"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control system driving NAO (and, per internal sources, Pepper 2.9)
+      joints through the LoLA protocol over the local /tmp/robocup socket
+      (MessagePack, ~83 Hz). Bypasses NAOqi; must run on the robot. Position +
+      stiffness.
+    </description>
+  </class>
+</library>

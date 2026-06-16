@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+  Self-contained ros2_control description for Pepper, usable without
+  pepper_description or meshes. It carries a single base_link plus the
+  <ros2_control> block, which is all controller_manager needs to load a NAOqi
+  hardware backend.
+
+  Scope: the 17 articular joints (head, arms, hip, knee). Pepper's holonomic
+  base (WheelFL/WheelFR/WheelB) is velocity-controlled and is handled by the
+  driver's /cmd_vel subscriber (ALMotion.move), not exposed here as joints.
+
+  Backend: AlMotionSystem by default, which works on Pepper 2.5 and 2.9. DCM
+  (Pepper 2.5) and LoLA (Pepper 2.9, hidden) are selectable via the plugin arg;
+  both are assumptions to verify on hardware (see ASSUMPTIONS.md).
+-->
+<robot name="pepper" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="plugin" default="naoqi_driver/AlMotionSystem"/>
+  <xacro:arg name="emulation_mode" default="false"/>
+  <xacro:arg name="nao_ip" default="127.0.0.1"/>
+  <xacro:arg name="nao_port" default="9559"/>
+  <xacro:arg name="user" default="nao"/>
+  <xacro:arg name="password" default="no_password"/>
+  <xacro:arg name="max_velocity" default="0.1"/>
+
+  <xacro:include filename="$(find naoqi_driver)/share/ros2_control/naoqi_system.ros2_control.xacro"/>
+
+  <link name="base_link"/>
+
+  <!-- Pepper articular joints (matches the driver's joint_state converter). -->
+  <xacro:property name="pepper_joints" value="${[
+    'HeadYaw', 'HeadPitch',
+    'LShoulderPitch', 'LShoulderRoll', 'LElbowYaw', 'LElbowRoll', 'LWristYaw', 'LHand',
+    'RShoulderPitch', 'RShoulderRoll', 'RElbowYaw', 'RElbowRoll', 'RWristYaw', 'RHand',
+    'HipRoll', 'HipPitch', 'KneePitch']}"/>
+
+  <xacro:naoqi_system
+      name="PepperSystem"
+      plugin="$(arg plugin)"
+      joints="${pepper_joints}"
+      robot_type="pepper"
+      emulation_mode="$(arg emulation_mode)"
+      nao_ip="$(arg nao_ip)"
+      nao_port="$(arg nao_port)"
+      user="$(arg user)"
+      password="$(arg password)"
+      max_velocity="$(arg max_velocity)"/>
+
+</robot>

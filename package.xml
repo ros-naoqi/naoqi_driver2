@@ -29,6 +29,18 @@
   <depend>boost</depend>
   <depend>ament_index_cpp</depend>
 
+  <!-- ros2_control hardware interface -->
+  <depend>hardware_interface</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp_lifecycle</depend>
+
+  <!-- ros2_control runtime: controller_manager, controllers, xacro for bringup -->
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>position_controllers</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>diagnostic_updater</build_depend>
   <build_depend>geometry_msgs</build_depend>

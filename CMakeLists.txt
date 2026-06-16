@@ -21,6 +21,9 @@ find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost QUIET COMPONENTS chrono filesystem program_options regex system thread random)
+find_package(hardware_interface REQUIRED)
+find_package(pluginlib REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
 
 set(
   CONVERTERS_SRC
@@ -89,6 +92,7 @@ set(
   src/fake_naoqi/fake_naoqi.cpp
   src/fake_naoqi/fake_almotion.cpp
   src/fake_naoqi/fake_almemory.cpp
+  src/fake_naoqi/fake_dcm.cpp
   src/fake_naoqi/fake_services.cpp
 )
 
@@ -167,8 +171,40 @@ target_link_libraries(naoqi_driver_node
 
 install(TARGETS naoqi_driver_node DESTINATION lib/${PROJECT_NAME})
 
-# install the urdf for runtime loading
+# ros2_control hardware interfaces (loaded by controller_manager via pluginlib).
+# Built as a separate plugin library; reuses the driver lib for the libqi
+# session helpers and the in-process fake NAOqi used in emulation.
+set(
+  HARDWARE_SRC
+  src/hardware/session_factory.cpp
+  src/hardware/joint_state_keys.cpp
+  src/hardware/almotion_system.cpp
+  src/hardware/dcm_system.cpp
+  src/hardware/lola_protocol.cpp
+  src/hardware/lola_system.cpp
+)
+add_library(naoqi_driver_hardware SHARED ${HARDWARE_SRC})
+target_include_directories(naoqi_driver_hardware PRIVATE
+  "include"
+  "src"
+  ${naoqi_libqi_INCLUDE_DIRS}
+)
+ament_target_dependencies(naoqi_driver_hardware
+  hardware_interface
+  pluginlib
+  rclcpp
+  rclcpp_lifecycle
+  naoqi_libqi
+)
+target_link_libraries(naoqi_driver_hardware naoqi_driver)
+pluginlib_export_plugin_description_file(hardware_interface naoqi_driver_hardware.xml)
+install(TARGETS naoqi_driver_hardware DESTINATION lib)
+
+# install the urdf, ros2_control descriptions and rviz config for runtime loading
 install(DIRECTORY share DESTINATION share/${PROJECT_NAME})
+
+# install the controller configurations
+install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 # install the launch files
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
@@ -184,6 +220,48 @@ if(BUILD_TESTING)
     $<INSTALL_INTERFACE:include>
   )
   target_link_libraries(${PROJECT_NAME}_test naoqi_driver)
+
+  # ros2_control hardware interface, driven against the fake NAOqi.
+  ament_add_gtest(${PROJECT_NAME}_hardware_test "test/almotion_system_test.cpp")
+  target_include_directories(${PROJECT_NAME}_hardware_test PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:include>
+  )
+  ament_target_dependencies(${PROJECT_NAME}_hardware_test
+    hardware_interface
+    rclcpp
+    rclcpp_lifecycle
+    naoqi_libqi
+  )
+  target_link_libraries(${PROJECT_NAME}_hardware_test naoqi_driver_hardware)
+
+  ament_add_gtest(${PROJECT_NAME}_dcm_test "test/dcm_system_test.cpp")
+  target_include_directories(${PROJECT_NAME}_dcm_test PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:include>
+  )
+  ament_target_dependencies(${PROJECT_NAME}_dcm_test
+    hardware_interface
+    rclcpp
+    rclcpp_lifecycle
+    naoqi_libqi
+  )
+  target_link_libraries(${PROJECT_NAME}_dcm_test naoqi_driver_hardware)
+
+  ament_add_gtest(${PROJECT_NAME}_lola_test "test/lola_system_test.cpp")
+  target_include_directories(${PROJECT_NAME}_lola_test PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test>
+    $<INSTALL_INTERFACE:include>
+  )
+  ament_target_dependencies(${PROJECT_NAME}_lola_test
+    hardware_interface
+    rclcpp
+    rclcpp_lifecycle
+  )
+  target_link_libraries(${PROJECT_NAME}_lola_test naoqi_driver_hardware)
 endif()
 
 ament_package()

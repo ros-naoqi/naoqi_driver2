@@ -1,0 +1,38 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 50  # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    pepper_joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+pepper_joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - HeadYaw
+      - HeadPitch
+      - LShoulderPitch
+      - LShoulderRoll
+      - LElbowYaw
+      - LElbowRoll
+      - LWristYaw
+      - LHand
+      - RShoulderPitch
+      - RShoulderRoll
+      - RElbowYaw
+      - RElbowRoll
+      - RWristYaw
+      - RHand
+      - HipRoll
+      - HipPitch
+      - KneePitch
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    # Allow sending goals for a subset of joints (e.g. just the head); the
+    # controller holds the others at their current position.
+    allow_partial_joints_goal: true

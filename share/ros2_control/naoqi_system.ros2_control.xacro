@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!--
+  Reusable ros2_control description for NAOqi robots.
+
+  Include this file and call the `naoqi_system` macro from a robot URDF/xacro,
+  passing the list of joints to control and the hardware plugin to use:
+
+    naoqi_driver/AlMotionSystem  - universal, position only (NAOqi 2.1-2.9)
+    naoqi_driver/DcmSystem       - NAO 2.1 / Pepper 2.5, position + velocity (planned)
+    naoqi_driver/LolaSystem      - NAO 2.8+ / Pepper 2.9, position (planned)
+
+  The same connection parameters are accepted by every backend; each ignores the
+  ones it does not need (e.g. LolaSystem ignores nao_ip and connects to the local
+  /tmp/robocup socket).
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Emit <joint> entries with a position command and position/velocity/effort
+       state, one per name in the `joints` list. Recursive because xacro has no
+       loop construct. -->
+  <xacro:macro name="naoqi_joints" params="joints">
+    <xacro:if value="${joints}">
+      <xacro:property name="head" value="${joints[0]}"/>
+      <xacro:property name="tail" value="${joints[1:]}"/>
+      <joint name="${head}">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+      <xacro:naoqi_joints joints="${tail}"/>
+    </xacro:if>
+  </xacro:macro>
+
+  <xacro:macro name="naoqi_system"
+      params="name plugin joints
+              emulation_mode:=false robot_type:=nao
+              nao_ip:=127.0.0.1 nao_port:=9559
+              user:=nao password:=no_password
+              max_velocity:=0.1 stiffness:=1.0
+              velocity_actuator_key:='' lola_socket:=/tmp/robocup">
+    <ros2_control name="${name}" type="system">
+      <hardware>
+        <plugin>${plugin}</plugin>
+        <param name="emulation_mode">${emulation_mode}</param>
+        <param name="robot_type">${robot_type}</param>
+        <param name="nao_ip">${nao_ip}</param>
+        <param name="nao_port">${nao_port}</param>
+        <param name="user">${user}</param>
+        <param name="password">${password}</param>
+        <!-- ALMotion only: fraction of max joint speed for setAngles. -->
+        <param name="max_velocity">${max_velocity}</param>
+        <!-- DCM only: joint stiffness, and (for velocity command) the per-joint
+             speed actuator key template, with {} replaced by the joint name. -->
+        <param name="stiffness">${stiffness}</param>
+        <param name="velocity_actuator_key">${velocity_actuator_key}</param>
+        <!-- LoLA only: path to the local LoLA socket. -->
+        <param name="lola_socket">${lola_socket}</param>
+      </hardware>
+      <xacro:naoqi_joints joints="${joints}"/>
+    </ros2_control>
+  </xacro:macro>
+
+</robot>

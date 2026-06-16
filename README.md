@@ -257,6 +257,64 @@ angular:
 ```
 
 
+## ros2_control
+
+Beyond the topic-based interface above, the driver provides
+[`ros2_control`](https://control.ros.org) hardware interfaces, so standard
+controllers (e.g. `joint_trajectory_controller`) can drive the robot's joints.
+Three `SystemInterface` plugins cover the different NAOqi generations; you pick
+one in the URDF (or via the `plugin:=` launch argument):
+
+| Plugin | Transport | Robots / NAOqi | Command |
+|--------|-----------|----------------|---------|
+| `naoqi_driver/AlMotionSystem` | libqi → ALMotion | any (NAOqi 2.1–2.9); required on Pepper 2.9 | position |
+| `naoqi_driver/DcmSystem` | libqi → DCM | NAO 2.1, Pepper 2.5 | position + stiffness |
+| `naoqi_driver/LolaSystem` | local `/tmp/robocup` socket | NAO 2.8+, Pepper 2.9; must run **on the robot** | position + stiffness |
+
+Position command is the supported baseline on every backend; velocity is
+exposed as a state only (work in progress for the DCM backend). See
+[`ASSUMPTIONS.md`](ASSUMPTIONS.md) for what is verified versus assumed per robot.
+
+### Try it without a robot (emulation)
+
+```sh
+ros2 launch naoqi_driver ros2_control.launch.py emulation_mode:=true
+ros2 control list_controllers          # joint_state_broadcaster + trajectory controller, active
+ros2 topic echo /joint_states --once
+```
+
+Move the head through the trajectory controller:
+
+```sh
+ros2 action send_goal /nao_joint_trajectory_controller/follow_joint_trajectory \
+  control_msgs/action/FollowJointTrajectory \
+  "{trajectory: {joint_names: [HeadYaw], points: [{positions: [0.3], time_from_start: {sec: 2}}]}}"
+```
+
+### On a real robot
+
+Select the robot, backend and connection. For example, ALMotion on a Pepper:
+
+```sh
+ros2 launch naoqi_driver ros2_control.launch.py \
+  robot:=pepper plugin:=naoqi_driver/AlMotionSystem \
+  nao_ip:=<robot_host> password:=<robot_password>
+```
+
+> `robot:=` selects the description and controllers (`nao` or `pepper`).
+> `plugin:=` selects the backend. `LolaSystem` only works when the driver runs
+> on the robot itself.
+
+There is also a one-shot human-verification test that nods the head:
+
+```sh
+./src/naoqi_driver/test/real_robot_move.sh <robot_ip> [password] [plugin] [nao|pepper]
+```
+
+A full validation procedure (emulation and on-robot, per backend) is in
+[`doc/ros2_control_test_plan.md`](doc/ros2_control_test_plan.md).
+
+
 ## Development
 
 Check how to [install the driver from source](#installing-from-source),
