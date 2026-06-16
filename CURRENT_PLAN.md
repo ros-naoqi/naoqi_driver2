@@ -52,11 +52,15 @@ the baseline. Velocity is pursued through DCM speed keys — see ASSUMPTIONS.md,
   and URDF<->LoLA 25-joint mapping (RHipYawPitch aliases LHipYawPitch). Tested
   against a fake LoLA Unix-socket server (`test/fake_lola_server.hpp`).
 - Wiring: pluginlib export (`naoqi_driver_hardware.xml`, all three classes), reusable
-  `naoqi_system.ros2_control.xacro` macro + `nao.urdf.xacro` (plugin selectable),
-  `config/nao_controllers.yaml`, `launch/ros2_control.launch.py`.
+  `naoqi_system.ros2_control.xacro` macro, `nao.urdf.xacro` + `pepper.urdf.xacro`
+  (plugin + robot selectable), `config/{nao,pepper}_controllers.yaml`,
+  `launch/ros2_control.launch.py` (`robot:=nao|pepper`).
+- Pepper description: 17 articular joints (head, arms, hip, knee). The holonomic
+  base (WheelFL/FR/B, velocity-controlled) stays on the driver's `/cmd_vel`
+  subscriber (ALMotion.move), not exposed as ros2_control joints.
 - Tests: emulation gtests `test/almotion_system_test.cpp`,
-  `test/dcm_system_test.cpp`; human real-robot `test/real_robot_move.sh`
-  (works with any plugin via its 3rd arg).
+  `test/dcm_system_test.cpp`, `test/lola_system_test.cpp`; human real-robot
+  `test/real_robot_move.sh` (any plugin via arg 3, `nao`/`pepper` via arg 4).
 
 ### Next (real-robot validation)
 1. Verify the hand-rolled MessagePack matches real LoLA on a NAO V6 (field
@@ -66,8 +70,8 @@ the baseline. Velocity is pursued through DCM speed keys — see ASSUMPTIONS.md,
    set `velocity_actuator_key` and validate velocity command (ASSUMPTIONS.md).
 3. Verify on a real robot that a mixed-type libqi list is accepted by the real
    DCM as an ALValue (the emulator parses it; hardware is untested).
-4. Pepper description (`pepper.urdf.xacro`) with its joint set (+ wheels via a
-   separate velocity interface / cmd_vel).
+4. Optional: expose Pepper's wheels as a velocity ros2_control interface (omni
+   base controller) instead of / alongside `/cmd_vel`.
 5. Decide co-existence between a running naoqi_driver node and a ros2_control
    backend (both talk to the robot).
 

@@ -24,18 +24,20 @@
 set -euo pipefail
 
 if [[ $# -lt 1 ]]; then
-  echo "usage: $0 <robot_ip> [password] [plugin]" >&2
+  echo "usage: $0 <robot_ip> [password] [plugin] [robot]" >&2
+  echo "  [robot] is 'nao' (default) or 'pepper'" >&2
   exit 2
 fi
 
 ROBOT_IP="$1"
 PASSWORD="${2:-no_password}"
 PLUGIN="${3:-naoqi_driver/AlMotionSystem}"
-CONTROLLER="nao_joint_trajectory_controller"
+ROBOT="${4:-nao}"
+CONTROLLER="${ROBOT}_joint_trajectory_controller"
 
 echo "============================================================"
 echo " REAL ROBOT MOTION TEST"
-echo "   robot:   ${ROBOT_IP}"
+echo "   robot:   ${ROBOT} @ ${ROBOT_IP}"
 echo "   plugin:  ${PLUGIN}"
 echo "   motion:  HeadYaw -> +0.3 rad -> 0.0 rad"
 echo "============================================================"
@@ -47,6 +49,7 @@ read -r -p "Press Enter to start, Ctrl-C to abort... " _
 
 # Bring up controller_manager + controllers against the real robot.
 ros2 launch naoqi_driver ros2_control.launch.py \
+  robot:="${ROBOT}" \
   emulation_mode:=false \
   plugin:="${PLUGIN}" \
   nao_ip:="${ROBOT_IP}" \

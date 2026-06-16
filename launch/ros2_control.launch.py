@@ -20,9 +20,6 @@ controller. Works against a real robot or, with emulation_mode:=true, the
 in-process fake NAOqi (no robot needed).
 """
 
-import os
-
-from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
@@ -31,9 +28,10 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    pkg_share = get_package_share_directory("naoqi_driver")
-
     args = [
+        DeclareLaunchArgument("robot", default_value="nao",
+                              description="Robot to bring up: 'nao' or 'pepper'. Selects the "
+                                          "ros2_control description and controllers."),
         DeclareLaunchArgument("emulation_mode", default_value="false",
                               description="Run against the in-process fake NAOqi (no robot)."),
         DeclareLaunchArgument("plugin", default_value="naoqi_driver/AlMotionSystem",
@@ -46,11 +44,14 @@ def generate_launch_description():
                               description="Fraction of each joint's max speed (ALMotion)."),
     ]
 
+    robot = LaunchConfiguration("robot")
+
     robot_description = {
         "robot_description": Command([
             FindExecutable(name="xacro"), " ",
             PathJoinSubstitution([
-                FindPackageShare("naoqi_driver"), "share", "ros2_control", "nao.urdf.xacro"]),
+                FindPackageShare("naoqi_driver"), "share", "ros2_control",
+                [robot, ".urdf.xacro"]]),
             " plugin:=", LaunchConfiguration("plugin"),
             " emulation_mode:=", LaunchConfiguration("emulation_mode"),
             " nao_ip:=", LaunchConfiguration("nao_ip"),
@@ -61,7 +62,8 @@ def generate_launch_description():
         ])
     }
 
-    controllers = os.path.join(pkg_share, "config", "nao_controllers.yaml")
+    controllers = PathJoinSubstitution([
+        FindPackageShare("naoqi_driver"), "config", [robot, "_controllers.yaml"]])
 
     # robot_state_publisher publishes /robot_description, which controller_manager
     # consumes on Iron and later. On Humble, controller_manager reads the
@@ -89,7 +91,7 @@ def generate_launch_description():
     spawn_trajectory_controller = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["nao_joint_trajectory_controller", "-c", "/controller_manager"],
+        arguments=[[robot, "_joint_trajectory_controller"], "-c", "/controller_manager"],
     )
 
     return LaunchDescription(args + [
