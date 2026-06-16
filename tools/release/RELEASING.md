@@ -15,6 +15,18 @@ via [bloom]. It covers six upstream repos and their `*-release` counterparts.
 **Active target distros:** Humble, Jazzy, Kilted, Rolling. (Iron, Foxy,
 Galactic and ROS 1 Noetic are EOL — rosdistro will not accept new releases.)
 
+**Platforms:** Humble → Ubuntu 22.04 (jammy); Jazzy/Kilted → Ubuntu 24.04
+(noble); Rolling → **Ubuntu 26.04 (resolute)** since the 2026-04 sync (it left
+24.04 behind). The buildfarm is the source of truth for Rolling — local CI on a
+stale Ubuntu will show false failures.
+
+> **Note — `geometry_msgs/Pose2D` removed in Rolling.** `naoqi_bridge_msgs`
+> used to reference `geometry_msgs/Pose2D` in `CmdPoseService.srv`; that type
+> was removed in Rolling. As of `naoqi_bridge_msgs` 2.1.1 it ships its own
+> field-compatible `naoqi_bridge_msgs/Pose2D` instead, so it builds on all
+> distros. The two upstream commits are preserved as patches under
+> `tools/release/patches/` in case the bridge_msgs checkout needs rebuilding.
+
 ## Prerequisites
 
 * A GitHub **bloom token** (PAT) belonging to a `ros-naoqi` member with write
@@ -47,7 +59,7 @@ Last computed round (June 2026):
 | Package | Old → New | Notes |
 |---|---|---|
 | `naoqi_libqicore` | 3.0.0 → **3.0.1** | ships "Support for Jazzy" |
-| `naoqi_bridge_msgs` | 2.1.0 → **2.1.1** | ships "Support for Jazzy" + CI |
+| `naoqi_bridge_msgs` | 2.1.0 → **2.1.1** | "Support for Jazzy" + CI + local `Pose2D` (Rolling fix) |
 | `naoqi_driver` | 2.1.1 → **2.1.2** | ships Jazzy cv_bridge fix + more |
 | `nao_meshes` | 2.1.1 → **2.1.2** | "Remove java dependency" |
 | `naoqi_libqi` | 3.0.3 (no bump) | source == latest tag |
