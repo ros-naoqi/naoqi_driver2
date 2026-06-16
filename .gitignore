@@ -1,6 +1,7 @@
 doc/*
 !doc/source/*
 !doc/Doxyfile
+!doc/ros2_control_test_plan.md
 *.pro
 *.pro.user
 .colcon/
