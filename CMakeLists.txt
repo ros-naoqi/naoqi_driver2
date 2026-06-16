@@ -180,6 +180,8 @@ set(
   src/hardware/joint_state_keys.cpp
   src/hardware/almotion_system.cpp
   src/hardware/dcm_system.cpp
+  src/hardware/lola_protocol.cpp
+  src/hardware/lola_system.cpp
 )
 add_library(naoqi_driver_hardware SHARED ${HARDWARE_SRC})
 target_include_directories(naoqi_driver_hardware PRIVATE
@@ -247,6 +249,19 @@ if(BUILD_TESTING)
     naoqi_libqi
   )
   target_link_libraries(${PROJECT_NAME}_dcm_test naoqi_driver_hardware)
+
+  ament_add_gtest(${PROJECT_NAME}_lola_test "test/lola_system_test.cpp")
+  target_include_directories(${PROJECT_NAME}_lola_test PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test>
+    $<INSTALL_INTERFACE:include>
+  )
+  ament_target_dependencies(${PROJECT_NAME}_lola_test
+    hardware_interface
+    rclcpp
+    rclcpp_lifecycle
+  )
+  target_link_libraries(${PROJECT_NAME}_lola_test naoqi_driver_hardware)
 endif()
 
 ament_package()

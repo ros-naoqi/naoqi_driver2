@@ -104,6 +104,22 @@ uses, and that velocity control is the real goal. Status of the search:
 - Sources: https://github.com/ros-sports/nao_lola (lola_enums.hpp),
   https://github.com/bhuman/BHumanCodeRelease, https://github.com/NaoHTWK/LolaConnector
 
+### LolaSystem implementation assumptions (verify on a NAO V6)
+
+- **[ASSUMPTION]** The hand-rolled MessagePack codec (`lola_protocol.cpp`)
+  matches real LoLA on the wire. It round-trips against the fake server in CI,
+  which proves self-consistency, not wire-compatibility. Check field names,
+  whether values are float32 vs float64, and map vs array framing on hardware.
+- **[ASSUMPTION]** Sending only `Position` + `Stiffness` in the actuator frame is
+  accepted. LoLA may require all actuator groups (LED fields) every frame; if so,
+  add them to `encodeActuators` (sizes in the table above).
+- **[ASSUMPTION]** One `recv()` returns exactly one LoLA frame (no reassembly).
+  True for small frames in practice; if LoLA fragments, add length-based framing.
+- **[ASSUMPTION]** `RHipYawPitch` shares `LHipYawPitch`'s LoLA slot; commanding
+  both writes the same slot (last wins). Correct only because they are coupled.
+- **[ASSUMPTION]** LoLA has no joint velocity/torque sensor field, so velocity and
+  effort states are left at 0. Could be derived (finite difference) later.
+
 ## libqi runtime from inside controller_manager
 
 - **[ASSUMPTION]** `src/hardware/session_factory.cpp` lazily creates a single

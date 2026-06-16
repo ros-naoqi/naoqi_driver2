@@ -38,7 +38,7 @@
               nao_ip:=127.0.0.1 nao_port:=9559
               user:=nao password:=no_password
               max_velocity:=0.1 stiffness:=1.0
-              velocity_actuator_key:=''">
+              velocity_actuator_key:='' lola_socket:=/tmp/robocup">
     <ros2_control name="${name}" type="system">
       <hardware>
         <plugin>${plugin}</plugin>
@@ -54,6 +54,8 @@
              speed actuator key template, with {} replaced by the joint name. -->
         <param name="stiffness">${stiffness}</param>
         <param name="velocity_actuator_key">${velocity_actuator_key}</param>
+        <!-- LoLA only: path to the local LoLA socket. -->
+        <param name="lola_socket">${lola_socket}</param>
       </hardware>
       <xacro:naoqi_joints joints="${joints}"/>
     </ros2_control>

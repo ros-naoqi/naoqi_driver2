@@ -17,4 +17,14 @@
       per-joint speed key is provided via the velocity_actuator_key parameter.
     </description>
   </class>
+  <class name="naoqi_driver/LolaSystem"
+         type="naoqi::hardware::LolaSystem"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control system driving NAO (and, per internal sources, Pepper 2.9)
+      joints through the LoLA protocol over the local /tmp/robocup socket
+      (MessagePack, ~83 Hz). Bypasses NAOqi; must run on the robot. Position +
+      stiffness.
+    </description>
+  </class>
 </library>

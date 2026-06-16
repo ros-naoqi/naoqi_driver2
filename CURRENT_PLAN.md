@@ -46,16 +46,22 @@ the baseline. Velocity is pursued through DCM speed keys — see ASSUMPTIONS.md,
   `dcm_system.*`, DCM `createAlias`/`getTime`/`setAlias`. Each joint declares
   one command interface (position XOR velocity); velocity needs the
   `velocity_actuator_key` param. `FakeDCM` added to the fake NAOqi.
-- Wiring: pluginlib export (`naoqi_driver_hardware.xml`, both classes), reusable
+- `LolaSystem` (position + stiffness) — `lola_system.*`, AF_UNIX `/tmp/robocup`,
+  hand-rolled MessagePack codec (`lola_protocol.*`, no msgpack dependency), a
+  background IO thread decoupling the 83 Hz LoLA cycle from controller_manager,
+  and URDF<->LoLA 25-joint mapping (RHipYawPitch aliases LHipYawPitch). Tested
+  against a fake LoLA Unix-socket server (`test/fake_lola_server.hpp`).
+- Wiring: pluginlib export (`naoqi_driver_hardware.xml`, all three classes), reusable
   `naoqi_system.ros2_control.xacro` macro + `nao.urdf.xacro` (plugin selectable),
   `config/nao_controllers.yaml`, `launch/ros2_control.launch.py`.
 - Tests: emulation gtests `test/almotion_system_test.cpp`,
   `test/dcm_system_test.cpp`; human real-robot `test/real_robot_move.sh`
   (works with any plugin via its 3rd arg).
 
-### Next
-1. `LolaSystem`: MessagePack client over `/tmp/robocup` (fields/order in
-   ASSUMPTIONS.md). Add a fake LoLA Unix-socket server for CI. Verify Pepper 2.9.
+### Next (real-robot validation)
+1. Verify the hand-rolled MessagePack matches real LoLA on a NAO V6 (field
+   names, float widths, whether LoLA requires LED groups in every actuator
+   frame). Confirm `/tmp/robocup` and that LoLA exists/socket path on Pepper 2.9.
 2. Resolve the DCM per-joint velocity key on a real NAO 2.1 / Pepper 2.5, then
    set `velocity_actuator_key` and validate velocity command (ASSUMPTIONS.md).
 3. Verify on a real robot that a mixed-type libqi list is accepted by the real
