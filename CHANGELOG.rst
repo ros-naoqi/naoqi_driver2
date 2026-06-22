@@ -2,6 +2,19 @@
 Changelog for package naoqi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.1.2 (2026-06-22)
+------------------
+* Add dep on ament_index + update cv_bridge header for jazzy
+* CI: update GH cache action
+* Automatically select port 9503 when password is set
+* Fallback when audio extraction fails
+* Automatically disable audio if no endpoint is set
+* Fallback to 2.9's ALRobotModel if ALMotion.getRobotConfig fails
+* README: fix usage of qi_listen_url
+* Update README
+* README: fix link to boot_config.json
+* Contributors: Victor Paléologue
+
 2.1.1 (2023-12-05)
 ------------------
 * Drop testing of `foxy` and `galactic`
