@@ -1,0 +1,64 @@
+name: buildfarm-watch
+
+# Watches the ROS 2 build farm (build.ros2.org) for the qi dependency stack
+# released from this org, and opens/updates a tracking issue when any job is
+# not green. Runs on GitHub's runners, which can reach build.ros2.org.
+
+on:
+  schedule:
+    - cron: '0 7 * * *'   # daily at 07:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query build.ros2.org and report failures
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Packages of the qi stack maintained out of ros-naoqi.
+            const PKG = /naoqi_libqi|naoqi_libqicore|naoqi_bridge_msgs|naoqi_driver|nao_meshes|pepper_meshes/;
+            // Jenkins "color" values that indicate a problem. *_anime = currently
+            // building; blue/notbuilt/disabled are not failures.
+            const BAD = new Set(['red', 'red_anime', 'yellow', 'yellow_anime', 'aborted', 'aborted_anime']);
+            const LABEL = 'buildfarm';
+            const TITLE = 'Buildfarm: qi-stack job failures';
+
+            const res = await fetch('https://build.ros2.org/api/json?tree=jobs[name,color,url]');
+            if (!res.ok) { core.setFailed(`buildfarm query failed: HTTP ${res.status}`); return; }
+            const data = await res.json();
+            const jobs = (data.jobs || []).filter(j => PKG.test(j.name));
+            const failing = jobs.filter(j => BAD.has(j.color)).sort((a, b) => a.name.localeCompare(b.name));
+            core.info(`qi-stack jobs: ${jobs.length}, not green: ${failing.length}`);
+
+            const { owner, repo } = context.repo;
+            const open = (await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: LABEL })).data[0];
+
+            if (failing.length === 0) {
+              if (open) {
+                await github.rest.issues.createComment({ owner, repo, issue_number: open.number,
+                  body: `✅ All ${jobs.length} qi-stack buildfarm jobs are green as of ${new Date().toISOString()}. Closing.` });
+                await github.rest.issues.update({ owner, repo, issue_number: open.number, state: 'closed' });
+              }
+              return;
+            }
+
+            const body = [
+              `As of ${new Date().toISOString()}, ${failing.length} of ${jobs.length} qi-stack buildfarm job(s) are not green:`,
+              '',
+              ...failing.map(j => `- \`${j.color}\` [${j.name}](${j.url})`),
+              '',
+              'Source: <https://build.ros2.org/>. Updated automatically by `.github/workflows/buildfarm-watch.yml`.',
+            ].join('\n');
+
+            if (open) {
+              await github.rest.issues.update({ owner, repo, issue_number: open.number, body });
+            } else {
+              try { await github.rest.issues.getLabel({ owner, repo, name: LABEL }); }
+              catch (e) { await github.rest.issues.createLabel({ owner, repo, name: LABEL, color: 'b60205' }); }
+              await github.rest.issues.create({ owner, repo, title: TITLE, labels: [LABEL], body });
+            }
