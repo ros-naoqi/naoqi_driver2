@@ -15,6 +15,10 @@ via [bloom]. It covers six upstream repos and their `*-release` counterparts.
 **Active target distros:** Humble, Jazzy, Kilted, Rolling. (Iron, Foxy,
 Galactic and ROS 1 Noetic are EOL — rosdistro will not accept new releases.)
 
+> **Rolling is special:** its release repositories must live in the `ros2-gbp`
+> org, not `ros-naoqi`. See [`ROLLING_ros2-gbp.md`](./ROLLING_ros2-gbp.md) for
+> the step-by-step plan.
+
 **Platforms:** Humble → Ubuntu 22.04 (jammy); Jazzy/Kilted → Ubuntu 24.04
 (noble); Rolling → **Ubuntu 26.04 (resolute)** since the 2026-04 sync (it left
 24.04 behind). The buildfarm is the source of truth for Rolling — local CI on a
