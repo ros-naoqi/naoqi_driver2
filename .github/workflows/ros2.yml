@@ -18,6 +18,10 @@ on:
       ALLOW_FAIL:
         required: true
         type: boolean
+      UPSTREAM_WORKSPACE:
+        required: false
+        default: ''
+        type: string
 
 jobs:
   ros2_ci:
